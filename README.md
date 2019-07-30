@@ -23,6 +23,8 @@ This tool is written in C++ and makes use of NVIDIA's [NVAPI](https://developer.
 ### How to use
 After configuring all the desired configurations, the tool allows you to create a batch file for each configuration. Running this batch file simply calls the tool with the desired configuration as an argument, applying it instantly. You can create a shortcut to each batch file and place it in your start menu/desktop.
 
+You can find the latest executable in the Releases part of this repository.
+
 ## Overview
 The tool uses two main concepts: _preset_ and _configuration_. A _configuration_ is an arrangement of _presets_ at specific positions.
 
