@@ -28,7 +28,7 @@ You can find the latest executable in the Releases part of this repository.
 ## Overview
 The tool uses two main concepts: _preset_ and _configuration_. A _configuration_ is an arrangement of _presets_ at specific positions.
 
-A _preset_ consists of a display ID (hidden to the user, identifies the display to the NVAPI), a name (given by the user), a resolution (height and width), a refresh rate and a color depth. You may have multiple _presets_ with the same name and display ID but with different resolutions or refresh rates. This represents cases where a display can run at different resolutions/refresh rates.
+A _preset_ consists of a display ID (hidden to the user, identifies the display to the NVAPI), a name (given by the user), a resolution (height and width), a refresh rate, a rotation and a color depth (this one isn't editable). You may have multiple _presets_ with the same name and display ID but with different resolutions or refresh rates. This represents cases where a display can run at different resolutions/refresh rates.
 
 _Configurations_ are sets of _presets_ but with additional position information for each _preset_. When a _configuration_ is created, it copies the information from each _preset_ used, which means any further change to one of the _presets_ won't be reflected on already existing _configurations_.
 
@@ -48,7 +48,7 @@ The goal of this step is for you to name your displays, since I could not find a
 ![](./pictures/naming.png)
 
 ### 3. (Optional) Create more presets
-After naming the displays you are asked if you want to create more presets. The tool will save the resolution and refresh rate you are currently using for each display, but sometimes you may wish for a display to be at a different resolution or refresh rate depending on the configuration. If you wish to do so, here you can create more presets for each display. Each preset stores a resolution and refresh rate combination for that display. In the following picture I add a 1080p@120Hz preset to my LG display.
+After naming the displays you are asked if you want to create more presets. The tool will save the resolution, refresh rate and rotation you are currently using for each display, but sometimes you may wish for a display to be at a different resolution, refresh rate or rotation depending on the configuration. If you wish to do so, here you can create more presets for each display. Each preset stores a resolution and refresh rate combination for that display. In the following picture I add a 1080p@120Hz preset to my LG display (this picture is **outdated** and does not show the rotation options).
 
 ![](./pictures/new_preset.png)
 
@@ -83,6 +83,18 @@ If you want to add another display, you will need to pick its position relative 
 #### 4.3 Alignment
 Since not all monitors are born equal, some displays in your configuration may have different resolutions. When two side-by-side monitors have different vertical resolutions, the tool will ask you how to align them (by the bottom edges, upper edges or centrally). The equivalent is also true when the horizontal resolutions don't match and you are trying to stack them vertically.
 
+### 4.4 Rotation
+The rotation of a display is part of its preset, so if you want to change the rotation of any display that should be done through a new preset in the "Manage presets" submenu. After creating a preset with rotation, it should display a bit differently from the other ones:
+
+   2. "VX239" (1920x1080@60)
+   3. "VX329" (1920x1080@60) (90 deg)
+
+In the above example, I have two presets for the same display, one with a 90º rotation. I decided to print the "native" resolution of the display, 1920x1080, but in practice the rotated display takes up a 1080x1920 space. This difference is taken into account when the preset is added to a configuration. In the following configuration you can see this behaviour in effect:
+
+   1. VX238 (1920x1080@60) (\[0, 1920], \[0, 1080])
+   2. VX239 (1920x1080@60) (\[420, 1500], \[-1920, 0])
+   
+In this configuration, the VX239 (with a 90 deg rotation) is placed centrally above the VX238 (1080p unrotated) and, from the VX239 coordinates it is possible to see that it takes 1500-420 = 1080px horizontally and 1920px vertically.
 ### 5. Creating the batch files
 When you are done creating the configurations (you can delete the DEFAULT_CONFIG now) and leave the configurations submenu, all your changes will be automatically saved to the *configs.json* file. Now you can select one of the *Generate batch files* options from the main menu.
 - **Create batch files**: Creates one batch file per configuration, running this file instantly applies the configuration. The batch files **must** stay in the same folder as the executable. You can create shortcuts to place them somewhere else, or create your own batch files that contain the full path to the executable.
