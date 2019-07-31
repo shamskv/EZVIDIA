@@ -37,6 +37,10 @@ public:
 	int posX;	//position of bottom-left corner
 	int posY;
 
+	int rotation;
+	int virtual_height;
+	int virtual_width;
+
 	json mapToJson();
 
 	NV_DISPLAYCONFIG_PATH_INFO* toNVAPIPathInfo();
@@ -48,7 +52,7 @@ public:
 	}
 
 	DisplayParameters();
-	DisplayParameters(std::string n, unsigned long dI, int h, int w, int cD, int r, int pX, int pY);
+	DisplayParameters(std::string n, unsigned long dI, int h, int w, int cD, int r, int pX, int pY, int rotation);
 	DisplayParameters(json j);
 	
 };

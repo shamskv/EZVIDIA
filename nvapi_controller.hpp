@@ -138,6 +138,16 @@ public:
 			disp.width = pInfo[i].sourceModeInfo->resolution.width;
 			disp.refresh = pInfo[i].targetInfo->details->refreshRate1K;
 			disp.colorDepth = pInfo[i].sourceModeInfo->resolution.colorDepth;
+			disp.rotation = pInfo[i].targetInfo->details->rotation * 90;
+			if (disp.rotation == 0 || disp.rotation == 180) {
+				disp.virtual_width = disp.width;
+				disp.virtual_height = disp.height;
+			}
+			else if (disp.rotation == 90 || disp.rotation == 270) {
+				disp.virtual_width = disp.height;
+				disp.virtual_height = disp.width;
+			}
+
 			displayList.push_back(disp);
 		}
 

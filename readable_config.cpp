@@ -34,6 +34,7 @@ json DisplayParameters::mapToJson() {
 	j["refresh"] = refresh;
 	j["posX"] = posX;
 	j["posY"] = posY;
+	j["rotation"] = rotation;
 
 	return j;
 }
@@ -47,6 +48,16 @@ void DisplayParameters::populateFromJson(json j) {
 	refresh = j["refresh"].get<int>();
 	posX = j["posX"].get<int>();
 	posY = j["posY"].get<int>();
+	rotation = j["rotation"].get<int>();
+
+	if (rotation == 0 || rotation == 180) {
+		virtual_width = width;
+		virtual_height = height;
+	}
+	else if (rotation == 90 || rotation == 270) {
+		virtual_width = height;
+		virtual_height = width;
+	}
 }
 
 NV_DISPLAYCONFIG_PATH_INFO* DisplayParameters::toNVAPIPathInfo() {
@@ -87,11 +98,29 @@ NV_DISPLAYCONFIG_PATH_INFO* DisplayParameters::toNVAPIPathInfo() {
 	pInfo->sourceModeInfo->position.x = posX;
 	pInfo->sourceModeInfo->position.y = posY;
 
+	switch (rotation) {
+	case 0:
+		pInfo->targetInfo->details->rotation = NV_ROTATE_0;
+		break;
+	case 90:
+		pInfo->targetInfo->details->rotation = NV_ROTATE_90;
+		break;
+	case 180:
+		pInfo->targetInfo->details->rotation = NV_ROTATE_180;
+		break;
+	case 270:
+		pInfo->targetInfo->details->rotation = NV_ROTATE_270;
+		break;
+	default:
+		pInfo->targetInfo->details->rotation = NV_ROTATE_0;
+		break;
+	}
+
 	return pInfo;
 }
 
 DisplayParameters::DisplayParameters() {};
-DisplayParameters::DisplayParameters(std::string n, unsigned long dI, int h, int w, int cD, int r, int pX, int pY) : name(n), displayId(dI), height(h), width(w), colorDepth(cD), refresh(r), posX(pX), posY(pY) {}
+//DisplayParameters::DisplayParameters(std::string n, unsigned long dI, int h, int w, int cD, int r, int pX, int pY, int rotation) : name(n), displayId(dI), height(h), width(w), colorDepth(cD), refresh(r), posX(pX), posY(pY), rotation(rotation) {}
 DisplayParameters::DisplayParameters(json j) { populateFromJson(j); }
 
 
@@ -175,17 +204,17 @@ bool GlobalConfig::addDisplaytoConfig(DisplayParameters disp, unsigned long ref_
 			disp.posX = ref.posX;
 		}
 		else if (align == 1) {
-			disp.posX = ref.posX + ref.width - disp.width;
+			disp.posX = ref.posX + ref.virtual_width - disp.virtual_width;
 		}
 		else if (align == 2) {
-			disp.posX = ref.posX + (ref.width - disp.width) / 2;
+			disp.posX = ref.posX + (ref.virtual_width - disp.virtual_width) / 2;
 		}
 		//Vertical coordinates 
 		if (rel_pos == 0) {
-			disp.posY = ref.posY - disp.height;
+			disp.posY = ref.posY - disp.virtual_height;
 		}
 		else if (rel_pos == 1) {
-			disp.posY = ref.posY + ref.height;
+			disp.posY = ref.posY + ref.virtual_height;
 		}
 	}
 
@@ -196,17 +225,17 @@ bool GlobalConfig::addDisplaytoConfig(DisplayParameters disp, unsigned long ref_
 			disp.posY = ref.posY;
 		}
 		else if (align == 1) {
-			disp.posY = ref.posY + ref.height - disp.height;
+			disp.posY = ref.posY + ref.virtual_height - disp.virtual_height;
 		}
 		else if (align == 2) {
-			disp.posY = ref.posY + (ref.height - disp.height) / 2;
+			disp.posY = ref.posY + (ref.virtual_height - disp.virtual_height) / 2;
 		}
 		//Horizontal coordinates
 		if (rel_pos == 2) {
-			disp.posX = ref.posX - disp.width;
+			disp.posX = ref.posX - disp.virtual_width;
 		}
 		else if (rel_pos == 3) {
-			disp.posX = ref.posX + ref.width;
+			disp.posX = ref.posX + ref.virtual_width;
 		}
 
 	}
@@ -216,15 +245,15 @@ bool GlobalConfig::addDisplaytoConfig(DisplayParameters disp, unsigned long ref_
 	int x2_start, x2_end, y2_start, y2_end;
 
 	x1_start = disp.posX;
-	x1_end = disp.posX + disp.width;
+	x1_end = disp.posX + disp.virtual_width;
 	y1_start = disp.posY;
-	y1_end = disp.posY + disp.height;
+	y1_end = disp.posY + disp.virtual_height;
 
 	for (auto& d : displayList) {
 		x2_start = d.posX;
-		x2_end = d.posX + d.width;
+		x2_end = d.posX + d.virtual_width;
 		y2_start = d.posY;
-		y2_end = d.posY + d.height;
+		y2_end = d.posY + d.virtual_height;
 
 		if (x1_end > x2_start && x2_end > x1_start) {
 			if (y1_end > y2_start && y2_end > y1_start) {

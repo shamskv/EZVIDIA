@@ -171,7 +171,7 @@ void printConfigDetails(GlobalConfig& conf) {
 	std::cout << '\n';
 	for (auto& d : conf.displayList) {
 		std::cout << " " << ++i << ". " << d.name << " (" << d.width << "x" << d.height << "@" << float(d.refresh) / 1000 << ")";
-		std::cout << " ([" << d.posX << ", " << d.posX + d.width << "], [" << d.posY << ", " << d.posY + d.height << "])" << std::endl;
+		std::cout << " ([" << d.posX << ", " << d.posX + d.virtual_width << "], [" << d.posY << ", " << d.posY + d.virtual_height << "])" << std::endl;
 	}
 	std::cout << '\n';
 }
@@ -181,7 +181,13 @@ void printDisplayList(std::vector<DisplayParameters>& list) {
 	int i = 0;
 	std::cout << '\n';
 	for (auto& d : list) {
-		std::cout << " " << ++i << ". \"" << d.name << "\" (" << d.width << "x" << d.height << "@" << float(d.refresh) / 1000 << ")" << std::endl;
+		std::cout << " " << ++i << ". \"" << d.name << "\" (" << d.width << "x" << d.height << "@" << float(d.refresh) / 1000 << ")";
+		if (d.rotation != 0) {
+			std::cout << " (" << d.rotation << " deg)\n";
+		}
+		else {
+			std::cout << "\n";
+		}
 	}
 	std::cout << '\n';
 }
@@ -228,7 +234,7 @@ void manageDisplayPresets(std::vector<DisplayParameters>& list) {
 			if (disp_num == 0) { continue; }
 
 			DisplayParameters new_disp(list.at((size_t)disp_num - 1));
-			std::cout << "\nNow you need to select the resolution and refresh rate for the new preset.\n";
+			std::cout << "\nNow you need to select the resolution, refresh rate and rotation for the new preset.\n";
 			std::cout << "The values inserted will not be validated so be dumb at your own risk.\n";
 
 			prompt_str = "\nInsert the resolution width (the 1920 in 1920x1080): ";
@@ -237,6 +243,17 @@ void manageDisplayPresets(std::vector<DisplayParameters>& list) {
 			new_disp.height = getUserInputNum(prompt_str);
 			prompt_str = "\nInsert the refresh rate (in Hz, up to 3 decimal places): ";
 			new_disp.refresh = 1000 * getUserInputFloat(prompt_str); //Because we store a int that represents 1000*Hz
+			prompt_str = "\nPick the rotation for the display (counterclockwise).\n 1. 0 deg\n 2. 90 deg\n 3. 180 deg\n 4. 270 deg\nInsert your option: ";
+			getUserInputRange(prompt_str, 1, 4, option);
+			new_disp.rotation = (option - 1) * 90;
+			if (new_disp.rotation == 0 || new_disp.rotation == 180) {
+				new_disp.virtual_height = new_disp.height;
+				new_disp.virtual_width = new_disp.width;
+			} 
+			else if (new_disp.rotation == 90 || new_disp.rotation == 270) {
+				new_disp.virtual_height = new_disp.width;
+				new_disp.virtual_width = new_disp.height;
+			}
 
 			list.push_back(new_disp);
 			std::cout << "\nNew preset added.\n";
@@ -339,7 +356,7 @@ void createConfig(std::vector<GlobalConfig>& conf_list, std::vector<DisplayParam
 		rel_pos--;
 
 		//aligment
-		if ((rel_pos == 0 || rel_pos == 1) && ref_disp.width != preset.width) {
+		if ((rel_pos == 0 || rel_pos == 1) && ref_disp.virtual_width != preset.virtual_width) {
 			screenSpace();
 			std::cout << "The selected displays don't have matching horizontal resolutions. It is necessary to choose an aligment.\n";
 			std::cout << " 1. Align the left edges\n 2. Align the right edges\n 3. Align centrally\n";
@@ -348,7 +365,7 @@ void createConfig(std::vector<GlobalConfig>& conf_list, std::vector<DisplayParam
 			if (align == 0) continue;
 			align--;
 		}
-		else if ((rel_pos == 2 || rel_pos == 3) && ref_disp.height != preset.height) {
+		else if ((rel_pos == 2 || rel_pos == 3) && ref_disp.virtual_height != preset.virtual_height) {
 			screenSpace();
 			std::cout << "The selected displays don't have matching vertical resolutions. It is necessary to choose an aligment.\n";
 			std::cout << " 1. Align the upper edges\n 2. Align the bottom edges\n 3. Align centrally\n";
