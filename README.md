@@ -3,6 +3,11 @@
 
 EZVIDIA is a command-line tool for **Windows** and **NVIDIA** GPUs that allows a user to create and apply multiple display configurations. It is mainly targeted at users with multiple displays that frequently have to change their display configuration (through NVIDIA's Control Panel).
 
+### Requirements
+- Windows XP or later (64-bit only)
+- NVIDIA GPU (with installed drivers)
+- Latest 64-bit Visual C++ Redistributable ([link](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
+
 ### Why
 My personal motivation behind this project was the hassle of changing from my "desk" setup, which contains 2 23" displays, to my "living room" setup, which only contains my living room TV. When doing this through NVIDIA's Control Panel, I would have to go through the following steps:
 1. Open NVIDIA's Control Panel
