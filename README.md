@@ -88,7 +88,7 @@ If you want to add another display, you will need to pick its position relative 
 #### 4.3 Alignment
 Since not all monitors are born equal, some displays in your configuration may have different resolutions. When two side-by-side monitors have different vertical resolutions, the tool will ask you how to align them (by the bottom edges, upper edges or centrally). The equivalent is also true when the horizontal resolutions don't match and you are trying to stack them vertically.
 
-### 4.4 Rotation
+#### 4.4 Rotation
 The rotation of a display is part of its preset, so if you want to change the rotation of any display that should be done through a new preset in the "Manage presets" submenu. After creating a preset with rotation, it should display a bit differently from the other ones:
 
    2. "VX239" (1920x1080@60)
@@ -99,7 +99,7 @@ In the above example, I have two presets for the same display, one with a 90º r
    1. VX238 (1920x1080@60) (\[0, 1920], \[0, 1080])
    2. VX239 (1920x1080@60) (\[420, 1500], \[-1920, 0])
    
-In this configuration, the VX239 (with a 90 deg rotation) is placed centrally above the VX238 (1080p unrotated) and, from the VX239 coordinates it is possible to see that it takes 1500-420 = 1080px horizontally and 1920px vertically.
+In this configuration, the VX239 (with a 90 deg rotation) is placed centrally above the VX238 (1080p unrotated) and, from the VX239 coordinates, it is possible to see that it takes 1500-420 = 1080px horizontally and 1920px vertically.
 ### 5. Creating the batch files
 When you are done creating the configurations (you can delete the DEFAULT_CONFIG now) and leave the configurations submenu, all your changes will be automatically saved to the *configs.json* file. Now you can select one of the *Generate batch files* options from the main menu.
 - **Create batch files**: Creates one batch file per configuration, running this file instantly applies the configuration. The batch files **must** stay in the same folder as the executable. You can create shortcuts to place them somewhere else, or create your own batch files that contain the full path to the executable.
