@@ -15,7 +15,7 @@ My personal motivation behind this project was the hassle of changing from my "d
 3. Toggle the checkboxes for the displays I'm turning on/off
 4. Check if the displays are correctly arranged and which is the primary display (when dealing with multiple displays)
 5. Press 'Apply'
-6. After the new configuration is applied you have around 15-20s to confirm it
+6. After the new configuration is applied you have 20s to confirm it
 7. (Optional) Change resolution/refresh rate of displays in the new configuration
 
 Point 6 was especially annoying in my case, since I would have to rush to the other room before the timer ended.
