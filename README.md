@@ -52,7 +52,7 @@ This tool is written in C++ and makes use of NVIDIA's [NVAPI](https://developer.
 The tool listen for two different types of UDP messages on port 48541. A LIST message, which prompts a reply with all the current configurations:
 
 	>>"LIST"
-	<<"conf1;conf2;conf3;conf4"
+	<<"conf1;;conf2;;conf3;;conf4"
 	
 And an APPLY message, which prompts the tool to apply the desired configuration:
 
