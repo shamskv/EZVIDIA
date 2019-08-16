@@ -10,7 +10,7 @@ EZVIDIA is a tool for **Windows** and **NVIDIA** GPUs that allows a user to save
 - Selecting the desired configuration from a popup menu:
 
 	![Right-clicking the notification icon shows this menu](./menu.png)
-- Sending a UDP message following a specific syntax. Works even if the computer is locked. This is implemented in an Android app (developed by [fchamicapereira](https://github.com/fchamicapereira) available at [this repository](https://github.com/fchamicapereira/EZVIDIA_android_app). Here is a preview:
+- Sending a UDP message following a specific syntax. Works even if the computer is locked. This is implemented in an Android app (developed by [fchamicapereira](https://github.com/fchamicapereira)) available at [this repository](https://github.com/fchamicapereira/EZVIDIA_android_app). Here is a preview:
 
 	<img src="./android.jpg" width="270">
 
