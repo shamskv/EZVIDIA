@@ -65,5 +65,5 @@ And an APPLY message, which prompts the tool to apply the desired configuration:
 - This tool has only been tested by myself so I have no clue how it behaves with other GPU features like G-Sync.
 - From my experience, settings like the color options in the NVIDIA Control Panel persist through configuration changes, which is nice.
 - There will obviously be bugs. If do you find them, please report them to me.
-- This was my first experience with C++ so you will probably find some stupid things in the code. During the project I also experimented a bit with some features just to learn about them so some parts may be overengineered or not make much sense. If you see anything worth noting please do, so I can learn from it.
+- This was my first experience with C++ out of college, so you will probably find some stupid things in the code. During the project I also experimented a bit with some features just to learn about them so some parts may be overengineered or not make much sense. If you see anything worth noting please do, so I can learn from it.
 - I assume no responsability for any damage or inconvenience this tool causes.
