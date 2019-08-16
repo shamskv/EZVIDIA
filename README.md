@@ -26,7 +26,7 @@ Run the executable and look for a green notification icon in your task bar. To u
 
 With the tool running, you can use the [Android app](https://github.com/fchamicapereira/EZVIDIA_android_app), to change the display configuration even if you are away from the computer or the computer is locked.
 
-You can find the latest executable in the Releases page of this repository.
+You can find the latest executable in the [Releases page](https://github.com/shamskv/EZVIDIA/releases/) of this repository.
 
 If you used the old version, you can reuse the _configs.json_ file by placing it in the same folder as the executable.
 
@@ -49,7 +49,7 @@ Doing this everytime I wanted to use my PC on the living room got tiring, so I f
 This tool is written in C++ and makes use of NVIDIA's [NVAPI](https://developer.nvidia.com/nvapi). This SDK allows (between many other features) to control the display configuration, making this tool possible. All the source code I wrote is in this repo, you are free to fork and improve/expand upon it. None of the dependencies are included.
 
 ### UDP messages
-The tool listen for two different types of UDP messages. A LIST message, which prompts a reply with all the current configurations:
+The tool listen for two different types of UDP messages on port 48541. A LIST message, which prompts a reply with all the current configurations:
 
 	>>"LIST"
 	<<"conf1;conf2;conf3;conf4"
