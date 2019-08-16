@@ -22,11 +22,14 @@ EZVIDIA is a tool for **Windows** and **NVIDIA** GPUs that allows a user to save
 ### How to use
 Run the executable and look for a green notification icon in your task bar. To use the Android app, you will need to give it network permissions. Right-clicking this icon gives the option to save the current display configuration and to pick any of the saved configurations.
 
+**Note:** After applying a configuration, there is a 5 seconds window where the tool ignores requests to change configuration again.
+
 With the tool running, you can use the [Android app](https://github.com/fchamicapereira/EZVIDIA_android_app), to change the display configuration even if you are away from the computer or the computer is locked.
 
 You can find the latest executable in the Releases page of this repository.
 
 If you used the old version, you can reuse the _configs.json_ file by placing it in the same folder as the executable.
+
 
 ### Why
 My personal motivation behind this project was the hassle of changing from my "desk" setup, which contains 2 23" displays, to my "living room" setup, which only contains my living room TV. When doing this through NVIDIA's Control Panel, I would have to go through the following steps:
@@ -44,6 +47,19 @@ Doing this everytime I wanted to use my PC on the living room got tiring, so I f
 
 ### How
 This tool is written in C++ and makes use of NVIDIA's [NVAPI](https://developer.nvidia.com/nvapi). This SDK allows (between many other features) to control the display configuration, making this tool possible. All the source code I wrote is in this repo, you are free to fork and improve/expand upon it. None of the dependencies are included.
+
+### UDP messages
+The tool listen for two different types of UDP messages. A LIST message, which prompts a reply with all the current configurations:
+
+	>>"LIST"
+	<<"conf1;conf2;conf3;conf4"
+	
+And an APPLY message, which prompts the tool to apply the desired configuration:
+
+	>>"APPLY conf1"
+	<<"OK"
+	>>"APPLY gibberish"
+	<<"NOK"
 
 ## Notes/Disclaimers
 - This tool has only been tested by myself so I have no clue how it behaves with other GPU features like G-Sync.
