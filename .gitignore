@@ -1,0 +1,13 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/packages
+/EZVIDIA/Debug
+/EZVIDIA/packages.config
+/EZVIDIA/x64
+/EZVIDIA/configs.json
+/EZVIDIA/ezvidia.log
+/x64
+/EZVIDIA/EZVIDIA.vcxproj.user
