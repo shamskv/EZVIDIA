@@ -215,8 +215,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (globalError) {
 			std::wstring errorMessage = std::wstring(L"Error(s) on start up:\n") + globalErrorString;
-			MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR);
+			MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 			PostQuitMessage(0);
+			break;
 		}
 
 		AddNotificationIcon(hWnd);
@@ -254,7 +255,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				conf = configList.at(confnum);
 				int ret = safeApplyConfig(conf);
 				if (ret != 0 && ret != -2) { //TODO fix
-					MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR);
+					MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 				}
 			}
 
@@ -292,7 +293,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					saveConfigFile();
 				}
 				else {
-					MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR);
+					MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 				}
 			}
 			awaitingInput = false;
