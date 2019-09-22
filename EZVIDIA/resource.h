@@ -30,6 +30,7 @@
 #define IDC_EDIT1                       1000
 #define IDM_DELCONFNUM                  1500
 #define IDM_SAVECONF                    2000
+#define IDM_GENERATEBAT					2500
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

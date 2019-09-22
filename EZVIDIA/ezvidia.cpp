@@ -59,6 +59,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    NewConfig(HWND, UINT, WPARAM, LPARAM);
 int					safeApplyConfig(GlobalConfig&);
 void				blockConfigs();
+int					generateBatFiles();
 void				logPrint(std::string);
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
@@ -69,7 +70,42 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow)
 {
 	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
+
+	{
+		std::lock_guard<std::mutex> lock(confMutex);
+		//Load config file
+		if (!loadConfigFile()) {
+			/*globalError = true;
+			globalErrorString += L"Error opening config file\n";*/
+			saveConfigFile();
+		}
+	}
+
+	int argc;
+	LPWSTR* argv;
+	argv = CommandLineToArgvW(lpCmdLine, &argc);
+
+	//MessageBox(NULL, lpCmdLine, std::to_wstring(argc).c_str(), MB_OK | MB_ICONERROR | MB_APPLMODAL);
+
+	if (argc == 1 && *lpCmdLine != 0) {
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		std::string confArg = converter.to_bytes(argv[0]);
+		for (auto& c : configList) {
+			if (!c.name.compare(confArg)) {
+				int ret = NVAPIController::applyGlobalConfig(c);
+				if (ret != 0 ) {
+					MessageBox(NULL, L"Error applying configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+				}
+				return 0;
+			}
+		}
+		MessageBox(NULL, L"Configuration not found.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+		return -1;
+	}
+	else if (argc > 1 && *lpCmdLine != 0) {
+		return -1;
+	}
+
 
 	// Open log file
 	logStream.open(logName);
@@ -82,15 +118,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!startUDPSocket()) {
 		globalError = true;
 		globalErrorString += L"Error opening UDP socket\n";
-	}
-	{
-		std::lock_guard<std::mutex> lock(confMutex);
-		//Load config file
-		if (!loadConfigFile()) {
-			/*globalError = true;
-			globalErrorString += L"Error opening config file\n";*/
-			saveConfigFile();
-		}
 	}
 
 	// Initialize global strings
@@ -175,6 +202,10 @@ void ShowContextMenu(HWND hwnd, POINT pt)
 			AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT)hDeleteMenu, L"Delete configuration");
 		}
 	}
+	if (configList.size() > 0) {
+		AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
+		AppendMenu(hSubMenu, MF_STRING, IDM_GENERATEBAT, L"Generate batch files");
+	}
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 	AppendMenu(hSubMenu, MF_STRING, IDM_EXIT, L"Exit");
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT)hSubMenu, L"");
@@ -215,8 +246,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		if (globalError) {
 			std::wstring errorMessage = std::wstring(L"Error(s) on start up:\n") + globalErrorString;
-			MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR);
+			MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 			PostQuitMessage(0);
+			break;
 		}
 
 		AddNotificationIcon(hWnd);
@@ -254,7 +286,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				conf = configList.at(confnum);
 				int ret = safeApplyConfig(conf);
 				if (ret != 0 && ret != -2) { //TODO fix
-					MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR);
+					MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 				}
 			}
 
@@ -292,8 +324,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					saveConfigFile();
 				}
 				else {
-					MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR);
+					MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 				}
+			}
+			awaitingInput = false;
+			break;
+		case IDM_GENERATEBAT:
+			awaitingInput = true;
+			if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
+				generateBatFiles();
 			}
 			awaitingInput = false;
 			break;
@@ -397,6 +436,25 @@ void blockConfigs() {
 	logPrint("Unblocking configs...");
 	configLock = false;
 	return;
+}
+
+int generateBatFiles() {
+	if (configList.empty()) {
+		return -1;
+	}
+
+	std::ofstream fileout;
+	for (auto& c : configList) {
+		fileout.open("EZVIDIA " + c.name + ".bat");
+		if (!fileout) {
+			fileout.close();
+			return -1;
+		}
+		fileout << "EZVIDIA.exe \"" << c.name <<  "\"" << std::endl;
+		fileout.close();
+	}
+
+	return 0;
 }
 
 ATOM MyRegisterClass(HINSTANCE hInstance)
