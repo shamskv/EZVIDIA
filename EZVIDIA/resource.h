@@ -1,21 +1,6 @@
-//This file is part of EZVIDIA.
-//
-//EZVIDIA is free software : you can redistribute itand /or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
-//
-//EZVIDIA is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-//GNU General Public License for more details.
-//
-//You should have received a copy of the GNU General Public License
-//along with EZVIDIA. If not, see < https://www.gnu.org/licenses/>.
-
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by EZVIDIA_SERVER_DEV.rc
+// Used by ezvidia.rc
 //
 #define IDC_MYICON                      2
 #define IDD_EZVIDIASERVERDEV_DIALOG     102
@@ -30,7 +15,7 @@
 #define IDC_EDIT1                       1000
 #define IDM_DELCONFNUM                  1500
 #define IDM_SAVECONF                    2000
-#define IDM_GENERATEBAT					2500
+#define IDM_GENERATEBAT                 2500
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

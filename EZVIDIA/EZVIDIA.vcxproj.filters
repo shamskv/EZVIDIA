@@ -27,6 +27,12 @@
     <ClCompile Include="readable_config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="configurations\ConfigManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="configurations\JSONConfigManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico">
@@ -61,6 +67,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="configurations\structs\DisplayConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="configurations\structs\GlobalConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="configurations\ConfigManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\ConfigManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\JSONConfigManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

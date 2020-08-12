@@ -132,6 +132,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="configurations\ConfigManager.cpp" />
+    <ClCompile Include="configurations\JSONConfigManager.cpp" />
     <ClCompile Include="ezvidia.cpp" />
     <ClCompile Include="logging.cpp" />
     <ClCompile Include="networking.cpp" />
@@ -144,8 +146,15 @@
     <ResourceCompile Include="ezvidia.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="configurations\ConfigManager.hpp" />
+    <ClInclude Include="configurations\structs\DisplayConfiguration.hpp" />
+    <ClInclude Include="configurations\structs\GlobalConfiguration.hpp" />
     <ClInclude Include="ezvidia.hpp" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="include\configurations\ConfigManager.hpp" />
+    <ClInclude Include="include\configurations\JSONConfigManager.hpp" />
+    <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp" />
+    <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp" />
     <ClInclude Include="logging.hpp" />
     <ClInclude Include="networking.hpp" />
     <ClInclude Include="nvapi_controller.hpp" />
