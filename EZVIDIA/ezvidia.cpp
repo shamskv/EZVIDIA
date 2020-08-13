@@ -19,10 +19,10 @@
 // Need to link with Ws2_32.lib
 #pragma comment(lib,"ws2_32.lib")
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "framework.h"
 #include "resource.h"
-
 
 #define MAX_LOADSTRING 100
 
@@ -67,8 +67,7 @@ BOOL                InitInstance(HINSTANCE, int);
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
-{
+	_In_ int       nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
 	{
@@ -93,7 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		for (auto& c : configList) {
 			if (!c.name.compare(confArg)) {
 				int ret = NVAPIController::applyGlobalConfig(c);
-				if (ret != 0 ) {
+				if (ret != 0) {
 					MessageBox(NULL, L"Error applying configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 				}
 				return 0;
@@ -105,7 +104,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	else if (argc > 1 && *lpCmdLine != 0) {
 		return -1;
 	}
-
 
 	// Open log file
 	logStream.open(logName);
@@ -126,17 +124,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow))
-	{
+	if (!InitInstance(hInstance, nCmdShow)) {
 		return FALSE;
 	}
 
-	
 	std::thread t1(HandleUDPSocket, globalSocket);
 	MSG msg;
 	// Main message loop:
-	while (GetMessage(&msg, nullptr, 0, 0))
-	{
+	while (GetMessage(&msg, nullptr, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
@@ -153,8 +148,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return (int)msg.wParam;
 }
 
-BOOL AddNotificationIcon(HWND hwnd)
-{
+BOOL AddNotificationIcon(HWND hwnd) {
 	NOTIFYICONDATA nid = { sizeof(nid) };
 	nid.hWnd = hwnd;
 	// add the icon, setting the icon, tooltip, and callback message.
@@ -170,8 +164,7 @@ BOOL AddNotificationIcon(HWND hwnd)
 	return Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
-void ShowContextMenu(HWND hwnd, POINT pt)
-{
+void ShowContextMenu(HWND hwnd, POINT pt) {
 	HMENU hMenu = CreateMenu();
 	HMENU hSubMenu = CreatePopupMenu();
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
@@ -211,22 +204,18 @@ void ShowContextMenu(HWND hwnd, POINT pt)
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT)hSubMenu, L"");
 	bool res = SetMenu(hwnd, hMenu);
 
-	if (hMenu)
-	{
+	if (hMenu) {
 		HMENU hSubMenu = GetSubMenu(hMenu, 0);
-		if (hSubMenu)
-		{
+		if (hSubMenu) {
 			// our window must be foreground before calling TrackPopupMenu or the menu will not disappear when the user clicks away
 			SetForegroundWindow(hwnd);
 
 			// respect menu drop alignment
 			UINT uFlags = TPM_RIGHTBUTTON;
-			if (GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0)
-			{
+			if (GetSystemMetrics(SM_MENUDROPALIGNMENT) != 0) {
 				uFlags |= TPM_RIGHTALIGN;
 			}
-			else
-			{
+			else {
 				uFlags |= TPM_LEFTALIGN;
 			}
 
@@ -236,12 +225,8 @@ void ShowContextMenu(HWND hwnd, POINT pt)
 	}
 }
 
-
-
-LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-	switch (message)
-	{
+LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	switch (message) {
 	case WM_CREATE:
 	{
 		if (globalError) {
@@ -298,18 +283,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				msg += converter.from_bytes(configList.at(confnum).name) + L"?";
 				awaitingInput = true;
 				if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
-					configList.erase(configList.begin()+confnum);
+					configList.erase(configList.begin() + confnum);
 					saveConfigFile();
 				}
 				awaitingInput = false;
 			}
 		}
 
-
-
 		// Parse the menu selections:
-		switch (wmId)
-		{
+		switch (wmId) {
 		case IDM_SAVECONF:
 			awaitingInput = true;
 			if (DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig) == IDOK) {
@@ -362,10 +344,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 }
 
 INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-
 	UNREFERENCED_PARAMETER(lParam);
-	switch (message)
-	{
+	switch (message) {
 	case WM_INITDIALOG:
 		SetWindowText(hDlg, L"Insert the configuration name:");
 		return (INT_PTR)TRUE;
@@ -382,7 +362,7 @@ INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
-			else if (input.length() <= 0){
+			else if (input.length() <= 0) {
 				MessageBox(hDlg, L"Type something.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
@@ -411,7 +391,6 @@ INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 }
 
 int safeApplyConfig(GlobalConfig& conf) {
-
 	if (!configLock) {
 		std::thread waitThread(blockConfigs);
 		waitThread.detach();
@@ -450,15 +429,14 @@ int generateBatFiles() {
 			fileout.close();
 			return -1;
 		}
-		fileout << "EZVIDIA.exe \"" << c.name <<  "\"" << std::endl;
+		fileout << "EZVIDIA.exe \"" << c.name << "\"" << std::endl;
 		fileout.close();
 	}
 
 	return 0;
 }
 
-ATOM MyRegisterClass(HINSTANCE hInstance)
-{
+ATOM MyRegisterClass(HINSTANCE hInstance) {
 	WNDCLASSEXW wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -478,16 +456,13 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	return RegisterClassExW(&wcex);
 }
 
-
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
 	hInst = hInstance; // Store instance handle in our global variable
 
 	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
 
-	if (!hWnd)
-	{
+	if (!hWnd) {
 		return FALSE;
 	}
 

@@ -1,5 +1,6 @@
 #pragma once
 #include<stdint.h>
+#include<vector>
 
 class DisplayConfiguration {
 public:
@@ -15,6 +16,5 @@ public:
 	// NVIDIA specific parameters
 	uint32_t scaling;
 	uint32_t tvFormat;
-	uint32_t nDisplays; // For clone mode
-	uint32_t* displayIds;
+	std::vector<uint32_t> displayIds; // multiple displayIds for clone mode
 };
