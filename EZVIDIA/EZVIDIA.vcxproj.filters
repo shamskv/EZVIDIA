@@ -30,7 +30,13 @@
     <ClCompile Include="configurations\ConfigManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="configurations\JSONConfigManager.cpp">
+    <ClCompile Include="configurations\JsonConfigManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="configurations\JsonAux.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EzvidiaMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -87,7 +93,16 @@
     <ClInclude Include="include\configurations\ConfigManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\JSONConfigManager.hpp">
+    <ClInclude Include="include\configurations\JsonAux.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\JsonConfigManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\configurations\ConfException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\EzvidiaMaster.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

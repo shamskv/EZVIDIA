@@ -6,7 +6,7 @@
 
 class GlobalConfiguration {
 public:
-	std::string name;
+	std::wstring name;
 	std::vector<DisplayConfiguration> displays;
-	uint32_t primaryDisplay;
+	uint32_t primaryId;
 };

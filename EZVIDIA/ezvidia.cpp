@@ -19,10 +19,11 @@
 // Need to link with Ws2_32.lib
 #pragma comment(lib,"ws2_32.lib")
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+//#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "framework.h"
 #include "resource.h"
+#include "include/EzvidiaMaster.hpp"
 
 #define MAX_LOADSTRING 100
 
@@ -70,53 +71,55 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
-	{
-		std::lock_guard<std::mutex> lock(confMutex);
-		//Load config file
-		if (!loadConfigFile()) {
-			/*globalError = true;
-			globalErrorString += L"Error opening config file\n";*/
-			saveConfigFile();
-		}
-	}
+	EzvidiaMaster master(hInstance, "ezconfig.json");
 
-	int argc;
-	LPWSTR* argv;
-	argv = CommandLineToArgvW(lpCmdLine, &argc);
+	//{
+	//	std::lock_guard<std::mutex> lock(confMutex);
+	//	//Load config file
+	//	if (!loadConfigFile()) {
+	//		/*globalError = true;
+	//		globalErrorString += L"Error opening config file\n";*/
+	//		saveConfigFile();
+	//	}
+	//}
 
-	//MessageBox(NULL, lpCmdLine, std::to_wstring(argc).c_str(), MB_OK | MB_ICONERROR | MB_APPLMODAL);
+	//int argc;
+	//LPWSTR* argv;
+	//argv = CommandLineToArgvW(lpCmdLine, &argc);
 
-	if (argc == 1 && *lpCmdLine != 0) {
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-		std::string confArg = converter.to_bytes(argv[0]);
-		for (auto& c : configList) {
-			if (!c.name.compare(confArg)) {
-				int ret = NVAPIController::applyGlobalConfig(c);
-				if (ret != 0) {
-					MessageBox(NULL, L"Error applying configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-				}
-				return 0;
-			}
-		}
-		MessageBox(NULL, L"Configuration not found.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-		return -1;
-	}
-	else if (argc > 1 && *lpCmdLine != 0) {
-		return -1;
-	}
+	////MessageBox(NULL, lpCmdLine, std::to_wstring(argc).c_str(), MB_OK | MB_ICONERROR | MB_APPLMODAL);
 
-	// Open log file
-	logStream.open(logName);
-	if (!logStream) {
-		globalError = true;
-		globalErrorString += L"Error opening log file\n";
-	}
+	//if (argc == 1 && *lpCmdLine != 0) {
+	//	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	//	std::string confArg = converter.to_bytes(argv[0]);
+	//	for (auto& c : configList) {
+	//		if (!c.name.compare(confArg)) {
+	//			int ret = NVAPIController::applyGlobalConfig(c);
+	//			if (ret != 0) {
+	//				MessageBox(NULL, L"Error applying configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+	//			}
+	//			return 0;
+	//		}
+	//	}
+	//	MessageBox(NULL, L"Configuration not found.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+	//	return -1;
+	//}
+	//else if (argc > 1 && *lpCmdLine != 0) {
+	//	return -1;
+	//}
 
-	// Open UDP Socket
-	if (!startUDPSocket()) {
-		globalError = true;
-		globalErrorString += L"Error opening UDP socket\n";
-	}
+	//// Open log file
+	//logStream.open(logName);
+	//if (!logStream) {
+	//	globalError = true;
+	//	globalErrorString += L"Error opening log file\n";
+	//}
+
+	//// Open UDP Socket
+	//if (!startUDPSocket()) {
+	//	globalError = true;
+	//	globalErrorString += L"Error opening UDP socket\n";
+	//}
 
 	// Initialize global strings
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -124,11 +127,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance);
 
 	// Perform application initialization:
-	if (!InitInstance(hInstance, nCmdShow)) {
+
+	HWND hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, &master);
+
+	if (!hWnd) {
 		return FALSE;
 	}
 
-	std::thread t1(HandleUDPSocket, globalSocket);
+	//ShowWindow(hWnd, nCmdShow);
+	UpdateWindow(hWnd);
+
+	//std::thread t1(HandleUDPSocket, globalSocket);
 	MSG msg;
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0)) {
@@ -136,14 +146,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		DispatchMessage(&msg);
 	}
 
-	if (globalSocket) {
-		closesocket(globalSocket);
-	}
-	logMutex.lock();
-	logStream.close();
-	logMutex.unlock();
+	//if (globalSocket) {
+	//	closesocket(globalSocket);
+	//}
+	//logMutex.lock();
+	//logStream.close();
+	//logMutex.unlock();
 	WSACleanup();
-	t1.join();
+	//t1.join();
 
 	return (int)msg.wParam;
 }
@@ -226,15 +236,21 @@ void ShowContextMenu(HWND hwnd, POINT pt) {
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	EzvidiaMaster* master = reinterpret_cast<EzvidiaMaster*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+
 	switch (message) {
 	case WM_CREATE:
 	{
-		if (globalError) {
-			std::wstring errorMessage = std::wstring(L"Error(s) on start up:\n") + globalErrorString;
-			MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-			PostQuitMessage(0);
-			break;
-		}
+		//if (globalError) {
+		//	std::wstring errorMessage = std::wstring(L"Error(s) on start up:\n") + globalErrorString;
+		//	MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+		//	PostQuitMessage(0);
+		//	break;
+		//}
+
+		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+		EzvidiaMaster* masterPtr = reinterpret_cast<EzvidiaMaster*>(pCreate->lpCreateParams);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)masterPtr);
 
 		AddNotificationIcon(hWnd);
 	}
@@ -251,9 +267,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case WM_CONTEXTMENU:
 		{
 			POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
-			if (!globalError && !awaitingInput) {
-				ShowContextMenu(hWnd, pt);
-			}
+			//if (!globalError && !awaitingInput) {
+			ShowContextMenu(hWnd, pt);
 		}
 		break;
 		}
@@ -263,9 +278,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	{
 		int wmId = LOWORD(wParam);
 		{
-			std::lock_guard<std::mutex> lock(confMutex);
 			//Applying configs
-			if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + configList.size()) {
+			if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + master->getConfigNum()) {
 				int confnum = wmId - IDM_CONFIGNUM;
 				GlobalConfig conf;
 				conf = configList.at(confnum);
@@ -454,20 +468,4 @@ ATOM MyRegisterClass(HINSTANCE hInstance) {
 	wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
 	return RegisterClassExW(&wcex);
-}
-
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow) {
-	hInst = hInstance; // Store instance handle in our global variable
-
-	HWND hWnd = CreateWindowW(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
-
-	if (!hWnd) {
-		return FALSE;
-	}
-
-	//ShowWindow(hWnd, nCmdShow);
-	UpdateWindow(hWnd);
-
-	return TRUE;
 }

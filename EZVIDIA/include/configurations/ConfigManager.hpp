@@ -7,7 +7,7 @@
 
 class ConfigManager {
 protected:
-	std::map<std::string, GlobalConfiguration> configMap;
+	std::map<std::wstring, GlobalConfiguration> configMap;
 	std::mutex configurationLock;
 
 	virtual bool persist() = 0;
@@ -15,14 +15,19 @@ protected:
 	virtual bool read() = 0;
 
 public:
-	void addConfiguration(const GlobalConfiguration& conf);
+	bool addConfiguration(const GlobalConfiguration& conf);
 
-	void deleteConfiguration(const std::string& name);
+	bool deleteConfiguration(const std::wstring& name);
 
-	bool isConfigurationPresent(const std::string& name);
+	bool isConfigurationPresent(const std::wstring& name);
 
-	// Return a copy of the configuration (it's not heavy and we don't want to risk it being deleted before we use it)
-	GlobalConfiguration getConfiguration(const std::string& name);
+	GlobalConfiguration getConfiguration(const std::wstring& name);
 
-	std::vector<std::string> getAllConfigurationNames();
+	std::vector<std::wstring> getAllConfigurationNames();
+
+	bool refreshConfigurations();
+
+	void init();
+
+	uint32_t getConfigNum();
 };
