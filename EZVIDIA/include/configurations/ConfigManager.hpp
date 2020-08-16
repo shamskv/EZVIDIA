@@ -1,13 +1,13 @@
 #pragma once
-#include<map>
 #include<mutex>
 #include<vector>
 #include<string>
+#include<optional>
 #include"structs/GlobalConfiguration.hpp"
 
 class ConfigManager {
 protected:
-	std::map<std::wstring, GlobalConfiguration> configMap;
+	std::vector<GlobalConfiguration> configVector;
 	std::mutex configurationLock;
 
 	virtual bool persist() = 0;
@@ -19,9 +19,13 @@ public:
 
 	bool deleteConfiguration(const std::wstring& name);
 
+	bool deleteConfiguration(const int& index);
+
 	bool isConfigurationPresent(const std::wstring& name);
 
-	GlobalConfiguration getConfiguration(const std::wstring& name);
+	std::optional<GlobalConfiguration> getConfiguration(const std::wstring& name);
+
+	std::optional<GlobalConfiguration> getConfiguration(const int& index);
 
 	std::vector<std::wstring> getAllConfigurationNames();
 
@@ -29,5 +33,5 @@ public:
 
 	void init();
 
-	uint32_t getConfigNum();
+	size_t getConfigNum();
 };

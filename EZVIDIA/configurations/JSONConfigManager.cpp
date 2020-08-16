@@ -14,8 +14,8 @@ bool JsonConfigManager::persist() {
 	nlohmann::json root;
 	root["configList"] = nlohmann::basic_json(nlohmann::detail::value_t::array);
 
-	for (auto& pair : configMap) {
-		root["configList"].push_back(JsonAux::fromGlobalConfig(pair.second));
+	for (auto& entry : configVector) {
+		root["configList"].push_back(JsonAux::fromGlobalConfig(entry));
 	}
 
 	return true;
@@ -33,15 +33,15 @@ bool JsonConfigManager::read() {
 	if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
 		for (auto& gConfig : fRoot["configList"]) {
 			const GlobalConfiguration& conf = JsonAux::toGlobalConfig(gConfig);
-			if (configMap.find(conf.name) != configMap.end()) {
+			if (std::find_if(configVector.begin(), configVector.end(), [&conf](GlobalConfiguration& gc) {return gc.name == conf.name; }) != configVector.end()) {
 				// TODO log duplicate configuration here
 				continue;
 			}
-			configMap.insert(std::pair<std::wstring, GlobalConfiguration>(conf.name, conf));
+			configVector.push_back(conf);
 		}
 	}
 	else {
-		configMap.clear();
+		configVector.clear();
 		throw ConfException(L"Missing configList array.");
 	}
 	return true;

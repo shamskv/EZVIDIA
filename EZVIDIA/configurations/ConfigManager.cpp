@@ -2,32 +2,54 @@
 
 bool ConfigManager::addConfiguration(const GlobalConfiguration& conf) {
 	std::lock_guard<std::mutex> lock(configurationLock);
-	configMap.insert_or_assign(conf.name, conf);
+	configVector.push_back(conf);
 	return persist();
 }
 
 bool ConfigManager::deleteConfiguration(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
-	configMap.erase(name);
+	auto stfuCompiler = std::remove_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; });
+	return persist();
+}
+
+bool ConfigManager::deleteConfiguration(const int& index) {
+	std::lock_guard<std::mutex> lock(configurationLock);
+	configVector.erase(configVector.begin() + index);
 	return persist();
 }
 
 bool ConfigManager::isConfigurationPresent(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
-	return configMap.find(name) != configMap.end();
+	return std::find_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; }) != configVector.end();
 }
 
-GlobalConfiguration ConfigManager::getConfiguration(const std::wstring& name) {
+std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
-	return configMap.at(name);
+	auto it = std::find_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; });
+	if (it != configVector.end()) {
+		return std::optional<GlobalConfiguration>(*it);
+	}
+	else {
+		return std::optional<GlobalConfiguration>();
+	}
+}
+
+std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const int& index) {
+	std::lock_guard<std::mutex> lock(configurationLock);
+	if (index >= 0 && index < configVector.size()) {
+		return std::optional<GlobalConfiguration>(configVector.at(index));
+	}
+	else {
+		return std::optional<GlobalConfiguration>();
+	}
 }
 
 std::vector<std::wstring> ConfigManager::getAllConfigurationNames() {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	std::vector<std::wstring> names;
 
-	for (auto it = configMap.begin(); it != configMap.end(); it++) {
-		names.push_back(it->first);
+	for (auto& conf : configVector) {
+		names.push_back(conf.name);
 	}
 
 	return names;
@@ -43,6 +65,6 @@ void ConfigManager::init() {
 	}
 }
 
-uint32_t ConfigManager::getConfigNum() {
-	return configMap.size();
+size_t ConfigManager::getConfigNum() {
+	return configVector.size();
 }

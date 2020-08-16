@@ -4,6 +4,7 @@
 
 EzvidiaMaster::EzvidiaMaster(const HINSTANCE& hInstance, const std::string& configPath) : hInst(hInstance) {
 	configManager = std::make_unique<JsonConfigManager>(configPath);
+	this->blockInput = false;
 }
 void EzvidiaMaster::init() {
 	configManager.get()->init();
@@ -31,8 +32,24 @@ void EzvidiaMaster::saveCurrentConfig(const std::wstring& newName) {
 }
 
 void EzvidiaMaster::applySelectedConfig(const std::wstring& name) {
-	GlobalConfiguration conf = configManager.get()->getConfiguration(name);
+	auto optConf = configManager.get()->getConfiguration(name);
 
+	if (!optConf.has_value()) {
+		return;
+	}
+
+	auto conf = optConf.value();
+	// TODO apply the config
+}
+
+void EzvidiaMaster::applySelectedConfig(const int& index) {
+	auto optConf = configManager.get()->getConfiguration(index);
+
+	if (!optConf.has_value()) {
+		return;
+	}
+
+	auto conf = optConf.value();
 	// TODO apply the config
 }
 
@@ -40,10 +57,28 @@ void EzvidiaMaster::deleteSelectedConfig(const std::wstring& name) {
 	configManager.get()->deleteConfiguration(name);
 }
 
+void EzvidiaMaster::deleteSelectedConfig(const int& index) {
+	configManager.get()->deleteConfiguration(index);
+}
+
+bool EzvidiaMaster::isConfigNameAvailable(const std::wstring& name) {
+	return !configManager.get()->isConfigurationPresent(name);
+}
+
+std::wstring EzvidiaMaster::getConfigNameByIndex(const int& index) {
+	auto optConf = configManager.get()->getConfiguration(index);
+
+	if (!optConf.has_value()) {
+		return L"";
+	}
+
+	return optConf.value().name;
+}
+
 std::vector<std::wstring> EzvidiaMaster::getConfigList() {
 	return configManager.get()->getAllConfigurationNames();
 }
 
-uint32_t EzvidiaMaster::getConfigNum() {
+size_t EzvidiaMaster::getConfigNum() {
 	return configManager.get()->getConfigNum();
 }

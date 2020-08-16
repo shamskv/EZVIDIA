@@ -31,26 +31,3 @@
 #include <shellapi.h>
 #include <commctrl.h>
 #include <strsafe.h>
-
-#include <fstream>
-#include <vector>
-#include <locale>
-#include <codecvt>
-#include <string>
-#include <winsock2.h>
-#include <ws2tcpip.h>
-#include <json.hpp>
-#include <atomic>
-#include <thread>
-#include <iomanip>
-#include <ctime>
-#include <boost/asio.hpp>
-#include <boost/optional.hpp>
-#include <boost/algorithm/string.hpp>
-#include <nvapi.h>
-
-#include "readable_config.hpp"
-#include "nvapi_controller.hpp"
-#include "networking.hpp"
-#include "logging.hpp"
-#include "ezvidia.hpp"

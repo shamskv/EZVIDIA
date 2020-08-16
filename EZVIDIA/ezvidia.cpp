@@ -19,51 +19,25 @@
 // Need to link with Ws2_32.lib
 #pragma comment(lib,"ws2_32.lib")
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-//#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "framework.h"
 #include "resource.h"
 #include "include/EzvidiaMaster.hpp"
+#include <boost/algorithm/string.hpp>
 
 #define MAX_LOADSTRING 100
-
-// Global Variables:
-HINSTANCE hInst;                                // current instance
-WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
-WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
-UINT const WMAPP_NOTIFYCALLBACK = WM_APP + 1;
-
-bool NVAPIController::isInit = false;
-
-std::string confName = "configs.json";
-std::vector<GlobalConfig> configList;
-std::atomic<bool> configLock = false;	//For the 5s delay
-std::mutex confMutex;					//For writing/deleting configs
-
-std::string logName = "ezvidia.log";
-std::ofstream logStream;
-std::mutex logMutex;
-
-SOCKET globalSocket = 0;
-
-bool globalError = false;
-std::wstring globalErrorString = L"";
-std::atomic<bool> awaitingInput = false;
-
-CHAR dialogInput[MAX_LOADSTRING];
+#define WMAPP_NOTIFYCALLBACK WM_APP+1
 
 // Forward declarations of functions included in this code module:
-BOOL				AddNotificationIcon(HWND);
-void				ShowContextMenu(HWND, WPARAM, LPARAM);
+BOOL				AddNotificationIcon(HWND, HINSTANCE);
+void				ShowContextMenu(HWND, POINT, EzvidiaMaster*);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    NewConfig(HWND, UINT, WPARAM, LPARAM);
-int					safeApplyConfig(GlobalConfig&);
-void				blockConfigs();
-int					generateBatFiles();
-void				logPrint(std::string);
-ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+//int					safeApplyConfig(GlobalConfig&);
+//void				blockConfigs();
+//int					generateBatFiles();
+//void				logPrint(std::string);
+ATOM                MyRegisterClass(HINSTANCE, WCHAR*);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -72,6 +46,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
 	EzvidiaMaster master(hInstance, "ezconfig.json");
+	WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
+	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
 	//{
 	//	std::lock_guard<std::mutex> lock(confMutex);
@@ -124,7 +100,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Initialize global strings
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_EZVIDIASERVERDEV, szWindowClass, MAX_LOADSTRING);
-	MyRegisterClass(hInstance);
+	MyRegisterClass(hInstance, szWindowClass);
 
 	// Perform application initialization:
 
@@ -152,13 +128,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//logMutex.lock();
 	//logStream.close();
 	//logMutex.unlock();
-	WSACleanup();
+	//WSACleanup();
 	//t1.join();
 
 	return (int)msg.wParam;
 }
 
-BOOL AddNotificationIcon(HWND hwnd) {
+BOOL AddNotificationIcon(HWND hwnd, HINSTANCE hInst) {
 	NOTIFYICONDATA nid = { sizeof(nid) };
 	nid.hWnd = hwnd;
 	// add the icon, setting the icon, tooltip, and callback message.
@@ -174,44 +150,35 @@ BOOL AddNotificationIcon(HWND hwnd) {
 	return Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
-void ShowContextMenu(HWND hwnd, POINT pt) {
+void ShowContextMenu(HWND hwnd, POINT pt, EzvidiaMaster* master) {
 	HMENU hMenu = CreateMenu();
 	HMENU hSubMenu = CreatePopupMenu();
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	//Applying configs
-	{
-		ULONG i = 0;
-		std::lock_guard<std::mutex> lock(confMutex);
-		if (configList.size() > 0) {
-			for (auto& conf : configList) {
-				AppendMenu(hSubMenu, MF_STRING, IDM_CONFIGNUM + i++, converter.from_bytes(conf.name).c_str());
-			}
-		}
-		else {
-			AppendMenu(hSubMenu, MF_STRING | MF_GRAYED, NULL, L"(No saved configurations)");
-		}
-	}
-	//Deleting configs
-	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 	HMENU hDeleteMenu = CreatePopupMenu();
-	AppendMenu(hSubMenu, MF_STRING, IDM_SAVECONF, L"Save current configuration");
-	{
-		ULONG i = 0;
-		std::lock_guard<std::mutex> lock(confMutex);
-		for (auto& conf : configList) {
-			AppendMenu(hDeleteMenu, MF_STRING, IDM_DELCONFNUM + i++, converter.from_bytes(conf.name).c_str());
-		}
-		if (configList.size() > 0) {
-			AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT)hDeleteMenu, L"Delete configuration");
+	std::vector<std::wstring> confNameList = master->getConfigList();
+
+	// Menu parts that list the configurations
+	if (confNameList.size() > 0) {
+		long long i = 0;
+		for (auto& confName : confNameList) {
+			AppendMenu(hSubMenu, MF_STRING, long long(IDM_CONFIGNUM) + i, confName.c_str());
+			AppendMenu(hDeleteMenu, MF_STRING, long long(IDM_DELCONFNUM) + i, confName.c_str());
+			i++;
 		}
 	}
-	if (configList.size() > 0) {
+	else {
+		AppendMenu(hSubMenu, MF_STRING | MF_GRAYED, NULL, L"(No saved configurations)");
+	}
+	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
+	AppendMenu(hSubMenu, MF_STRING, IDM_SAVECONF, L"Save current configuration");
+	// If we have configurations, add these options
+	if (confNameList.size() > 0) {
+		AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hDeleteMenu, L"Delete configuration");
 		AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 		AppendMenu(hSubMenu, MF_STRING, IDM_GENERATEBAT, L"Generate batch files");
 	}
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 	AppendMenu(hSubMenu, MF_STRING, IDM_EXIT, L"Exit");
-	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT)hSubMenu, L"");
+	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, L"");
 	bool res = SetMenu(hwnd, hMenu);
 
 	if (hMenu) {
@@ -249,10 +216,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		//}
 
 		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
-		EzvidiaMaster* masterPtr = reinterpret_cast<EzvidiaMaster*>(pCreate->lpCreateParams);
-		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)masterPtr);
+		master = reinterpret_cast<EzvidiaMaster*>(pCreate->lpCreateParams);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)master);
 
-		AddNotificationIcon(hWnd);
+		AddNotificationIcon(hWnd, master->hInst);
 	}
 	break;
 
@@ -268,7 +235,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		{
 			POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
 			//if (!globalError && !awaitingInput) {
-			ShowContextMenu(hWnd, pt);
+			ShowContextMenu(hWnd, pt, master);
 		}
 		break;
 		}
@@ -280,57 +247,62 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		{
 			//Applying configs
 			if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + master->getConfigNum()) {
-				int confnum = wmId - IDM_CONFIGNUM;
-				GlobalConfig conf;
-				conf = configList.at(confnum);
-				int ret = safeApplyConfig(conf);
-				if (ret != 0 && ret != -2) { //TODO fix
-					MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-				}
+				int confNum = wmId - IDM_CONFIGNUM;
+				//GlobalConfig conf;
+				//conf = configList.at(confnum);
+				//int ret = safeApplyConfig(conf);
+				//if (ret != 0 && ret != -2) { //TODO fix
+				//	MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+				//}
+				master->applySelectedConfig(confNum);
 			}
 
 			//Delete configs
-			if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + configList.size()) {
-				int confnum = wmId - IDM_DELCONFNUM;
+			if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + master->getConfigNum()) {
+				int confNum = wmId - IDM_DELCONFNUM;
 				std::wstring msg = L"Are you sure you want to delete configuration ";
-				std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-				msg += converter.from_bytes(configList.at(confnum).name) + L"?";
-				awaitingInput = true;
+				//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+				msg += master->getConfigNameByIndex(confNum) + L"?";
+				//awaitingInput = true;
+				master->blockInput = true;
 				if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
-					configList.erase(configList.begin() + confnum);
-					saveConfigFile();
+					//configList.erase(configList.begin() + confnum);
+					//saveConfigFile();
+					master->deleteSelectedConfig(confNum);
 				}
-				awaitingInput = false;
+				//awaitingInput = false;
+				master->blockInput = false;
 			}
 		}
 
 		// Parse the menu selections:
 		switch (wmId) {
 		case IDM_SAVECONF:
-			awaitingInput = true;
-			if (DialogBox(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig) == IDOK) {
-				std::lock_guard<std::mutex> lock(confMutex);
-				//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-				boost::optional<GlobalConfig> opt_conf = NVAPIController::getCurrentConfig();
-				if (opt_conf.has_value()) {
-					GlobalConfig conf = opt_conf.get();
-					conf.name = std::string(dialogInput);
-					//conf.name = converter.to_bytes(std::wstring(dialogInput));
-					configList.push_back(conf);
-					saveConfigFile();
-				}
-				else {
-					MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-				}
-			}
-			awaitingInput = false;
+			//awaitingInput = true;
+			master->blockInput = true;
+			DialogBoxParam(master->hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig, (LPARAM)master);
+			//std::lock_guard<std::mutex> lock(confMutex);
+			//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+			//boost::optional<GlobalConfig> opt_conf = NVAPIController::getCurrentConfig();
+			//if (opt_conf.has_value()) {
+			//	GlobalConfig conf = opt_conf.get();
+			//	conf.name = std::string(dialogInput);
+			//	//conf.name = converter.to_bytes(std::wstring(dialogInput));
+			//	configList.push_back(conf);
+			//	saveConfigFile();
+			//}
+			//else {
+			//	MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
+			//}
+			//awaitingInput = false;
+			master->blockInput = false;
 			break;
 		case IDM_GENERATEBAT:
-			awaitingInput = true;
-			if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
-				generateBatFiles();
-			}
-			awaitingInput = false;
+			master->blockInput = true;
+			//if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
+			//	generateBatFiles();
+			//}
+			master->blockInput = false;
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -358,40 +330,41 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 }
 
 INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-	UNREFERENCED_PARAMETER(lParam);
+	EzvidiaMaster* master = reinterpret_cast<EzvidiaMaster*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 	switch (message) {
 	case WM_INITDIALOG:
 		SetWindowText(hDlg, L"Insert the configuration name:");
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK) {
-			if (!GetDlgItemTextA(hDlg, IDC_EDIT1, dialogInput, MAX_LOADSTRING)) {
-				dialogInput[0] = '\0';
+			TCHAR input[100];
+			if (!GetDlgItemText(hDlg, IDC_EDIT1, input, MAX_LOADSTRING)) {
+				input[0] = '\0';
 			}
 
-			std::string input(dialogInput);
-			boost::trim(input);
-			if (input.find(";") != std::string::npos) {
+			std::wstring inputStr(input);
+			boost::trim(inputStr);
+			if (inputStr.find(L";") != std::wstring::npos) {
 				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
-			else if (input.length() <= 0) {
+			else if (inputStr.length() <= 0) {
 				MessageBox(hDlg, L"Type something.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
-			else if (input.length() > 50) {
+			else if (inputStr.length() > 50) {
 				MessageBox(hDlg, L"No more than 50 characters.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
-			else {
-				for (auto& c : configList) {
-					if (!c.name.compare(input)) {
-						MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
-						return (INT_PTR)FALSE;
-					}
-				}
+			else if (!master->isConfigNameAvailable(inputStr)) {
+				MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
 			}
+
+			master->saveCurrentConfig(inputStr);
+
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}
@@ -404,53 +377,53 @@ INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	return (INT_PTR)FALSE;
 }
 
-int safeApplyConfig(GlobalConfig& conf) {
-	if (!configLock) {
-		std::thread waitThread(blockConfigs);
-		waitThread.detach();
+//int safeApplyConfig(GlobalConfig& conf) {
+//	if (!configLock) {
+//		std::thread waitThread(blockConfigs);
+//		waitThread.detach();
+//
+//		logPrint("Applying configuration " + conf.name + "...");
+//		int ret = NVAPIController::applyGlobalConfig(conf);
+//		return ret;
+//	}
+//	else {
+//		logPrint("Skipping apply configuration request...");
+//		return -2;
+//	}
+//}
 
-		logPrint("Applying configuration " + conf.name + "...");
-		int ret = NVAPIController::applyGlobalConfig(conf);
-		return ret;
-	}
-	else {
-		logPrint("Skipping apply configuration request...");
-		return -2;
-	}
-}
+//void blockConfigs() {
+//	if (configLock) return;
+//	configLock = true;
+//	logPrint("Blocking configs...");
+//	boost::asio::io_context io;
+//	boost::asio::steady_timer t(io, boost::asio::chrono::seconds(5));
+//	t.wait();
+//	logPrint("Unblocking configs...");
+//	configLock = false;
+//	return;
+//}
 
-void blockConfigs() {
-	if (configLock) return;
-	configLock = true;
-	logPrint("Blocking configs...");
-	boost::asio::io_context io;
-	boost::asio::steady_timer t(io, boost::asio::chrono::seconds(5));
-	t.wait();
-	logPrint("Unblocking configs...");
-	configLock = false;
-	return;
-}
+//int generateBatFiles() {
+//	if (configList.empty()) {
+//		return -1;
+//	}
+//
+//	std::ofstream fileout;
+//	for (auto& c : configList) {
+//		fileout.open("EZVIDIA " + c.name + ".bat");
+//		if (!fileout) {
+//			fileout.close();
+//			return -1;
+//		}
+//		fileout << "EZVIDIA.exe \"" << c.name << "\"" << std::endl;
+//		fileout.close();
+//	}
+//
+//	return 0;
+//}
 
-int generateBatFiles() {
-	if (configList.empty()) {
-		return -1;
-	}
-
-	std::ofstream fileout;
-	for (auto& c : configList) {
-		fileout.open("EZVIDIA " + c.name + ".bat");
-		if (!fileout) {
-			fileout.close();
-			return -1;
-		}
-		fileout << "EZVIDIA.exe \"" << c.name << "\"" << std::endl;
-		fileout.close();
-	}
-
-	return 0;
-}
-
-ATOM MyRegisterClass(HINSTANCE hInstance) {
+ATOM MyRegisterClass(HINSTANCE hInstance, WCHAR* szWindowClass) {
 	WNDCLASSEXW wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);

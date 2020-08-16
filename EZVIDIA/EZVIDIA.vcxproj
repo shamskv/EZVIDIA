@@ -138,9 +138,6 @@
     <ClCompile Include="ezvidia.cpp" />
     <ClCompile Include="configurations\JsonAux.cpp" />
     <ClCompile Include="EzvidiaMaster.cpp" />
-    <ClCompile Include="logging.cpp" />
-    <ClCompile Include="networking.cpp" />
-    <ClCompile Include="readable_config.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico" />
@@ -161,10 +158,6 @@
     <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp" />
     <ClInclude Include="include\EzvidiaMaster.hpp" />
-    <ClInclude Include="logging.hpp" />
-    <ClInclude Include="networking.hpp" />
-    <ClInclude Include="nvapi_controller.hpp" />
-    <ClInclude Include="readable_config.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
