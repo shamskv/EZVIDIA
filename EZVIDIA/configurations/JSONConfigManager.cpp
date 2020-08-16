@@ -18,6 +18,8 @@ bool JsonConfigManager::persist() {
 		root["configList"].push_back(JsonAux::fromGlobalConfig(entry));
 	}
 
+	out << root.dump(3) << std::endl;
+
 	return true;
 }
 

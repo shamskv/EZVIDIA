@@ -105,7 +105,7 @@ nlohmann::json JsonAux::fromDisplayConfig(const DisplayConfiguration& displayCon
 	dcRoot["scaling"] = displayConfig.scaling;
 	dcRoot["tvFormat"] = displayConfig.tvFormat;
 	for (auto& id : displayConfig.displayIds) {
-		dcRoot["displayids"].push_back(id);
+		dcRoot["displayIds"].push_back(id);
 	}
 
 	return dcRoot;

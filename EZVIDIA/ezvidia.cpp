@@ -115,6 +115,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UpdateWindow(hWnd);
 
 	//std::thread t1(HandleUDPSocket, globalSocket);
+	master.init();
 	MSG msg;
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0)) {
@@ -333,9 +334,10 @@ INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	EzvidiaMaster* master = reinterpret_cast<EzvidiaMaster*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 	switch (message) {
 	case WM_INITDIALOG:
-		SetWindowText(hDlg, L"Insert the configuration name:");
 		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
-		return (INT_PTR)TRUE;
+		SetWindowText(hDlg, L"Insert the configuration name:");
+		SetFocus(GetDlgItem(hDlg, IDC_EDIT1));
+		return (INT_PTR)FALSE;
 
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK) {
