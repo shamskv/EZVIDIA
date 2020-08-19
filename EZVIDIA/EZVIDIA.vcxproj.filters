@@ -84,6 +84,12 @@
     <ClInclude Include="include\EzvidiaMaster.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\drivers\DriverManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drivers\VirtualDriver.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

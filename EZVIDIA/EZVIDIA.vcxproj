@@ -157,6 +157,8 @@
     <ClInclude Include="include\configurations\JsonConfigManager.hpp" />
     <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp" />
+    <ClInclude Include="include\drivers\DriverManager.hpp" />
+    <ClInclude Include="include\drivers\VirtualDriver.hpp" />
     <ClInclude Include="include\EzvidiaMaster.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
