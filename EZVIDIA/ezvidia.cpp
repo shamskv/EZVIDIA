@@ -23,6 +23,8 @@
 #include "framework.h"
 #include "resource.h"
 #include "include/EzvidiaMaster.hpp"
+#include "include/configurations/ConfException.hpp"
+#include "include/drivers/DriverException.hpp"
 #include <boost/algorithm/string.hpp>
 
 #define MAX_LOADSTRING 100
@@ -45,7 +47,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ int       nCmdShow) {
 	UNREFERENCED_PARAMETER(hPrevInstance);
 
-	EzvidiaMaster master(hInstance, "ezconfig.json");
 	WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
 
@@ -102,10 +103,23 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	LoadStringW(hInstance, IDC_EZVIDIASERVERDEV, szWindowClass, MAX_LOADSTRING);
 	MyRegisterClass(hInstance, szWindowClass);
 
-	// Perform application initialization:
+	// Instantiate master and check for problems
+	std::unique_ptr<EzvidiaMaster> masterPtr;
+	try {
+		masterPtr = std::make_unique<EzvidiaMaster>(hInstance, "ezconfig.json");
+	}
+	catch (ConfException& e) {
+		MessageBox(NULL, e.msg().c_str(), L"Configuration exception", MB_OK | MB_ICONERROR);
+		return -1;
+	}
+	catch (DriverException& e) {
+		MessageBox(NULL, e.msg().c_str(), L"Driver exception", MB_OK | MB_ICONERROR);
+		return -1;
+	}
 
+	// Perform application initialization:
 	HWND hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, &master);
+		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, masterPtr.get());
 
 	if (!hWnd) {
 		return FALSE;
@@ -115,7 +129,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UpdateWindow(hWnd);
 
 	//std::thread t1(HandleUDPSocket, globalSocket);
-	master.init();
 	MSG msg;
 	// Main message loop:
 	while (GetMessage(&msg, nullptr, 0, 0)) {

@@ -1,17 +1,19 @@
 #pragma once
+#define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <memory>
 #include "configurations/ConfigManager.hpp"
+#include "drivers/DriverManager.hpp"
 
 class EzvidiaMaster {
 private:
 	std::unique_ptr<ConfigManager> configManager;
+	std::unique_ptr<DriverManager> driverManager;
 public:
 	EzvidiaMaster(const HINSTANCE& hInstance, const std::string& configPath);
 	// Windows stuff
 	HINSTANCE hInst;
 	// Aux
-	void init();
 	bool blockInput;
 	// Operations
 	void saveCurrentConfig(const std::wstring& newName);

@@ -49,4 +49,6 @@ bool JsonConfigManager::read() {
 	return true;
 }
 
-JsonConfigManager::JsonConfigManager(const std::string& fileName) : fileName(fileName) {}
+JsonConfigManager::JsonConfigManager(const std::string& fileName) : fileName(fileName) {
+	this->init();
+}

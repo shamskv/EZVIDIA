@@ -95,6 +95,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,9 +137,11 @@
   <ItemGroup>
     <ClCompile Include="configurations\ConfigManager.cpp" />
     <ClCompile Include="configurations\JsonConfigManager.cpp" />
+    <ClCompile Include="drivers\NvapiDriver.cpp" />
     <ClCompile Include="ezvidia.cpp" />
     <ClCompile Include="configurations\JsonAux.cpp" />
     <ClCompile Include="EzvidiaMaster.cpp" />
+    <ClCompile Include="drivers\DriverManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico" />
@@ -157,7 +161,9 @@
     <ClInclude Include="include\configurations\JsonConfigManager.hpp" />
     <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp" />
+    <ClInclude Include="include\drivers\DriverException.hpp" />
     <ClInclude Include="include\drivers\DriverManager.hpp" />
+    <ClInclude Include="include\drivers\NvapiDriver.hpp" />
     <ClInclude Include="include\drivers\VirtualDriver.hpp" />
     <ClInclude Include="include\EzvidiaMaster.hpp" />
     <ClInclude Include="resource.h" />

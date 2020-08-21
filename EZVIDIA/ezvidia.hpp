@@ -15,5 +15,5 @@
 
 #pragma once
 
-int					safeApplyConfig(GlobalConfig&);
+//int					safeApplyConfig(GlobalConfig&);
 void				blockConfigs();
