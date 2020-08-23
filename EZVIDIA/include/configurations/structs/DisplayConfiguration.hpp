@@ -12,9 +12,10 @@ public:
 	int32_t posX;
 	int32_t posY;
 	uint32_t rotation;
+	uint32_t displayId;
+	uint32_t cloneGroup; // displays in the same cloneGroup are cloned (they share position and resolution)
 
 	// NVIDIA specific parameters
 	uint32_t scaling;
 	uint32_t tvFormat;
-	std::vector<uint32_t> displayIds; // multiple displayIds for clone mode
 };

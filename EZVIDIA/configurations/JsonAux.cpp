@@ -30,7 +30,7 @@ GlobalConfiguration JsonAux::toGlobalConfig(const nlohmann::json& gcRoot) {
 	globalConf.primaryId = getValueFromJson<uint32_t>(gcRoot, "primaryId");
 	bool validPrimaryId = false;
 	for (auto& disp : globalConf.displays) {
-		if (std::find(disp.displayIds.begin(), disp.displayIds.end(), globalConf.primaryId) != disp.displayIds.end()) {
+		if (disp.displayId == globalConf.primaryId) {
 			validPrimaryId = true;
 		}
 	}
@@ -40,6 +40,16 @@ GlobalConfiguration JsonAux::toGlobalConfig(const nlohmann::json& gcRoot) {
 		errorMsg.append(L"\":\n");
 		errorMsg.append(L"Provided primaryId doesn't match with any of the displays in displayList");
 		throw ConfException(errorMsg);
+	}
+
+	// Clone groups
+	// If one of the displays in the configuration had a missing cloneGroup value (which is represented by a UINT32_MAX), we assume extended mode
+	if (std::find_if(globalConf.displays.begin(), globalConf.displays.end(),
+		[](const DisplayConfiguration& disp) {return disp.cloneGroup == UINT32_MAX; }) != globalConf.displays.end()) {
+		uint32_t group = 0;
+		for (auto& disp : globalConf.displays) {
+			disp.cloneGroup = group++;
+		}
 	}
 
 	return globalConf;
@@ -55,26 +65,12 @@ DisplayConfiguration JsonAux::toDisplayConfig(const nlohmann::json& dcRoot) {
 	dispConf.colorDepth = getValueFromJson<uint32_t>(dcRoot, "colorDepth");
 	dispConf.refresh = getValueFromJson<uint32_t>(dcRoot, "refresh");
 	dispConf.rotation = getValueFromJson<uint32_t>(dcRoot, "rotation");
+	dispConf.displayId = getValueFromJson<uint32_t>(dcRoot, "displayId");
 
 	// Other parameters are optional and have a default value (for compatibility with legacy config files)
 	dispConf.scaling = getValueFromJson<uint32_t>(dcRoot, "scaling", std::optional<uint32_t>(0));
 	dispConf.tvFormat = getValueFromJson<uint32_t>(dcRoot, "tvFormat", std::optional<uint32_t>(0));
-
-	// DisplayIds should be in a JSON array or in a "displayId" object if dealing with a legacy configuration
-	if (dcRoot.contains("displayIds") && dcRoot["displayIds"].is_array() && !dcRoot["displayIds"].empty()) {
-		for (auto& id : dcRoot["displayIds"]) {
-			if (!id.is_number_unsigned()) {
-				throw ConfException(L"Invalid element in displayIds array");
-			}
-			dispConf.displayIds.push_back(id);
-		}
-	}
-	else if (dcRoot.contains("displayId") && dcRoot["displayId"].is_number_unsigned()) {
-		dispConf.displayIds.push_back(dcRoot["displayId"].get<uint32_t>());
-	}
-	else {
-		throw ConfException(L"Missing/invalid displayId info");
-	}
+	dispConf.cloneGroup = getValueFromJson<uint32_t>(dcRoot, "cloneGroup", std::optional<uint32_t>(UINT32_MAX));
 
 	return dispConf;
 }
@@ -104,9 +100,8 @@ nlohmann::json JsonAux::fromDisplayConfig(const DisplayConfiguration& displayCon
 	dcRoot["rotation"] = displayConfig.rotation;
 	dcRoot["scaling"] = displayConfig.scaling;
 	dcRoot["tvFormat"] = displayConfig.tvFormat;
-	for (auto& id : displayConfig.displayIds) {
-		dcRoot["displayIds"].push_back(id);
-	}
+	dcRoot["displayId"] = displayConfig.displayId;
+	dcRoot["cloneGroup"] = displayConfig.cloneGroup;
 
 	return dcRoot;
 }
