@@ -31,7 +31,16 @@ bool JsonConfigManager::read() {
 	}
 
 	nlohmann::json fRoot;
-	in >> fRoot;
+	try {
+		in >> fRoot;
+		if (!fRoot.is_object()) {
+			throw ConfException(L"Configuration file is not a JSON object.");
+		}
+	}
+	catch (std::exception& e) {
+		(e); //cmon warning
+		throw ConfException(L"Problem reading configuration file.");
+	}
 	if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
 		for (auto& gConfig : fRoot["configList"]) {
 			const GlobalConfiguration& conf = JsonAux::toGlobalConfig(gConfig);
