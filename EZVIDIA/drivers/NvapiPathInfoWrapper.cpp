@@ -19,7 +19,7 @@ bool NvapiPathInfoWrapper::allocate() {
 		if (this->pInfo == nullptr) {
 			throw DriverException(L"Error allocating memory (pInfo calloc).");
 		}
-		for (int i = 0; i < this->nDisplays; i++) {
+		for (uint32_t i = 0; i < this->nDisplays; i++) {
 			this->pInfo[i].version = NV_DISPLAYCONFIG_PATH_INFO_VER;
 			this->pInfo[i].sourceModeInfo = (NV_DISPLAYCONFIG_SOURCE_MODE_INFO*)calloc(1, sizeof(NV_DISPLAYCONFIG_SOURCE_MODE_INFO));
 			if (this->pInfo[i].sourceModeInfo == nullptr) {
@@ -31,13 +31,13 @@ bool NvapiPathInfoWrapper::allocate() {
 
 	// Second pass (allocate targetInfo according to targetInfoCount)
 	bool changed = false;
-	for (int i = 0; i < this->nDisplays; i++) {
+	for (uint32_t i = 0; i < this->nDisplays; i++) {
 		if (this->pInfo[i].targetInfo == nullptr && this->pInfo[i].targetInfoCount > 0) {
 			this->pInfo[i].targetInfo = (NV_DISPLAYCONFIG_PATH_TARGET_INFO*)calloc(this->pInfo[i].targetInfoCount, sizeof(NV_DISPLAYCONFIG_PATH_TARGET_INFO));
 			if (this->pInfo[i].targetInfo == nullptr) {
 				throw DriverException(L"Error allocating memory (targetInfo calloc).");
 			}
-			for (int j = 0; j < this->pInfo[i].targetInfoCount; j++) {
+			for (uint32_t j = 0; j < this->pInfo[i].targetInfoCount; j++) {
 				this->pInfo[i].targetInfo[j].details = (NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO*)calloc(1, sizeof(NV_DISPLAYCONFIG_PATH_ADVANCED_TARGET_INFO));
 				if (this->pInfo[i].targetInfo[j].details == nullptr) {
 					throw DriverException(L"Error allocating memory (targetInfo.details calloc).");
@@ -52,12 +52,12 @@ bool NvapiPathInfoWrapper::allocate() {
 
 void NvapiPathInfoWrapper::destroy() {
 	if (this->pInfo != nullptr) {
-		for (int i = 0; i < this->nDisplays; i++) {
+		for (uint32_t i = 0; i < this->nDisplays; i++) {
 			if (this->pInfo[i].sourceModeInfo != nullptr) {
 				free(this->pInfo[i].sourceModeInfo);
 			}
 			if (this->pInfo[i].targetInfo != nullptr) {
-				for (int j = 0; j < this->pInfo[i].targetInfoCount; j++) {
+				for (uint32_t j = 0; j < this->pInfo[i].targetInfoCount; j++) {
 					if (this->pInfo[i].targetInfo[j].details != nullptr) {
 						free(this->pInfo[i].targetInfo[j].details);
 					}

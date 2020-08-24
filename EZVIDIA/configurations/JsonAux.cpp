@@ -26,22 +26,6 @@ GlobalConfiguration JsonAux::toGlobalConfig(const nlohmann::json& gcRoot) {
 		}
 	}
 
-	// Primary display
-	globalConf.primaryId = getValueFromJson<uint32_t>(gcRoot, "primaryId");
-	bool validPrimaryId = false;
-	for (auto& disp : globalConf.displays) {
-		if (disp.displayId == globalConf.primaryId) {
-			validPrimaryId = true;
-		}
-	}
-	if (!validPrimaryId) {
-		std::wstring errorMsg(L"Error occured while parsing primaryId for configuration \"");
-		errorMsg.append(globalConf.name);
-		errorMsg.append(L"\":\n");
-		errorMsg.append(L"Provided primaryId doesn't match with any of the displays in displayList");
-		throw ConfException(errorMsg);
-	}
-
 	// Clone groups
 	// If one of the displays in the configuration had a missing cloneGroup value (which is represented by a UINT32_MAX), we assume extended mode
 	if (std::find_if(globalConf.displays.begin(), globalConf.displays.end(),
@@ -50,6 +34,31 @@ GlobalConfiguration JsonAux::toGlobalConfig(const nlohmann::json& gcRoot) {
 		for (auto& disp : globalConf.displays) {
 			disp.cloneGroup = group++;
 		}
+	}
+
+	// Primary Group (in configurations with primaryId, we change it to the group containing that id)
+	globalConf.primaryGroup = getValueFromJson<uint32_t>(gcRoot, "primaryGroup", std::optional<uint32_t>(UINT32_MAX));
+	if (globalConf.primaryGroup == UINT32_MAX) {
+		uint32_t primaryId = getValueFromJson<uint32_t>(gcRoot, "primaryId", std::optional<uint32_t>(UINT32_MAX));
+		for (auto& disp : globalConf.displays) {
+			if (disp.displayId == primaryId) {
+				globalConf.primaryGroup = disp.cloneGroup;
+				break;
+			}
+		}
+	}
+	bool validPrimaryGroup = false;
+	for (auto& disp : globalConf.displays) {
+		if (disp.cloneGroup == globalConf.primaryGroup) {
+			validPrimaryGroup = true;
+		}
+	}
+	if (!validPrimaryGroup) {
+		std::wstring errorMsg(L"Error occured while parsing primaryGroup/Id for configuration \"");
+		errorMsg.append(globalConf.name);
+		errorMsg.append(L"\":\n");
+		errorMsg.append(L"Provided primaryGroup/Id doesn't match any of the cloneGroups/displayIds in DisplayList");
+		throw ConfException(errorMsg);
 	}
 
 	return globalConf;
@@ -79,7 +88,7 @@ nlohmann::json JsonAux::fromGlobalConfig(const GlobalConfiguration& globalConfig
 	nlohmann::json gcRoot;
 
 	gcRoot["name"] = JsonAux::wideStringToString(globalConfig.name);
-	gcRoot["primaryId"] = globalConfig.primaryId;
+	gcRoot["primaryGroup"] = globalConfig.primaryGroup;
 
 	for (auto& displayConf : globalConfig.displays) {
 		gcRoot["displayList"].push_back(JsonAux::fromDisplayConfig(displayConf));

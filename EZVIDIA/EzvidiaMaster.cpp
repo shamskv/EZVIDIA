@@ -13,21 +13,6 @@ void EzvidiaMaster::saveCurrentConfig(const std::wstring& newName) {
 	GlobalConfiguration gConf = this->driverManager.get()->getCurrentConfig();
 	gConf.name = newName;
 
-	DisplayConfiguration dConf;
-	dConf.height = 1080;
-	dConf.width = 1920;
-	dConf.posX = 0;
-	dConf.posY = 0;
-	dConf.colorDepth = 32;
-	dConf.refresh = 60000;
-	dConf.rotation = 0;
-	dConf.scaling = 0;
-	dConf.tvFormat = 0;
-	dConf.cloneGroup = 0;
-	dConf.displayId = 12345;
-	gConf.primaryId = 12345;
-	gConf.displays.push_back(dConf);
-
 	configManager.get()->addConfiguration(gConf);
 }
 

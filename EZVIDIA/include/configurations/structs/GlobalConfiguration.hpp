@@ -8,5 +8,5 @@ class GlobalConfiguration {
 public:
 	std::wstring name;
 	std::vector<DisplayConfiguration> displays;
-	uint32_t primaryId;
+	uint32_t primaryGroup;
 };

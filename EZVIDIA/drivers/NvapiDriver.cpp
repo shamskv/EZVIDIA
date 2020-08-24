@@ -43,7 +43,7 @@ GlobalConfiguration NvapiDriver::getConfig() {
 			dConf.cloneGroup = cloneGroup;
 
 			if (pInfoWrapper.pInfo[i].sourceModeInfo->bGDIPrimary == 1) {
-				gConf.primaryId = dConf.displayId;
+				gConf.primaryGroup = cloneGroup;
 			}
 
 			gConf.displays.push_back(dConf);
