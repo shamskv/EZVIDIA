@@ -16,6 +16,7 @@ DriverManager::DriverManager() {
 }
 
 void DriverManager::applyConfiguration(const GlobalConfiguration& conf) {
+	driver.get()->setConfig(conf);
 }
 
 GlobalConfiguration DriverManager::getCurrentConfig() {
