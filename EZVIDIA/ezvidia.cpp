@@ -233,7 +233,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		master = reinterpret_cast<EzvidiaMaster*>(pCreate->lpCreateParams);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)master);
 
-		AddNotificationIcon(hWnd, master->hInst);
+		AddNotificationIcon(hWnd, (HINSTANCE)master->hInst);
 	}
 	break;
 
@@ -294,7 +294,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 		case IDM_SAVECONF:
 			//awaitingInput = true;
 			master->blockInput = true;
-			DialogBoxParam(master->hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig, (LPARAM)master);
+			DialogBoxParam((HINSTANCE)master->hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig, (LPARAM)master);
 			//std::lock_guard<std::mutex> lock(confMutex);
 			//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 			//boost::optional<GlobalConfig> opt_conf = NVAPIController::getCurrentConfig();

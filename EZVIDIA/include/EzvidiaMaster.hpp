@@ -1,11 +1,10 @@
 #pragma once
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <memory>
 #include "configurations/ConfigManager.hpp"
 #include "drivers/DriverManager.hpp"
 
 class EzvidiaMaster {
+	using HINSTANCE = void*;
 private:
 	std::unique_ptr<ConfigManager> configManager;
 	std::unique_ptr<DriverManager> driverManager;
