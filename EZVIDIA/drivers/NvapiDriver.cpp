@@ -1,8 +1,6 @@
 #include "..\include\drivers\NvapiDriver.hpp"
 #include "../include/drivers/DriverException.hpp"
 #include "../include/drivers/NvapiPathInfoWrapper.hpp"
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
 #include <nvapi.h>
 #include <unordered_map>
 
