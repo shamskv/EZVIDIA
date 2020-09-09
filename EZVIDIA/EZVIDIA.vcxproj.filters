@@ -39,6 +39,9 @@
     <ClCompile Include="drivers\NvapiPathInfoWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="networking\UdpHandlerThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico">
@@ -106,6 +109,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\drivers\NvapiPathInfoWrapper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\networking\UdpHandlerThread.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\networking\NetworkException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

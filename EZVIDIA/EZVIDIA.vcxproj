@@ -143,6 +143,7 @@
     <ClCompile Include="EzvidiaMaster.cpp" />
     <ClCompile Include="drivers\DriverManager.cpp" />
     <ClCompile Include="drivers\NvapiPathInfoWrapper.cpp" />
+    <ClCompile Include="networking\UdpHandlerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico" />
@@ -168,6 +169,8 @@
     <ClInclude Include="include\drivers\NvapiPathInfoWrapper.hpp" />
     <ClInclude Include="include\drivers\VirtualDriver.hpp" />
     <ClInclude Include="include\EzvidiaMaster.hpp" />
+    <ClInclude Include="include\networking\NetworkException.hpp" />
+    <ClInclude Include="include\networking\UdpHandlerThread.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
