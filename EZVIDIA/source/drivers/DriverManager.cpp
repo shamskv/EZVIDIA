@@ -1,6 +1,6 @@
-#include "..\include\drivers\DriverManager.hpp"
-#include "..\include\drivers\NvapiDriver.hpp"
-#include "..\include\drivers\DriverException.hpp"
+#include "../../include/drivers/DriverManager.hpp"
+#include "../../include/drivers/NvapiDriver.hpp"
+#include "../../include/drivers/DriverException.hpp"
 
 DriverManager::DriverManager() {
 	try {

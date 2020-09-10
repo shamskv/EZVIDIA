@@ -104,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	MyRegisterClass(hInstance, szWindowClass);
 
 	// Instantiate master and check for problems
-	std::unique_ptr<EzvidiaMaster> masterPtr;
+	std::shared_ptr<EzvidiaMaster> masterPtr;
 	try {
 		masterPtr = std::make_unique<EzvidiaMaster>(hInstance, "ezconfig.json");
 	}

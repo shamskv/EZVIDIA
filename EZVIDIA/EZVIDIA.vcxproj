@@ -135,15 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="configurations\ConfigManager.cpp" />
-    <ClCompile Include="configurations\JsonConfigManager.cpp" />
-    <ClCompile Include="drivers\NvapiDriver.cpp" />
+    <ClCompile Include="source\configurations\ConfigManager.cpp" />
+    <ClCompile Include="source\configurations\JsonConfigManager.cpp" />
+    <ClCompile Include="source\drivers\NvapiDriver.cpp" />
     <ClCompile Include="ezvidia.cpp" />
-    <ClCompile Include="configurations\JsonAux.cpp" />
-    <ClCompile Include="EzvidiaMaster.cpp" />
-    <ClCompile Include="drivers\DriverManager.cpp" />
-    <ClCompile Include="drivers\NvapiPathInfoWrapper.cpp" />
-    <ClCompile Include="networking\UdpHandlerThread.cpp" />
+    <ClCompile Include="source\configurations\JsonAux.cpp" />
+    <ClCompile Include="source\EzvidiaMaster.cpp" />
+    <ClCompile Include="source\drivers\DriverManager.cpp" />
+    <ClCompile Include="source\drivers\NvapiPathInfoWrapper.cpp" />
+    <ClCompile Include="source\networking\UdpHandlerThread.cpp" />
+    <ClCompile Include="source\utils\StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico" />
@@ -161,6 +162,7 @@
     <ClInclude Include="include\configurations\ConfigManager.hpp" />
     <ClInclude Include="include\configurations\JsonAux.hpp" />
     <ClInclude Include="include\configurations\JsonConfigManager.hpp" />
+    <ClInclude Include="include\utils\StringUtils.hpp" />
     <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp" />
     <ClInclude Include="include\drivers\DriverException.hpp" />

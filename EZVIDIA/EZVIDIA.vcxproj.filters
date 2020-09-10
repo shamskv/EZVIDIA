@@ -18,28 +18,31 @@
     <ClCompile Include="ezvidia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="configurations\ConfigManager.cpp">
+    <ClCompile Include="source\networking\UdpHandlerThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="configurations\JsonConfigManager.cpp">
+    <ClCompile Include="source\drivers\DriverManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="configurations\JsonAux.cpp">
+    <ClCompile Include="source\drivers\NvapiDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="EzvidiaMaster.cpp">
+    <ClCompile Include="source\drivers\NvapiPathInfoWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\DriverManager.cpp">
+    <ClCompile Include="source\configurations\ConfigManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\NvapiDriver.cpp">
+    <ClCompile Include="source\configurations\JsonAux.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="drivers\NvapiPathInfoWrapper.cpp">
+    <ClCompile Include="source\configurations\JsonConfigManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="networking\UdpHandlerThread.cpp">
+    <ClCompile Include="source\EzvidiaMaster.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="source\utils\StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -115,6 +118,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\networking\NetworkException.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\StringUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
