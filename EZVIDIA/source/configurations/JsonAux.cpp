@@ -63,7 +63,7 @@ namespace {
 	}
 };
 
-GlobalConfiguration JsonAux::JsonToGlobalConfig(const nlohmann::json& gcRoot) {
+GlobalConfiguration JsonAux::globalConfigFromJson(const nlohmann::json& gcRoot) {
 	GlobalConfiguration globalConf;
 
 	// Name
@@ -125,7 +125,7 @@ GlobalConfiguration JsonAux::JsonToGlobalConfig(const nlohmann::json& gcRoot) {
 	return globalConf;
 }
 
-nlohmann::json JsonAux::JsonFromGlobalConfig(const GlobalConfiguration& globalConfig) {
+nlohmann::json JsonAux::jsonFromGlobalConfig(const GlobalConfiguration& globalConfig) {
 	nlohmann::json gcRoot;
 
 	gcRoot["name"] = StringUtils::wideStringToString(globalConfig.name);

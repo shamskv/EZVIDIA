@@ -15,7 +15,7 @@ bool JsonConfigManager::persist() {
 	root["configList"] = nlohmann::basic_json(nlohmann::detail::value_t::array);
 
 	for (auto& entry : configVector) {
-		root["configList"].push_back(JsonAux::JsonFromGlobalConfig(entry));
+		root["configList"].push_back(JsonAux::jsonFromGlobalConfig(entry));
 	}
 
 	out << root.dump(3) << std::endl;
@@ -43,7 +43,7 @@ bool JsonConfigManager::read() {
 	}
 	if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
 		for (auto& gConfig : fRoot["configList"]) {
-			const GlobalConfiguration& conf = JsonAux::JsonToGlobalConfig(gConfig);
+			const GlobalConfiguration& conf = JsonAux::globalConfigFromJson(gConfig);
 			if (std::find_if(configVector.begin(), configVector.end(), [&conf](GlobalConfiguration& gc) {return gc.name == conf.name; }) != configVector.end()) {
 				// TODO log duplicate configuration here
 				continue;
