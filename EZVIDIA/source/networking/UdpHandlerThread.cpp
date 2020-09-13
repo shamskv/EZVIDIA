@@ -18,7 +18,7 @@ UdpHandlerThread::UdpHandlerThread(std::weak_ptr<EzvidiaMaster> master, unsigned
 		struct sockaddr_in ipv4;
 		struct sockaddr_in6 ipv6;
 	} sockaddrUnion;
-	int sockaddrUnionSize;
+	size_t sockaddrUnionSize;
 
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		throw NetworkException(L"Error initiating WinSock2.");
@@ -39,9 +39,9 @@ UdpHandlerThread::UdpHandlerThread(std::weak_ptr<EzvidiaMaster> master, unsigned
 		sockaddrUnion.ipv4.sin_addr.S_un.S_addr = INADDR_ANY;
 	}
 	else {
-		int mode = 0;
+		char* mode = 0;
 		// Dual stack socket (captures both IPv6 and IPv4)
-		setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, (char*)mode, sizeof(mode));
+		setsockopt(s, IPPROTO_IPV6, IPV6_V6ONLY, mode, sizeof(mode));
 		family = AF_INET6;
 		sockaddrUnionSize = sizeof(sockaddr_in6);
 		sockaddrUnion.ipv6.sin6_family = AF_INET6;
@@ -49,7 +49,7 @@ UdpHandlerThread::UdpHandlerThread(std::weak_ptr<EzvidiaMaster> master, unsigned
 		sockaddrUnion.ipv6.sin6_addr = in6addr_any;
 	}
 
-	int ret = bind(s, reinterpret_cast<sockaddr*>(&sockaddrUnion), sockaddrUnionSize);
+	int ret = bind(s, reinterpret_cast<sockaddr*>(&sockaddrUnion), static_cast<int>(sockaddrUnionSize));
 	if (ret == SOCKET_ERROR) {
 		throw NetworkException(L"Error binding to port " + std::to_wstring(port) + L".");
 	}
