@@ -1,6 +1,6 @@
-#include "../../include/drivers/NvapiDriver.hpp"
-#include "../../include/drivers/DriverException.hpp"
-#include "../../include/drivers/NvapiPathInfoWrapper.hpp"
+#include "NvapiDriver.hpp"
+#include "DriverException.hpp"
+#include "NvapiPathInfoWrapper.hpp"
 #include <nvapi.h>
 #include <unordered_map>
 

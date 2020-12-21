@@ -1,11 +1,19 @@
-#include"../../include/networking/UdpHandlerThread.hpp"
-#include"../../include/networking/NetworkException.hpp"
+#include"UdpHandlerThread.hpp"
+#include"NetworkException.hpp"
 
 #include<WinSock2.h>
 #include<Ws2tcpip.h>
 
+#define BUFF_SIZE 65535
+
 // Used in a separate thread to listen to for ezvidia commands
 void UdpHandlerThread::threadFunction() {
+	char buf[BUFF_SIZE], replyBuf[BUFF_SIZE];
+	sockaddr addrInfo;
+	memset(buf, '\0', BUFF_SIZE);
+	//while (recvfrom(this->serverSocket, buf, BUFF_SIZE, 0)) {
+	//	continue;
+	//}
 }
 
 // The constructor inits WSA, creates the socket and binds it to the desired port

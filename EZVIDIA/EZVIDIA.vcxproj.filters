@@ -18,31 +18,28 @@
     <ClCompile Include="ezvidia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\networking\UdpHandlerThread.cpp">
+    <ClCompile Include="src\drivers\DriverManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\drivers\DriverManager.cpp">
+    <ClCompile Include="src\drivers\NvapiDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\drivers\NvapiDriver.cpp">
+    <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\drivers\NvapiPathInfoWrapper.cpp">
+    <ClCompile Include="src\networking\UdpHandlerThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\configurations\ConfigManager.cpp">
+    <ClCompile Include="src\utils\StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\configurations\JsonAux.cpp">
+    <ClCompile Include="src\EzvidiaMaster.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\configurations\JsonConfigManager.cpp">
+    <ClCompile Include="src\configurations\VirtualConfigurationList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="source\EzvidiaMaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="source\utils\StringUtils.cpp">
+    <ClCompile Include="src\configurations\JsonConfigurationList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,49 +75,46 @@
     <ClInclude Include="configurations\ConfigManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\structs\DisplayConfiguration.hpp">
+    <ClInclude Include="src\configurations\DisplayConfiguration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\structs\GlobalConfiguration.hpp">
+    <ClInclude Include="src\configurations\GlobalConfiguration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\ConfigManager.hpp">
+    <ClInclude Include="src\drivers\DriverManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\JsonAux.hpp">
+    <ClInclude Include="src\drivers\NvapiDriver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\JsonConfigManager.hpp">
+    <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\configurations\ConfException.hpp">
+    <ClInclude Include="src\drivers\VirtualDriver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\EzvidiaMaster.hpp">
+    <ClInclude Include="src\networking\UdpHandlerThread.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\drivers\DriverManager.hpp">
+    <ClInclude Include="src\utils\StringUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\drivers\VirtualDriver.hpp">
+    <ClInclude Include="src\EzvidiaMaster.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\drivers\NvapiDriver.hpp">
+    <ClInclude Include="src\configurations\ConfException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\drivers\DriverException.hpp">
+    <ClInclude Include="src\drivers\DriverException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\drivers\NvapiPathInfoWrapper.hpp">
+    <ClInclude Include="src\networking\NetworkException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\networking\UdpHandlerThread.hpp">
+    <ClInclude Include="src\configurations\VirtualConfigurationList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\networking\NetworkException.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\utils\StringUtils.hpp">
+    <ClInclude Include="src\configurations\JsonConfigurationList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

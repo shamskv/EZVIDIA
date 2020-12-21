@@ -1,9 +1,9 @@
-#include "../include/EzvidiaMaster.hpp"
-#include "../include/configurations/JsonConfigManager.hpp"
-#include "../include/configurations/structs/GlobalConfiguration.hpp"
+#include "EzvidiaMaster.hpp"
+#include "configurations/JsonConfigurationList.hpp"
+#include "configurations/GlobalConfiguration.hpp"
 
 EzvidiaMaster::EzvidiaMaster(const HINSTANCE& hInstance, const std::string& configPath) : hInst(hInstance) {
-	this->configManager = std::make_unique<JsonConfigManager>(configPath);
+	this->configManager = std::make_unique<JsonConfigurationList>(configPath);
 	this->driverManager = std::make_unique<DriverManager>();
 	this->blockInput = false;
 }

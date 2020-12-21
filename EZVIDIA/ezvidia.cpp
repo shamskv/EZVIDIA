@@ -22,9 +22,9 @@
 
 #include "framework.h"
 #include "resource.h"
-#include "include/EzvidiaMaster.hpp"
-#include "include/configurations/ConfException.hpp"
-#include "include/drivers/DriverException.hpp"
+#include "src/EzvidiaMaster.hpp"
+#include "src/configurations/ConfException.hpp"
+#include "src/drivers/DriverException.hpp"
 #include <boost/algorithm/string.hpp>
 
 #define MAX_LOADSTRING 100
@@ -106,7 +106,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	// Instantiate master and check for problems
 	std::shared_ptr<EzvidiaMaster> masterPtr;
 	try {
-		masterPtr = std::make_unique<EzvidiaMaster>(hInstance, "ezconfig.json");
+		masterPtr = std::make_shared<EzvidiaMaster>(hInstance, "ezconfig.json");
 	}
 	catch (ConfException& e) {
 		MessageBox(NULL, e.msg().c_str(), L"Configuration exception", MB_OK | MB_ICONERROR);

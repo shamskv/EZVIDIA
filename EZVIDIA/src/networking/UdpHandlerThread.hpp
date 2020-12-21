@@ -1,8 +1,9 @@
 #pragma once
-#include "../EzvidiaMaster.hpp"
 #include <basetsd.h>
 #include <thread>
 #include <memory>
+
+class EzvidiaMaster;
 
 class UdpHandlerThread {
 private:

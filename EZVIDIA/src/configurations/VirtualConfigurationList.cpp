@@ -1,29 +1,29 @@
-#include "../../include/configurations/ConfigManager.hpp"
+#include "VirtualConfigurationList.hpp"
 
-bool ConfigManager::addConfiguration(const GlobalConfiguration& conf) {
+bool VirtualConfigurationList::addConfiguration(const GlobalConfiguration& conf) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	configVector.push_back(conf);
 	return persist();
 }
 
-bool ConfigManager::deleteConfiguration(const std::wstring& name) {
+bool VirtualConfigurationList::deleteConfiguration(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	auto stfuCompiler = std::remove_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; });
 	return persist();
 }
 
-bool ConfigManager::deleteConfiguration(const int& index) {
+bool VirtualConfigurationList::deleteConfiguration(const int& index) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	configVector.erase(configVector.begin() + index);
 	return persist();
 }
 
-bool ConfigManager::isConfigurationPresent(const std::wstring& name) {
+bool VirtualConfigurationList::isConfigurationPresent(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	return std::find_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; }) != configVector.end();
 }
 
-std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const std::wstring& name) {
+std::optional<GlobalConfiguration> VirtualConfigurationList::getConfiguration(const std::wstring& name) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	auto it = std::find_if(configVector.begin(), configVector.end(), [&name](GlobalConfiguration& gc) {return name == gc.name; });
 	if (it != configVector.end()) {
@@ -34,7 +34,7 @@ std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const std::ws
 	}
 }
 
-std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const int& index) {
+std::optional<GlobalConfiguration> VirtualConfigurationList::getConfiguration(const int& index) {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	if (index >= 0 && index < configVector.size()) {
 		return std::optional<GlobalConfiguration>(configVector.at(index));
@@ -44,7 +44,7 @@ std::optional<GlobalConfiguration> ConfigManager::getConfiguration(const int& in
 	}
 }
 
-std::vector<std::wstring> ConfigManager::getAllConfigurationNames() {
+std::vector<std::wstring> VirtualConfigurationList::getAllConfigurationNames() {
 	std::lock_guard<std::mutex> lock(configurationLock);
 	std::vector<std::wstring> names;
 
@@ -55,16 +55,16 @@ std::vector<std::wstring> ConfigManager::getAllConfigurationNames() {
 	return names;
 }
 
-bool ConfigManager::refreshConfigurations() {
+bool VirtualConfigurationList::refreshConfigurations() {
 	return read();
 }
 
-void ConfigManager::init() {
+void VirtualConfigurationList::init() {
 	if (!read()) {
 		persist();
 	}
 }
 
-size_t ConfigManager::getConfigNum() {
+size_t VirtualConfigurationList::getConfigNum() {
 	return configVector.size();
 }

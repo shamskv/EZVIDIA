@@ -1,5 +1,5 @@
 #pragma once
-#include "../configurations/structs/GlobalConfiguration.hpp"
+#include "../configurations/GlobalConfiguration.hpp"
 #include "VirtualDriver.hpp"
 #include <memory>
 

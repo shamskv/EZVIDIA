@@ -1,5 +1,5 @@
 #pragma once
-#include "../configurations/structs/GlobalConfiguration.hpp"
+#include "../configurations/GlobalConfiguration.hpp"
 
 class VirtualDriver {
 public:
