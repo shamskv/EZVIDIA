@@ -1,9 +1,9 @@
 #pragma once
-#include "VirtualDriver.hpp"
+#include "DisplayDriver.hpp"
 
-class NvapiDriver : public VirtualDriver {
+class NvapiDriver : public DisplayDriver {
 public:
 	NvapiDriver();
-	GlobalConfiguration getConfig();
-	void setConfig(const GlobalConfiguration& conf);
+	GlobalConfiguration _getConfig() override;
+	void _applyConfig(const GlobalConfiguration& conf) override;
 };

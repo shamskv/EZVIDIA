@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ezvidia.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\drivers\DriverManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\drivers\NvapiDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -33,13 +27,22 @@
     <ClCompile Include="src\utils\StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\EzvidiaMaster.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\configurations\VirtualConfigurationList.cpp">
+    <ClCompile Include="src\configurations\SynchronizedConfigurationList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\configurations\JsonConfigurationList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\drivers\DisplayDriver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsGui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WinMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ezvidia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,9 +57,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ezvidia.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -81,25 +81,19 @@
     <ClInclude Include="src\configurations\GlobalConfiguration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\drivers\DriverManager.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\drivers\NvapiDriver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\drivers\VirtualDriver.hpp">
+    <ClInclude Include="src\drivers\DisplayDriver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\networking\UdpHandlerThread.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\utils\StringUtils.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\EzvidiaMaster.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\configurations\ConfException.hpp">
@@ -111,10 +105,16 @@
     <ClInclude Include="src\networking\NetworkException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\configurations\VirtualConfigurationList.hpp">
+    <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\configurations\JsonConfigurationList.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsGui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ezvidia.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

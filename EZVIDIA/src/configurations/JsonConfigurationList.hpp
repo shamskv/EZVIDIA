@@ -1,9 +1,9 @@
 #include<string>
 #include<json.hpp>
 #include <optional>
-#include "VirtualConfigurationList.hpp"
+#include "SynchronizedConfigurationList.hpp"
 
-class JsonConfigurationList : public VirtualConfigurationList {
+class JsonConfigurationList : public SynchronizedConfigurationList {
 private:
 	std::string fileName;
 	bool persist();

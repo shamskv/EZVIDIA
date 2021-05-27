@@ -41,7 +41,7 @@ INT_PTR CALLBACK    NewConfig(HWND, UINT, WPARAM, LPARAM);
 //void				logPrint(std::string);
 ATOM                MyRegisterClass(HINSTANCE, WCHAR*);
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
+int APIENTRY wWinMain________________(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow) {
@@ -49,54 +49,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	WCHAR szTitle[MAX_LOADSTRING];                  // The title bar text
 	WCHAR szWindowClass[MAX_LOADSTRING];            // the main window class name
-
-	//{
-	//	std::lock_guard<std::mutex> lock(confMutex);
-	//	//Load config file
-	//	if (!loadConfigFile()) {
-	//		/*globalError = true;
-	//		globalErrorString += L"Error opening config file\n";*/
-	//		saveConfigFile();
-	//	}
-	//}
-
-	//int argc;
-	//LPWSTR* argv;
-	//argv = CommandLineToArgvW(lpCmdLine, &argc);
-
-	////MessageBox(NULL, lpCmdLine, std::to_wstring(argc).c_str(), MB_OK | MB_ICONERROR | MB_APPLMODAL);
-
-	//if (argc == 1 && *lpCmdLine != 0) {
-	//	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	//	std::string confArg = converter.to_bytes(argv[0]);
-	//	for (auto& c : configList) {
-	//		if (!c.name.compare(confArg)) {
-	//			int ret = NVAPIController::applyGlobalConfig(c);
-	//			if (ret != 0) {
-	//				MessageBox(NULL, L"Error applying configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-	//			}
-	//			return 0;
-	//		}
-	//	}
-	//	MessageBox(NULL, L"Configuration not found.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-	//	return -1;
-	//}
-	//else if (argc > 1 && *lpCmdLine != 0) {
-	//	return -1;
-	//}
-
-	//// Open log file
-	//logStream.open(logName);
-	//if (!logStream) {
-	//	globalError = true;
-	//	globalErrorString += L"Error opening log file\n";
-	//}
-
-	//// Open UDP Socket
-	//if (!startUDPSocket()) {
-	//	globalError = true;
-	//	globalErrorString += L"Error opening UDP socket\n";
-	//}
 
 	// Initialize global strings
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -135,15 +87,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-
-	//if (globalSocket) {
-	//	closesocket(globalSocket);
-	//}
-	//logMutex.lock();
-	//logStream.close();
-	//logMutex.unlock();
-	//WSACleanup();
-	//t1.join();
 
 	return (int)msg.wParam;
 }
@@ -222,13 +165,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 	switch (message) {
 	case WM_CREATE:
 	{
-		//if (globalError) {
-		//	std::wstring errorMessage = std::wstring(L"Error(s) on start up:\n") + globalErrorString;
-		//	MessageBox(hWnd, errorMessage.c_str(), L"Error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-		//	PostQuitMessage(0);
-		//	break;
-		//}
-
 		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		master = reinterpret_cast<EzvidiaMaster*>(pCreate->lpCreateParams);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)master);
@@ -295,20 +231,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) 
 			//awaitingInput = true;
 			master->blockInput = true;
 			DialogBoxParam((HINSTANCE)master->hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfig, (LPARAM)master);
-			//std::lock_guard<std::mutex> lock(confMutex);
-			//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-			//boost::optional<GlobalConfig> opt_conf = NVAPIController::getCurrentConfig();
-			//if (opt_conf.has_value()) {
-			//	GlobalConfig conf = opt_conf.get();
-			//	conf.name = std::string(dialogInput);
-			//	//conf.name = converter.to_bytes(std::wstring(dialogInput));
-			//	configList.push_back(conf);
-			//	saveConfigFile();
-			//}
-			//else {
-			//	MessageBox(hWnd, L"Problem retrieving configuration.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-			//}
-			//awaitingInput = false;
 			master->blockInput = false;
 			break;
 		case IDM_GENERATEBAT:
@@ -391,33 +313,6 @@ INT_PTR CALLBACK NewConfig(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam
 	}
 	return (INT_PTR)FALSE;
 }
-
-//int safeApplyConfig(GlobalConfig& conf) {
-//	if (!configLock) {
-//		std::thread waitThread(blockConfigs);
-//		waitThread.detach();
-//
-//		logPrint("Applying configuration " + conf.name + "...");
-//		int ret = NVAPIController::applyGlobalConfig(conf);
-//		return ret;
-//	}
-//	else {
-//		logPrint("Skipping apply configuration request...");
-//		return -2;
-//	}
-//}
-
-//void blockConfigs() {
-//	if (configLock) return;
-//	configLock = true;
-//	logPrint("Blocking configs...");
-//	boost::asio::io_context io;
-//	boost::asio::steady_timer t(io, boost::asio::chrono::seconds(5));
-//	t.wait();
-//	logPrint("Unblocking configs...");
-//	configLock = false;
-//	return;
-//}
 
 //int generateBatFiles() {
 //	if (configList.empty()) {

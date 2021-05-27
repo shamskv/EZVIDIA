@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -135,15 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\configurations\VirtualConfigurationList.cpp" />
+    <ClCompile Include="ezvidia.cpp" />
+    <ClCompile Include="src\drivers\DisplayDriver.cpp" />
+    <ClCompile Include="src\configurations\SynchronizedConfigurationList.cpp" />
     <ClCompile Include="src\configurations\JsonConfigurationList.cpp" />
     <ClCompile Include="src\drivers\NvapiDriver.cpp" />
-    <ClCompile Include="ezvidia.cpp" />
-    <ClCompile Include="src\EzvidiaMaster.cpp" />
-    <ClCompile Include="src\drivers\DriverManager.cpp" />
     <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp" />
     <ClCompile Include="src\networking\UdpHandlerThread.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
+    <ClCompile Include="WindowsGui.cpp" />
+    <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="logo.ico" />
@@ -158,21 +159,20 @@
     <ClInclude Include="ezvidia.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="src\configurations\ConfException.hpp" />
-    <ClInclude Include="src\configurations\VirtualConfigurationList.hpp" />
+    <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp" />
     <ClInclude Include="src\configurations\JsonConfigurationList.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />
     <ClInclude Include="src\configurations\GlobalConfiguration.hpp" />
     <ClInclude Include="src\drivers\DriverException.hpp" />
-    <ClInclude Include="src\drivers\DriverManager.hpp" />
     <ClInclude Include="src\drivers\NvapiDriver.hpp" />
     <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp" />
-    <ClInclude Include="src\drivers\VirtualDriver.hpp" />
-    <ClInclude Include="src\EzvidiaMaster.hpp" />
+    <ClInclude Include="src\drivers\DisplayDriver.hpp" />
     <ClInclude Include="src\networking\NetworkException.hpp" />
     <ClInclude Include="src\networking\UdpHandlerThread.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="WindowsGui.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

@@ -8,11 +8,14 @@
 NvapiDriver::NvapiDriver() {
 	NvAPI_Status ret = NvAPI_Initialize();
 	if (ret != NVAPI_OK) {
-		throw DriverException(L"Error initializing NvAPI.");
+		this->state = FAIL;
+	}
+	else {
+		this->state = OK;
 	}
 }
 
-GlobalConfiguration NvapiDriver::getConfig() {
+GlobalConfiguration NvapiDriver::_getConfig() {
 	NvapiPathInfoWrapper pInfoWrapper;
 
 	do {
@@ -53,7 +56,7 @@ GlobalConfiguration NvapiDriver::getConfig() {
 	return gConf;
 }
 
-void NvapiDriver::setConfig(const GlobalConfiguration& conf) {
+void NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
 	NvapiPathInfoWrapper pInfoWrapper;
 
 	// assign a pInfo index for each clone group
