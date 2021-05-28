@@ -135,7 +135,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ezvidia.cpp" />
     <ClCompile Include="src\drivers\DisplayDriver.cpp" />
     <ClCompile Include="src\configurations\SynchronizedConfigurationList.cpp" />
     <ClCompile Include="src\configurations\JsonConfigurationList.cpp" />
@@ -156,7 +155,6 @@
     <ClInclude Include="configurations\ConfigManager.hpp" />
     <ClInclude Include="configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="configurations\structs\GlobalConfiguration.hpp" />
-    <ClInclude Include="ezvidia.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp" />

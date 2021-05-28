@@ -14,5 +14,5 @@ public:
 	void applyConfig(const GlobalConfiguration& conf);
 	bool isOK();
 	// static method to get instance
-	static std::shared_ptr<DisplayDriver> getAvailableDriver();
+	static std::unique_ptr<DisplayDriver> getAvailableDriver();
 };

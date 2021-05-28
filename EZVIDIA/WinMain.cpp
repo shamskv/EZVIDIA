@@ -7,9 +7,18 @@
 #include <Windows.h>
 #include <memory>
 
+#include "src/configurations/JsonConfigurationList.hpp"
+#include "src/drivers/DisplayDriver.hpp"
+#include "WindowsGui.hpp"
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow) {
-	auto hInstancePtr = std::make_shared<HINSTANCE>(hInstance);
+	JsonConfigurationList config("ezconfig.json");
+	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());
+
+	WindowsGui gui(hInstance, config, *driver.get());
+
+	return gui.msgLoop();
 }

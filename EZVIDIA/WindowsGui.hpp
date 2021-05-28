@@ -15,6 +15,8 @@ private:
 	WCHAR szTitle[MAX_LOADSTRING];
 	WCHAR szWindowClass[MAX_LOADSTRING];
 
+	bool actionLock = false;
+
 	DisplayDriver& driver;
 	SynchronizedConfigurationList& configList;
 

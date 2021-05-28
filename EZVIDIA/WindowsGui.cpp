@@ -9,6 +9,7 @@
 #include <CommCtrl.h>
 #include <vector>
 #include <string>
+#include <boost/algorithm/string.hpp>
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 
@@ -107,16 +108,16 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				int confNum = wmId - IDM_DELCONFNUM;
 				std::wstring msg = L"Are you sure you want to delete configuration ";
 				//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-				msg += master->getConfigNameByIndex(confNum) + L"?";
+				msg += thisPtr->configList.getConfiguration(confNum).value().name + L"?";
 				//awaitingInput = true;
-				master->blockInput = true;
+				thisPtr->actionLock = true;
 				if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
 					//configList.erase(configList.begin() + confnum);
 					//saveConfigFile();
-					master->deleteSelectedConfig(confNum);
+					thisPtr->configList.deleteConfiguration(confNum);
 				}
 				//awaitingInput = false;
-				master->blockInput = false;
+				thisPtr->actionLock = false;
 			}
 		}
 
@@ -124,16 +125,16 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		switch (wmId) {
 		case IDM_SAVECONF:
 			//awaitingInput = true;
-			master->blockInput = true;
-			DialogBoxParam((HINSTANCE)master->hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfProc, (LPARAM)master);
-			master->blockInput = false;
+			thisPtr->actionLock = true;
+			DialogBoxParam(thisPtr->hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfProc, (LPARAM)thisPtr);
+			thisPtr->actionLock = false;
 			break;
 		case IDM_GENERATEBAT:
-			master->blockInput = true;
+			thisPtr->actionLock = true;
 			//if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
 			//	generateBatFiles();
 			//}
-			master->blockInput = false;
+			thisPtr->actionLock = false;
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -160,8 +161,61 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-LRESULT WindowsGui::NewConfProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
-	return LRESULT();
+LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+	WindowsGui* thisPtr = reinterpret_cast<WindowsGui*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+	switch (message) {
+	case WM_INITDIALOG:
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
+		SetWindowText(hDlg, L"Insert the configuration name:");
+		SetFocus(GetDlgItem(hDlg, IDC_EDIT1));
+		return (INT_PTR)FALSE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK) {
+			TCHAR input[100];
+			if (!GetDlgItemText(hDlg, IDC_EDIT1, input, MAX_LOADSTRING)) {
+				input[0] = '\0';
+			}
+
+			std::wstring inputStr(input);
+			boost::trim(inputStr);
+			if (inputStr.find(L";") != std::wstring::npos) {
+				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+			else if (inputStr.length() <= 0) {
+				MessageBox(hDlg, L"Type something.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+			else if (inputStr.length() > 50) {
+				MessageBox(hDlg, L"No more than 50 characters.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+			else if (thisPtr->configList.isConfigurationPresent(inputStr)) {
+				MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+
+			auto optionalConf = thisPtr->driver.getConfig();
+			if (optionalConf.has_value()) {
+				optionalConf.value().name = inputStr;
+				thisPtr->configList.addConfiguration(optionalConf.value());
+			}
+			else {
+				MessageBox(hDlg, L"Error saving configuration.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		else if (LOWORD(wParam) == IDCANCEL) {
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
 }
 
 BOOL WindowsGui::AddNotificationIcon(HWND hwnd, HINSTANCE hInst) {
