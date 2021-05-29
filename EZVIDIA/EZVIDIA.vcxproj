@@ -168,6 +168,7 @@
     <ClInclude Include="src\networking\NetworkException.hpp" />
     <ClInclude Include="src\networking\UdpHandlerThread.hpp" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsGui.hpp" />
   </ItemGroup>
   <ItemGroup>
