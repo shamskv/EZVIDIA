@@ -155,7 +155,6 @@
     <ClInclude Include="configurations\ConfigManager.hpp" />
     <ClInclude Include="configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="configurations\structs\GlobalConfiguration.hpp" />
-    <ClInclude Include="framework.h" />
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp" />
     <ClInclude Include="src\configurations\JsonConfigurationList.hpp" />
@@ -169,7 +168,6 @@
     <ClInclude Include="src\networking\NetworkException.hpp" />
     <ClInclude Include="src\networking\UdpHandlerThread.hpp" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsGui.hpp" />
   </ItemGroup>
   <ItemGroup>
