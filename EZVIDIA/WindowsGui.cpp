@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <boost/algorithm/string.hpp>
+#include "WindowsUtils.hpp"
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 
@@ -131,9 +132,9 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			break;
 		case IDM_GENERATEBAT:
 			thisPtr->actionLock = true;
-			//if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
-			//	generateBatFiles();
-			//}
+			if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
+				WindowsUtils::generateBatFiles(thisPtr->configList.getAllConfigurationNames());
+			}
 			thisPtr->actionLock = false;
 			break;
 		case IDM_EXIT:

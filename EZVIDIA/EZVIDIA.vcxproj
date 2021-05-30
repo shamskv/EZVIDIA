@@ -143,6 +143,7 @@
     <ClCompile Include="src\networking\UdpHandlerThread.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="WindowsGui.cpp" />
+    <ClCompile Include="WindowsUtils.cpp" />
     <ClCompile Include="WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -170,6 +171,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsGui.hpp" />
+    <ClInclude Include="WindowsUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
