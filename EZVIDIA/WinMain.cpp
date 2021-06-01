@@ -4,7 +4,6 @@
 #pragma comment(lib, "comctl32.lib")
 // Need to link with Ws2_32.lib
 #pragma comment(lib,"ws2_32.lib")
-
 #include <Windows.h>
 #include <memory>
 
@@ -20,7 +19,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	WCHAR** argv = CommandLineToArgvW(lpCmdLine, &argc);
 
 	std::optional<std::wstring> confNameToApply; // if set, we try to apply this config and exit app
-
 	// Parse arguments before allocating/loading anything
 	if (argv != NULL) {
 		if (argc == 1) {
