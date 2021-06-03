@@ -94,33 +94,29 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	case WM_COMMAND:
 	{
 		int wmId = LOWORD(wParam);
-		{
-			//Applying configs
-			if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->configList.getConfigNum()) {
-				int confNum = wmId - IDM_CONFIGNUM;
-				auto confToApply = thisPtr->configList.getConfiguration(confNum).value(); // TODO add some error checking here just in case
-				thisPtr->driver.applyConfig(confToApply);
-			}
+		//Applying configs
+		if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->configList.getConfigNum()) {
+			int confNum = wmId - IDM_CONFIGNUM;
+			auto confToApply = thisPtr->configList.getConfiguration(confNum).value(); // TODO add some error checking here just in case
+			thisPtr->driver.applyConfig(confToApply);
+			break;
+		}
 
-			//Delete configs
-			if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + thisPtr->configList.getConfigNum()) {
-				int confNum = wmId - IDM_DELCONFNUM;
-				std::wstring msg = L"Are you sure you want to delete configuration ";
-				msg += thisPtr->configList.getConfiguration(confNum).value().name + L"?";
-				//awaitingInput = true;
-				thisPtr->actionLock = true;
-				if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
-					thisPtr->configList.deleteConfiguration(confNum);
-				}
-				//awaitingInput = false;
-				thisPtr->actionLock = false;
+		//Delete configs
+		if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + thisPtr->configList.getConfigNum()) {
+			int confNum = wmId - IDM_DELCONFNUM;
+			std::wstring msg = L"Are you sure you want to delete configuration ";
+			msg += thisPtr->configList.getConfiguration(confNum).value().name + L"?";
+			thisPtr->actionLock = true;
+			if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
+				thisPtr->configList.deleteConfiguration(confNum);
 			}
+			thisPtr->actionLock = false;
 		}
 
 		// Parse the menu selections:
 		switch (wmId) {
 		case IDM_SAVECONF:
-			//awaitingInput = true;
 			thisPtr->actionLock = true;
 			DialogBoxParam(thisPtr->hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfProc, (LPARAM)thisPtr);
 			thisPtr->actionLock = false;
@@ -131,6 +127,15 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 				WindowsUtils::generateBatFiles(thisPtr->configList.getAllConfigurationNames());
 			}
 			thisPtr->actionLock = false;
+			break;
+		case IDM_NETWORK_ON:
+			thisPtr->tcpServer = std::make_unique<TcpServer>(thisPtr->configList, thisPtr->driver);
+			if (!thisPtr->tcpServer.get()->up()) {
+				thisPtr->tcpServer.reset();
+			}
+			break;
+		case IDM_NETWORK_OFF:
+			thisPtr->tcpServer.reset();
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -262,6 +267,12 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	}
 	else {
 		AppendMenu(hOptionsMenu, MF_STRING | MF_GRAYED, NULL, L"Generate batch files");
+	}
+	if (thisPtr->tcpServer) {
+		AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_NETWORK_OFF, L"Network control (TCP)");
+	}
+	else {
+		AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON, L"Network control (TCP)");
 	}
 	AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu, L"Options");
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");

@@ -16,10 +16,12 @@
 #define IDM_DELCONFNUM                  1500
 #define IDM_SAVECONF                    2000
 #define IDM_GENERATEBAT                 2500
+#define IDM_NETWORK_ON					2501
+#define IDM_NETWORK_OFF					2502
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
-// 
+//
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1

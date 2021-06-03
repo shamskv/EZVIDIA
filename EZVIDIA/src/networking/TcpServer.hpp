@@ -24,6 +24,8 @@ public:
 	TcpServer(SynchronizedConfigurationList&, DisplayDriver&);
 	~TcpServer();
 
+	bool up();
+
 	TcpServer(const TcpServer&) = delete;
 	TcpServer& operator=(const TcpServer&) = delete;
 };

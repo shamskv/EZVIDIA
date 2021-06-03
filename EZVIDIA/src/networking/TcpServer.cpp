@@ -53,6 +53,7 @@ void TcpServer::serverThread() {
 		}
 
 		// Connection-less
+		shutdown(clientSocket, SD_BOTH);
 		closesocket(clientSocket);
 	}
 }
@@ -73,4 +74,8 @@ TcpServer::~TcpServer() {
 	if (thread_.joinable()) {
 		thread_.join(); // pls don't be stuck somehow, maybe implement timeout?
 	}
+}
+
+bool TcpServer::up() {
+	return this->state_ == ServerState::UP && this->socket_.ready() && this->thread_.joinable();
 }

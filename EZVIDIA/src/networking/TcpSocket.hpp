@@ -7,9 +7,9 @@ private:
 	SOCKET listenSocket = INVALID_SOCKET;
 	enum class SocketState { OPEN, FAIL, CLOSED };
 	SocketState state = SocketState::FAIL;
-	uint32_t port;
+	uint16_t port;
 public:
-	TcpSocket(uint32_t);
+	TcpSocket(uint16_t);
 	~TcpSocket();
 
 	bool ready();
