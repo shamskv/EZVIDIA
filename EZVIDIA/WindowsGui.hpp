@@ -8,6 +8,7 @@
 // Forward Declarations
 class DisplayDriver;
 class SynchronizedConfigurationList;
+class TcpServer;
 
 class WindowsGui {
 private:
@@ -20,6 +21,8 @@ private:
 	DisplayDriver& driver;
 	SynchronizedConfigurationList& configList;
 
+	std::unique_ptr<TcpServer> tcpServer;
+
 	ATOM MyRegisterClass(HINSTANCE, WCHAR*);
 	static LRESULT CALLBACK MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK NewConfProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -28,5 +31,6 @@ private:
 
 public:
 	WindowsGui(HINSTANCE, SynchronizedConfigurationList&, DisplayDriver&);
+	~WindowsGui();
 	int msgLoop(void);
 };

@@ -2,6 +2,7 @@
 //Forward declarations
 #include "src/configurations/SynchronizedConfigurationList.hpp"
 #include "src/drivers/DisplayDriver.hpp"
+#include "src/networking/TcpServer.hpp"
 //Windows stuff
 #include "resource.h"
 //Dependencies
@@ -45,6 +46,8 @@ WindowsGui::WindowsGui(HINSTANCE hInstance, SynchronizedConfigurationList& confi
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, this);
 }
 
+WindowsGui::~WindowsGui() = default;
+
 int WindowsGui::msgLoop(void) {
 	MSG msg;
 	// Main message loop:
@@ -80,8 +83,9 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		case WM_CONTEXTMENU:
 		{
 			POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
-			//if (!globalError && !awaitingInput) {
-			ShowContextMenu(hWnd, pt, thisPtr);
+			if (!thisPtr->actionLock) {
+				ShowContextMenu(hWnd, pt, thisPtr);
+			}
 		}
 		break;
 		}
@@ -94,12 +98,6 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			//Applying configs
 			if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->configList.getConfigNum()) {
 				int confNum = wmId - IDM_CONFIGNUM;
-				//GlobalConfig conf;
-				//conf = configList.at(confnum);
-				//int ret = safeApplyConfig(conf);
-				//if (ret != 0 && ret != -2) { //TODO fix
-				//	MessageBox(hWnd, L"Error applying configuration", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
-				//}
 				auto confToApply = thisPtr->configList.getConfiguration(confNum).value(); // TODO add some error checking here just in case
 				thisPtr->driver.applyConfig(confToApply);
 			}
@@ -108,13 +106,10 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + thisPtr->configList.getConfigNum()) {
 				int confNum = wmId - IDM_DELCONFNUM;
 				std::wstring msg = L"Are you sure you want to delete configuration ";
-				//std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
 				msg += thisPtr->configList.getConfiguration(confNum).value().name + L"?";
 				//awaitingInput = true;
 				thisPtr->actionLock = true;
 				if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
-					//configList.erase(configList.begin() + confnum);
-					//saveConfigFile();
 					thisPtr->configList.deleteConfiguration(confNum);
 				}
 				//awaitingInput = false;
@@ -235,7 +230,7 @@ BOOL WindowsGui::AddNotificationIcon(HWND hwnd, HINSTANCE hInst) {
 	return Shell_NotifyIcon(NIM_SETVERSION, &nid);
 }
 
-void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr) {
+void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	HMENU hMenu = CreateMenu();
 	HMENU hSubMenu = CreatePopupMenu();
 	HMENU hDeleteMenu = CreatePopupMenu();
