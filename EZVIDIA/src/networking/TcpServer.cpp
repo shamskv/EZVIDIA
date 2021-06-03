@@ -53,7 +53,6 @@ void TcpServer::serverThread() {
 		}
 
 		// Connection-less
-		shutdown(clientSocket, SD_BOTH);
 		closesocket(clientSocket);
 	}
 }

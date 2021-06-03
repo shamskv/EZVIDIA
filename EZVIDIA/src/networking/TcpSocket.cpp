@@ -58,7 +58,8 @@ SOCKET TcpSocket::waitForClient() {
 
 void TcpSocket::close() {
 	if (listenSocket != INVALID_SOCKET) {
-		shutdown(listenSocket, SD_BOTH);
+		closesocket(listenSocket);
 		this->state = SocketState::CLOSED;
+		listenSocket = INVALID_SOCKET;
 	}
 }
