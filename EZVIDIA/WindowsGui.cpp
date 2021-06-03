@@ -234,6 +234,7 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	HMENU hMenu = CreateMenu();
 	HMENU hSubMenu = CreatePopupMenu();
 	HMENU hDeleteMenu = CreatePopupMenu();
+	HMENU hOptionsMenu = CreatePopupMenu();
 	std::vector<std::wstring> confNameList = thisPtr->configList.getAllConfigurationNames();
 
 	// Menu parts that list the configurations
@@ -254,8 +255,15 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	if (confNameList.size() > 0) {
 		AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hDeleteMenu, L"Delete configuration");
 		AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
-		AppendMenu(hSubMenu, MF_STRING, IDM_GENERATEBAT, L"Generate batch files");
 	}
+	// Build options menu
+	if (confNameList.size() > 0) {
+		AppendMenu(hOptionsMenu, MF_STRING, IDM_GENERATEBAT, L"Generate batch files");
+	}
+	else {
+		AppendMenu(hOptionsMenu, MF_STRING | MF_GRAYED, NULL, L"Generate batch files");
+	}
+	AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu, L"Options");
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 	AppendMenu(hSubMenu, MF_STRING, IDM_EXIT, L"Exit");
 	AppendMenu(hMenu, MF_STRING | MF_POPUP, (UINT_PTR)hSubMenu, L"");
