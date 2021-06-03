@@ -21,7 +21,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	std::optional<std::wstring> confNameToApply; // if set, we try to apply this config and exit app
 	// Parse arguments before allocating/loading anything
 	if (argv != NULL) {
-		if (argc == 1) {
+		if (argc == 1 && wcslen(lpCmdLine) > 0) {
 			confNameToApply.emplace(argv[0]);
 		}
 		else if (argc > 1) {
