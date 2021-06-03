@@ -1,5 +1,6 @@
 #include "TcpServer.hpp"
 #include "../utils/StringUtils.hpp"
+#include <boost/algorithm/string.hpp>
 
 void TcpServer::serverThread() {
 	int ret;
@@ -29,27 +30,30 @@ void TcpServer::serverThread() {
 			//No reply if trying to apply
 			else if (strncmp(buf, "APPLY ", 6) == 0) {
 				strcpy_s(reply_buf, "NOK");
-				//for (auto& c : configList) {
-				//	if (strlen(buf + 6) >= c.name.length()) {
-				//		if (strncmp(buf + 6, c.name.c_str(), c.name.length()) == 0) {
-				//			logPrint("Parsed apply request for configuration " + c.name);
-				//			if (!safeApplyConfig(c)) {
-				//				strcpy_s(reply_buf, "OK");
-				//			}
-				//			break;
-				//		}
-				//	}
-				//}
+				if (strlen(buf) > 6) {
+					std::string targetConf(buf + 6);
+					boost::trim(targetConf);
+					std::wstring targetConfW = StringUtils::stringToWideString(targetConf);
+					auto optionalConf = this->config_->getConfiguration(targetConfW);
+					if (optionalConf.has_value()) {
+						if (this->driver_->applyConfig(optionalConf.value())) {
+							strcpy_s(reply_buf, "OK");
+						}
+					}
+				}
 			}
 			else {
 				strcpy_s(reply_buf, "INVALID");
 			}
 
 			//REPLY
-			//if (sendto(s, reply_buf, strlen(reply_buf), 0, (struct sockaddr*)&si_other, slen) == SOCKET_ERROR) {
-			//	return;
-			//}
+			if (send(clientSocket, reply_buf, strlen(reply_buf), 0) == SOCKET_ERROR) {
+				// TODO log the error
+			}
 		}
+
+		// Connection-less
+		closesocket(clientSocket);
 	}
 }
 
