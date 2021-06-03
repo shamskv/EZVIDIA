@@ -56,7 +56,7 @@ GlobalConfiguration NvapiDriver::_getConfig() {
 	return gConf;
 }
 
-void NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
+bool NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
 	NvapiPathInfoWrapper pInfoWrapper;
 
 	// assign a pInfo index for each clone group
@@ -103,6 +103,8 @@ void NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
 
 	NvAPI_Status ret = NvAPI_DISP_SetDisplayConfig(pInfoWrapper.nDisplays, pInfoWrapper.pInfo, NV_DISPLAYCONFIG_SAVE_TO_PERSISTENCE);
 	if (ret != NVAPI_OK) {
-		throw DriverException(L"Error calling NvAPI_DISP_SetDisplayConfig (code " + std::to_wstring(ret) + L")");
+		/*throw DriverException(L"Error calling NvAPI_DISP_SetDisplayConfig (code " + std::to_wstring(ret) + L")");*/
+		return false;
 	}
+	return true;
 }

@@ -5,5 +5,5 @@ class NvapiDriver : public DisplayDriver {
 public:
 	NvapiDriver();
 	GlobalConfiguration _getConfig() override;
-	void _applyConfig(const GlobalConfiguration& conf) override;
+	bool _applyConfig(const GlobalConfiguration& conf) override;
 };

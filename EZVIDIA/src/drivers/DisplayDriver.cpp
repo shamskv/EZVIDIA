@@ -10,10 +10,11 @@ std::optional<GlobalConfiguration> DisplayDriver::getConfig() {
 	}
 }
 
-void DisplayDriver::applyConfig(const GlobalConfiguration& conf) {
+bool DisplayDriver::applyConfig(const GlobalConfiguration& conf) {
 	if (this->state == OK) {
-		this->_applyConfig(conf);
+		return this->_applyConfig(conf);
 	}
+	return false;
 }
 
 bool DisplayDriver::isOK() {
