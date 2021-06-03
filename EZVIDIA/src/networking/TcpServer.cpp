@@ -15,7 +15,7 @@ void TcpServer::serverThread() {
 		if (ret > 0) {
 			if (strncmp(buf, "LIST", 4) == 0) {
 				std::string tmp = "";
-				for (auto& confName : this->config_->getAllConfigurationNames()) {
+				for (auto& confName : this->config_.getAllConfigurationNames()) {
 					tmp += tmp.empty() ? "" : ";;";
 					tmp += StringUtils::wideStringToString(confName);
 				}
@@ -34,9 +34,9 @@ void TcpServer::serverThread() {
 					std::string targetConf(buf + 6);
 					boost::trim(targetConf);
 					std::wstring targetConfW = StringUtils::stringToWideString(targetConf);
-					auto optionalConf = this->config_->getConfiguration(targetConfW);
+					auto optionalConf = this->config_.getConfiguration(targetConfW);
 					if (optionalConf.has_value()) {
-						if (this->driver_->applyConfig(optionalConf.value())) {
+						if (this->driver_.applyConfig(optionalConf.value())) {
 							strcpy_s(reply_buf, "OK");
 						}
 					}
@@ -47,7 +47,7 @@ void TcpServer::serverThread() {
 			}
 
 			//REPLY
-			if (send(clientSocket, reply_buf, strlen(reply_buf), 0) == SOCKET_ERROR) {
+			if (send(clientSocket, reply_buf, static_cast<int>(strlen(reply_buf)), 0) == SOCKET_ERROR) {
 				// TODO log the error
 			}
 		}
@@ -57,7 +57,7 @@ void TcpServer::serverThread() {
 	}
 }
 
-TcpServer::TcpServer(SynchronizedConfigurationList* config, DisplayDriver* driver) :
+TcpServer::TcpServer(SynchronizedConfigurationList& config, DisplayDriver& driver) :
 	config_(config), driver_(driver), socket_(TCP_PORT) {
 	if (!socket_.ready()) {
 		this->state_ = ServerState::DOWN;

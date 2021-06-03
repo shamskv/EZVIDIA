@@ -13,15 +13,15 @@ private:
 	TcpSocket socket_;
 	std::thread thread_;
 
-	SynchronizedConfigurationList* config_;
-	DisplayDriver* driver_;
+	SynchronizedConfigurationList& config_;
+	DisplayDriver& driver_;
 
 	enum class ServerState { UP, DOWN, INIT };
 	std::atomic<ServerState> state_ = ServerState::INIT;
 
 	void serverThread();
 public:
-	TcpServer(SynchronizedConfigurationList*, DisplayDriver*);
+	TcpServer(SynchronizedConfigurationList&, DisplayDriver&);
 	~TcpServer();
 
 	TcpServer(const TcpServer&) = delete;
