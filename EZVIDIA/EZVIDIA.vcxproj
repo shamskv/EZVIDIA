@@ -140,6 +140,7 @@
     <ClCompile Include="src\configurations\JsonConfigurationList.cpp" />
     <ClCompile Include="src\drivers\NvapiDriver.cpp" />
     <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp" />
+    <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
     <ClCompile Include="src\networking\UdpHandlerThread.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp" />
     <ClInclude Include="src\configurations\JsonConfigurationList.hpp" />
+    <ClInclude Include="src\networking\TcpServer.hpp" />
     <ClInclude Include="src\networking\TcpSocket.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />

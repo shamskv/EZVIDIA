@@ -12,7 +12,9 @@ public:
 	TcpSocket(uint32_t);
 	~TcpSocket();
 
+	bool ready();
 	SOCKET waitForClient();
+	void close();
 
 	TcpSocket(const TcpSocket&) = delete;
 	TcpSocket& operator=(const TcpSocket&) = delete;

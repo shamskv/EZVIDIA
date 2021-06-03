@@ -47,9 +47,20 @@ TcpSocket::~TcpSocket() {
 	WSACleanup();
 }
 
+bool TcpSocket::ready() {
+	return this->state == SocketState::OPEN && this->listenSocket != INVALID_SOCKET;
+}
+
 SOCKET TcpSocket::waitForClient() {
 	if (this->state != SocketState::OPEN || listenSocket == INVALID_SOCKET) {
 		return INVALID_SOCKET;
 	}
-	accept(listenSocket, NULL, NULL);
+	return accept(listenSocket, NULL, NULL);
+}
+
+void TcpSocket::close() {
+	if (listenSocket != INVALID_SOCKET) {
+		shutdown(listenSocket, SD_BOTH);
+		this->state = SocketState::CLOSED;
+	}
 }
