@@ -1,6 +1,6 @@
 #pragma once
 #include "TcpSocket.hpp"
-#include "../configurations/SynchronizedConfigurationList.hpp"
+#include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
 #include <thread>
 #include <atomic>
@@ -13,7 +13,7 @@ private:
 	TcpSocket socket_;
 	std::thread thread_;
 
-	SynchronizedConfigurationList& config_;
+	Settings& config_;
 	DisplayDriver& driver_;
 
 	enum class ServerState { UP, DOWN, INIT };
@@ -21,7 +21,7 @@ private:
 
 	void serverThread();
 public:
-	TcpServer(SynchronizedConfigurationList&, DisplayDriver&);
+	TcpServer(Settings&, DisplayDriver&);
 	~TcpServer();
 
 	bool up();

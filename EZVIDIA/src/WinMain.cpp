@@ -7,7 +7,7 @@
 #include <Windows.h>
 #include <memory>
 
-#include "configurations/JsonConfigurationList.hpp"
+#include "configurations/JsonSettings.hpp"
 #include "drivers/DisplayDriver.hpp"
 #include "gui/WindowsGui.hpp"
 
@@ -31,7 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-	JsonConfigurationList config("ezconfig.json");
+	JsonSettings config("ezconfig.json");
 	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());
 
 	if (confNameToApply.has_value()) {

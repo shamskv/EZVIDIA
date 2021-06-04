@@ -1,4 +1,4 @@
-#include "JsonConfigurationList.hpp"
+#include "JsonSettings.hpp"
 #include <json.hpp>
 #include <fstream>
 #include "ConfException.hpp"
@@ -48,11 +48,11 @@ T getValueFromJson(const nlohmann::json& root, const std::string& name, const st
 }
 
 // Class implementations
-JsonConfigurationList::JsonConfigurationList(const std::string& fileName) : fileName(fileName) {
+JsonSettings::JsonSettings(const std::string& fileName) : fileName(fileName) {
 	this->init();
 }
 
-bool JsonConfigurationList::persist() {
+bool JsonSettings::persist() {
 	std::ofstream out(fileName, std::ios_base::out);
 
 	if (!out) {
@@ -71,7 +71,7 @@ bool JsonConfigurationList::persist() {
 	return true;
 }
 
-bool JsonConfigurationList::read() {
+bool JsonSettings::read() {
 	std::ifstream in(fileName, std::ios_base::in);
 
 	if (!in) {

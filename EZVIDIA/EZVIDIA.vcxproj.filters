@@ -24,10 +24,10 @@
     <ClCompile Include="src\utils\StringUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\configurations\SynchronizedConfigurationList.cpp">
+    <ClCompile Include="src\configurations\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\configurations\JsonConfigurationList.cpp">
+    <ClCompile Include="src\configurations\JsonSettings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\drivers\DisplayDriver.cpp">
@@ -99,10 +99,10 @@
     <ClInclude Include="src\networking\NetworkException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\configurations\SynchronizedConfigurationList.hpp">
+    <ClInclude Include="src\configurations\Settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\configurations\JsonConfigurationList.hpp">
+    <ClInclude Include="src\configurations\JsonSettings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gui\WindowsGui.hpp">

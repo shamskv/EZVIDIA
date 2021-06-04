@@ -1,6 +1,6 @@
 #include "WindowsGui.hpp"
 //Forward declarations
-#include "../configurations/SynchronizedConfigurationList.hpp"
+#include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
 #include "../networking/TcpServer.hpp"
 //Windows stuff
@@ -35,7 +35,7 @@ ATOM WindowsGui::MyRegisterClass(HINSTANCE, WCHAR*) {
 	return RegisterClassExW(&wcex);
 }
 
-WindowsGui::WindowsGui(HINSTANCE hInstance, SynchronizedConfigurationList& configList, DisplayDriver& driver)
+WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& configList, DisplayDriver& driver)
 	: hInstance(hInstance), configList(configList), driver(driver) {
 	// Do stuff related to windows idk what's happening here
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

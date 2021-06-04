@@ -1,5 +1,5 @@
 #include "DisplayDriver.hpp"
-#include "NvapiDriver.hpp"
+#include "NvapiDriver.hpp" // dangerous cycle here :)
 
 std::optional<GlobalConfiguration> DisplayDriver::getConfig() {
 	if (this->state == OK) {

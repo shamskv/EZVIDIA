@@ -57,7 +57,7 @@ void TcpServer::serverThread() {
 	}
 }
 
-TcpServer::TcpServer(SynchronizedConfigurationList& config, DisplayDriver& driver) :
+TcpServer::TcpServer(Settings& config, DisplayDriver& driver) :
 	config_(config), driver_(driver), socket_(TCP_PORT) {
 	if (!socket_.ready()) {
 		this->state_ = ServerState::DOWN;

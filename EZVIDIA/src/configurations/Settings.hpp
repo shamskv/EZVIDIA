@@ -5,7 +5,7 @@
 #include<optional>
 #include"GlobalConfiguration.hpp"
 
-class SynchronizedConfigurationList {
+class Settings {
 protected:
 	std::vector<GlobalConfiguration> configVector;
 	std::mutex configurationLock;

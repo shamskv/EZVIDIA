@@ -7,7 +7,7 @@
 
 // Forward Declarations
 class DisplayDriver;
-class SynchronizedConfigurationList;
+class Settings;
 class TcpServer;
 
 class WindowsGui {
@@ -19,7 +19,7 @@ private:
 	bool actionLock = false;
 
 	DisplayDriver& driver;
-	SynchronizedConfigurationList& configList;
+	Settings& configList;
 
 	std::unique_ptr<TcpServer> tcpServer;
 
@@ -30,7 +30,7 @@ private:
 	static void ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr);
 
 public:
-	WindowsGui(HINSTANCE, SynchronizedConfigurationList&, DisplayDriver&);
+	WindowsGui(HINSTANCE, Settings&, DisplayDriver&);
 	~WindowsGui();
 	int msgLoop(void);
 };
