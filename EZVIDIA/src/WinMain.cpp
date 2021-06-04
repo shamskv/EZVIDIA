@@ -7,9 +7,9 @@
 #include <Windows.h>
 #include <memory>
 
-#include "src/configurations/JsonConfigurationList.hpp"
-#include "src/drivers/DisplayDriver.hpp"
-#include "WindowsGui.hpp"
+#include "configurations/JsonConfigurationList.hpp"
+#include "drivers/DisplayDriver.hpp"
+#include "gui/WindowsGui.hpp"
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,

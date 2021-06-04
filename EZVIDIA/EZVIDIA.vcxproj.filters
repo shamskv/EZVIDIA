@@ -33,16 +33,16 @@
     <ClCompile Include="src\drivers\DisplayDriver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowsGui.cpp">
+    <ClCompile Include="src\gui\WindowsGui.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WindowsUtils.cpp">
+    <ClCompile Include="src\utils\WindowsUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\networking\TcpSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WinMain.cpp">
+    <ClCompile Include="src\WinMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\networking\TcpServer.cpp">
@@ -60,7 +60,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="src\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="configurations\structs\DisplayConfiguration.hpp">
@@ -105,13 +105,13 @@
     <ClInclude Include="src\configurations\JsonConfigurationList.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindowsGui.hpp">
+    <ClInclude Include="src\gui\WindowsGui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
+    <ClInclude Include="src\targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WindowsUtils.hpp">
+    <ClInclude Include="src\utils\WindowsUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\networking\TcpSocket.hpp">

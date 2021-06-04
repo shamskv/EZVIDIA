@@ -1,17 +1,17 @@
 #include "WindowsGui.hpp"
 //Forward declarations
-#include "src/configurations/SynchronizedConfigurationList.hpp"
-#include "src/drivers/DisplayDriver.hpp"
-#include "src/networking/TcpServer.hpp"
+#include "../configurations/SynchronizedConfigurationList.hpp"
+#include "../drivers/DisplayDriver.hpp"
+#include "../networking/TcpServer.hpp"
 //Windows stuff
-#include "resource.h"
+#include "../resource.h"
 //Dependencies
 #include <shellapi.h>
 #include <CommCtrl.h>
 #include <vector>
 #include <string>
 #include <boost/algorithm/string.hpp>
-#include "WindowsUtils.hpp"
+#include "../utils/WindowsUtils.hpp"
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 

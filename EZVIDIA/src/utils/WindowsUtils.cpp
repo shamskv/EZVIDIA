@@ -3,7 +3,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <fstream>
-#include "src/utils/StringUtils.hpp"
+#include "StringUtils.hpp"
 
 #define PATH_BUFFER_SIZE 300
 
