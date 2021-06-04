@@ -142,7 +142,6 @@
     <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp" />
     <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
-    <ClCompile Include="src\networking\UdpHandlerThread.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="WindowsGui.cpp" />
     <ClCompile Include="WindowsUtils.cpp" />
@@ -171,7 +170,6 @@
     <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp" />
     <ClInclude Include="src\drivers\DisplayDriver.hpp" />
     <ClInclude Include="src\networking\NetworkException.hpp" />
-    <ClInclude Include="src\networking\UdpHandlerThread.hpp" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="WindowsGui.hpp" />
