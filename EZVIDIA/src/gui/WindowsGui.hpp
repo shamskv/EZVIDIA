@@ -19,7 +19,7 @@ private:
 	bool actionLock = false;
 
 	DisplayDriver& driver;
-	Settings& configList;
+	Settings& settings;
 
 	std::unique_ptr<TcpServer> tcpServer;
 

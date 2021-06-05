@@ -35,8 +35,8 @@ ATOM WindowsGui::MyRegisterClass(HINSTANCE, WCHAR*) {
 	return RegisterClassExW(&wcex);
 }
 
-WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& configList, DisplayDriver& driver)
-	: hInstance(hInstance), configList(configList), driver(driver) {
+WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& settings, DisplayDriver& driver)
+	: hInstance(hInstance), settings(settings), driver(driver) {
 	// Do stuff related to windows idk what's happening here
 	LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	LoadStringW(hInstance, IDC_EZVIDIASERVERDEV, szWindowClass, MAX_LOADSTRING);
@@ -44,6 +44,11 @@ WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& configList, DisplayDriver&
 
 	HWND hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, this);
+
+	// We try to turn on networking if the settings say so
+	if (settings.networkTcpActive()) {
+		tcpServer = std::make_unique<TcpServer>(settings, driver);
+	}
 }
 
 WindowsGui::~WindowsGui() = default;
@@ -95,21 +100,21 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	{
 		int wmId = LOWORD(wParam);
 		//Applying configs
-		if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->configList.getConfigNum()) {
+		if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->settings.getConfigNum()) {
 			int confNum = wmId - IDM_CONFIGNUM;
-			auto confToApply = thisPtr->configList.getConfiguration(confNum).value(); // TODO add some error checking here just in case
+			auto confToApply = thisPtr->settings.getConfiguration(confNum).value(); // TODO add some error checking here just in case
 			thisPtr->driver.applyConfig(confToApply);
 			break;
 		}
 
 		//Delete configs
-		if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + thisPtr->configList.getConfigNum()) {
+		if (wmId >= IDM_DELCONFNUM && wmId < IDM_DELCONFNUM + thisPtr->settings.getConfigNum()) {
 			int confNum = wmId - IDM_DELCONFNUM;
 			std::wstring msg = L"Are you sure you want to delete configuration ";
-			msg += thisPtr->configList.getConfiguration(confNum).value().name + L"?";
+			msg += thisPtr->settings.getConfiguration(confNum).value().name + L"?";
 			thisPtr->actionLock = true;
 			if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
-				thisPtr->configList.deleteConfiguration(confNum);
+				thisPtr->settings.deleteConfiguration(confNum);
 			}
 			thisPtr->actionLock = false;
 		}
@@ -124,17 +129,19 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		case IDM_GENERATEBAT:
 			thisPtr->actionLock = true;
 			if (MessageBox(hWnd, L"Do you wish to create batch files for the current configurations?\nThe files will be placed in the same directory as the executable.", L"Generate batch files", MB_YESNO) == IDYES) {
-				WindowsUtils::generateBatFiles(thisPtr->configList.getAllConfigurationNames());
+				WindowsUtils::generateBatFiles(thisPtr->settings.getAllConfigurationNames());
 			}
 			thisPtr->actionLock = false;
 			break;
 		case IDM_NETWORK_ON:
-			thisPtr->tcpServer = std::make_unique<TcpServer>(thisPtr->configList, thisPtr->driver);
+			thisPtr->settings.setNetworkTcp(true);
+			thisPtr->tcpServer = std::make_unique<TcpServer>(thisPtr->settings, thisPtr->driver);
 			if (!thisPtr->tcpServer.get()->up()) {
 				thisPtr->tcpServer.reset();
 			}
 			break;
 		case IDM_NETWORK_OFF:
+			thisPtr->settings.setNetworkTcp(false);
 			thisPtr->tcpServer.reset();
 			break;
 		case IDM_EXIT:
@@ -192,7 +199,7 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 				MessageBox(hDlg, L"No more than 50 characters.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
-			else if (thisPtr->configList.isConfigurationPresent(inputStr)) {
+			else if (thisPtr->settings.isConfigurationPresent(inputStr)) {
 				MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
@@ -200,7 +207,7 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			auto optionalConf = thisPtr->driver.getConfig();
 			if (optionalConf.has_value()) {
 				optionalConf.value().name = inputStr;
-				thisPtr->configList.addConfiguration(optionalConf.value());
+				thisPtr->settings.addConfiguration(optionalConf.value());
 			}
 			else {
 				MessageBox(hDlg, L"Error saving configuration.", NULL, MB_OK | MB_ICONERROR);
@@ -240,7 +247,7 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	HMENU hSubMenu = CreatePopupMenu();
 	HMENU hDeleteMenu = CreatePopupMenu();
 	HMENU hOptionsMenu = CreatePopupMenu();
-	std::vector<std::wstring> confNameList = thisPtr->configList.getAllConfigurationNames();
+	std::vector<std::wstring> confNameList = thisPtr->settings.getAllConfigurationNames();
 
 	// Menu parts that list the configurations
 	if (confNameList.size() > 0) {
@@ -268,8 +275,11 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	else {
 		AppendMenu(hOptionsMenu, MF_STRING | MF_GRAYED, NULL, L"Generate batch files");
 	}
-	if (thisPtr->tcpServer) {
+	if (thisPtr->settings.networkTcpActive() && thisPtr->tcpServer && thisPtr->tcpServer->up()) {
 		AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_NETWORK_OFF, L"Network control (TCP)");
+	}
+	else if (thisPtr->settings.networkTcpActive()) {
+		AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_NETWORK_OFF, L"Network control (TCP) (ERROR)");
 	}
 	else {
 		AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON, L"Network control (TCP)");
