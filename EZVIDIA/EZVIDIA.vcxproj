@@ -169,7 +169,6 @@
     <ClInclude Include="src\drivers\NvapiDriver.hpp" />
     <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp" />
     <ClInclude Include="src\drivers\DisplayDriver.hpp" />
-    <ClInclude Include="src\networking\NetworkException.hpp" />
     <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\gui\WindowsGui.hpp" />

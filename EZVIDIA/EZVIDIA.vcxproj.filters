@@ -96,9 +96,6 @@
     <ClInclude Include="src\drivers\DriverException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\networking\NetworkException.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\configurations\Settings.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
