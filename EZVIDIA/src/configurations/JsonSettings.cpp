@@ -31,6 +31,11 @@ inline bool isValueInJson<std::string>(const nlohmann::json& root, const std::st
 	return root.contains(name) && root[name].is_string();
 }
 
+template<>
+inline bool isValueInJson<bool>(const nlohmann::json& root, const std::string& name) {
+	return root.contains(name) && root[name].is_boolean();
+}
+
 template<typename T>
 T getValueFromJson(const nlohmann::json& root, const std::string& name, const std::optional<T> defaultValue = std::optional<T>()) {
 	if (isValueInJson<T>(root, name)) {
@@ -60,11 +65,14 @@ bool JsonSettings::persist() {
 	}
 
 	nlohmann::json root;
+	// Save config list
 	root["configList"] = nlohmann::basic_json(nlohmann::detail::value_t::array);
 
 	for (auto& entry : configVector) {
 		root["configList"].push_back(jsonFromGlobalConfig(entry));
 	}
+	// Save other settings
+	root["networkTcp"] = networkTcp;
 
 	out << root.dump(3) << std::endl;
 
@@ -89,6 +97,7 @@ bool JsonSettings::read() {
 		(e); //cmon warning
 		throw ConfException(L"Problem reading configuration file.");
 	}
+	// Parse config list
 	if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
 		for (auto& gConfig : fRoot["configList"]) {
 			const GlobalConfiguration& conf = jsonToGlobalConfig(gConfig);
@@ -103,6 +112,9 @@ bool JsonSettings::read() {
 		configVector.clear();
 		throw ConfException(L"Missing configList array.");
 	}
+	// Parse other settings
+	networkTcp = getValueFromJson<bool>(fRoot, "networkTcp", std::optional<bool>(false));
+
 	return true;
 }
 

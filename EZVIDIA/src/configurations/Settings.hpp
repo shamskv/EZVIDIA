@@ -8,7 +8,8 @@
 class Settings {
 protected:
 	std::vector<GlobalConfiguration> configVector;
-	std::mutex configurationLock;
+	bool networkTcp;
+	std::mutex settingsLock;
 
 	virtual bool persist() = 0;
 
@@ -34,4 +35,8 @@ public:
 	void init();
 
 	size_t getConfigNum();
+
+	bool networkTcpActive();
+
+	bool setNetworkTcp(bool);
 };
