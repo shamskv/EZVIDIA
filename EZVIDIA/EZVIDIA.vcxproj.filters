@@ -48,21 +48,21 @@
     <ClCompile Include="src\networking\TcpServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\utils\UpdaterUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="logo.ico">
+    <Image Include="resources\logo.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ezvidia.rc">
+    <ResourceCompile Include="resources\ezvidia.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="configurations\structs\DisplayConfiguration.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,9 +117,15 @@
     <ClInclude Include="src\networking\TcpServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\utils\UpdaterUtils.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resources\resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="..\README.md" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

@@ -37,7 +37,7 @@ inline bool isValueInJson<bool>(const nlohmann::json& root, const std::string& n
 }
 
 template<typename T>
-T getValueFromJson(const nlohmann::json& root, const std::string& name, const std::optional<T> defaultValue = std::optional<T>()) {
+T getValueFromJson(const nlohmann::json& root, const std::string& name, std::optional<T> defaultValue = std::optional<T>()) {
 	if (isValueInJson<T>(root, name)) {
 		return root[name].get<T>();
 	}
@@ -113,7 +113,7 @@ bool JsonSettings::read() {
 		throw ConfException(L"Missing configList array.");
 	}
 	// Parse other settings
-	networkTcp = getValueFromJson<bool>(fRoot, "networkTcp", std::optional<bool>(false));
+	networkTcp = getValueFromJson(fRoot, "networkTcp", std::optional<bool>(false));
 
 	return true;
 }

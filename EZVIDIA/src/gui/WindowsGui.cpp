@@ -4,7 +4,7 @@
 #include "../drivers/DisplayDriver.hpp"
 #include "../networking/TcpServer.hpp"
 //Windows stuff
-#include "../resource.h"
+#include "../../resources/resource.h"
 //Dependencies
 #include <shellapi.h>
 #include <CommCtrl.h>
@@ -12,6 +12,7 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 #include "../utils/WindowsUtils.hpp"
+#include "../utils/UpdaterUtils.hpp"
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 
@@ -143,6 +144,9 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		case IDM_NETWORK_OFF:
 			thisPtr->settings.setNetworkTcp(false);
 			thisPtr->tcpServer.reset();
+			break;
+		case IDM_UPDATE:
+			MessageBox(NULL, UpdaterUtils::getLatestVersionNumber().c_str(), L"Version", MB_OK | MB_APPLMODAL);
 			break;
 		case IDM_EXIT:
 			DestroyWindow(hWnd);
@@ -284,6 +288,8 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	else {
 		AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON, L"Network control (TCP)");
 	}
+	AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
+
 	AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu, L"Options");
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");
 	AppendMenu(hSubMenu, MF_STRING, IDM_EXIT, L"Exit");

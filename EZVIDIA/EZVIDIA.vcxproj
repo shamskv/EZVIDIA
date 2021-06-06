@@ -126,6 +126,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -144,19 +145,21 @@
     <ClCompile Include="src\networking\TcpSocket.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
+    <ClCompile Include="src\utils\UpdaterUtils.cpp" />
     <ClCompile Include="src\utils\WindowsUtils.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="logo.ico" />
+    <Image Include="resources\logo.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ezvidia.rc" />
+    <ResourceCompile Include="resources\ezvidia.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="configurations\ConfigManager.hpp" />
     <ClInclude Include="configurations\structs\DisplayConfiguration.hpp" />
     <ClInclude Include="configurations\structs\GlobalConfiguration.hpp" />
+    <ClInclude Include="resources\resource.h" />
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\Settings.hpp" />
     <ClInclude Include="src\configurations\JsonSettings.hpp" />
@@ -169,9 +172,9 @@
     <ClInclude Include="src\drivers\NvapiDriver.hpp" />
     <ClInclude Include="src\drivers\NvapiPathInfoWrapper.hpp" />
     <ClInclude Include="src\drivers\DisplayDriver.hpp" />
-    <ClInclude Include="src\resource.h" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\gui\WindowsGui.hpp" />
+    <ClInclude Include="src\utils\UpdaterUtils.hpp" />
     <ClInclude Include="src\utils\WindowsUtils.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -180,16 +183,16 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\boost.1.70.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.70.0.0\build\boost.targets')" />
-    <Import Project="..\packages\boost_date_time-vc142.1.70.0.0\build\boost_date_time-vc142.targets" Condition="Exists('..\packages\boost_date_time-vc142.1.70.0.0\build\boost_date_time-vc142.targets')" />
-    <Import Project="..\packages\boost_regex-vc142.1.70.0.0\build\boost_regex-vc142.targets" Condition="Exists('..\packages\boost_regex-vc142.1.70.0.0\build\boost_regex-vc142.targets')" />
+    <Import Project="..\packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.76.0.0\build\boost.targets')" />
+    <Import Project="..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
+    <Import Project="..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets" Condition="Exists('..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\boost.1.70.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.70.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('..\packages\boost_date_time-vc142.1.70.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_date_time-vc142.1.70.0.0\build\boost_date_time-vc142.targets'))" />
-    <Error Condition="!Exists('..\packages\boost_regex-vc142.1.70.0.0\build\boost_regex-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_regex-vc142.1.70.0.0\build\boost_regex-vc142.targets'))" />
+    <Error Condition="!Exists('..\packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.76.0.0\build\boost.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets'))" />
   </Target>
 </Project>
