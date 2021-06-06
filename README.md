@@ -1,8 +1,3 @@
-### Major Update
-EZVIDIA went from a command-line tool to having a GUI! It lost the capability to manually create configurations, but now you can just save your current configuration, which is probably easier for most people. It also listen for UDP messages now, which allowed the development of an [Android app](https://github.com/fchamicapereira/EZVIDIA_android_app).
-
-The files for the old version of EZVIDIA can be found in the folder _old__ezvidia_. All the new source files are in the _EZVIDIA_ folder.
-
 # EZVIDIA
 ## Display configuration manager for NVIDIA GPUs
 
