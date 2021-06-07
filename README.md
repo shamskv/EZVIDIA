@@ -1,3 +1,24 @@
+### Roadmap
+- add versioning to settings file
+- Logging (header with static stuff, maybe initLogging() needs to be called)
+- Exception handling where necessary (WinMain)
+- MAYBE "parameters" header file with global definitions
+  - version number
+  - settings file name
+  - tcp port
+  - more?
+- Add "About" dialog
+- Update app
+  - check if remote tag > this version
+  - ask user if wants to update
+  - download new version as ezvidia.exe.new
+  - rename current version to ezvidia.exe.old OR rename to ezvidia_\<version\>.exe and move to a _backup_ folder, do the same thing with the settings file.
+  - rename the new version to ezvidia.exe
+- ...
+- ...
+- ...
+- Study AMD/Windows/Intel API/SDK for display management and possible implementation
+
 # EZVIDIA
 ## Display configuration manager for NVIDIA GPUs
 
