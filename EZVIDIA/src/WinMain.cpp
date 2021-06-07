@@ -31,11 +31,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-	JsonSettings config("ezconfig.json");
+	std::unique_ptr<Settings> config = std::make_unique<JsonSettings>("ezconfig.json");
 	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());
 
 	if (confNameToApply.has_value()) {
-		auto optionalConf = config.getConfiguration(confNameToApply.value());
+		auto optionalConf = config->getConfiguration(confNameToApply.value());
 		if (optionalConf.has_value()) {
 			driver->applyConfig(optionalConf.value());
 			return 0;
@@ -46,7 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-	WindowsGui gui(hInstance, config, *driver.get());
+	WindowsGui gui(hInstance, *config, *driver);
 
 	return gui.msgLoop();
 }
