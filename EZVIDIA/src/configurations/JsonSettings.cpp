@@ -67,6 +67,8 @@ bool JsonSettings::persist() {
 	}
 
 	nlohmann::json root;
+	// Schema version
+	root["schema_version"] = 1;
 	// Save config list
 	root["configList"] = nlohmann::basic_json(nlohmann::detail::value_t::array);
 
@@ -99,23 +101,31 @@ bool JsonSettings::read() {
 		(e); //cmon warning
 		throw ConfException(L"Problem reading configuration file.");
 	}
-	// Parse config list
-	if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
-		for (auto& gConfig : fRoot["configList"]) {
-			const GlobalConfiguration& conf = jsonToGlobalConfig(gConfig);
-			if (std::find_if(configVector.begin(), configVector.end(), [&conf](GlobalConfiguration& gc) {return gc.name == conf.name; }) != configVector.end()) {
-				// TODO log duplicate configuration here
-				continue;
+	// If no schema present then it should be assumed to be a v1
+	int schema_version = getValueFromJson(fRoot, "schema_version", std::optional<int>(1));
+
+	if (schema_version == 1) {
+		// Parse config list
+		if (fRoot.contains("configList") && fRoot["configList"].is_array()) {
+			for (auto& gConfig : fRoot["configList"]) {
+				const GlobalConfiguration& conf = jsonToGlobalConfig(gConfig);
+				if (std::find_if(configVector.begin(), configVector.end(), [&conf](GlobalConfiguration& gc) {return gc.name == conf.name; }) != configVector.end()) {
+					// TODO log duplicate configuration here
+					continue;
+				}
+				configVector.push_back(conf);
 			}
-			configVector.push_back(conf);
 		}
+		else {
+			configVector.clear();
+			throw ConfException(L"Missing configList array.");
+		}
+		// Parse other settings
+		networkTcp = getValueFromJson(fRoot, "networkTcp", std::optional<bool>(false));
 	}
 	else {
-		configVector.clear();
-		throw ConfException(L"Missing configList array.");
+		throw ConfException(L"Invalid schema");
 	}
-	// Parse other settings
-	networkTcp = getValueFromJson(fRoot, "networkTcp", std::optional<bool>(false));
 
 	return true;
 }
