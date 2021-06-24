@@ -13,6 +13,7 @@
 #include <boost/algorithm/string.hpp>
 #include "../utils/WindowsUtils.hpp"
 #include "../utils/UpdaterUtils.hpp"
+#include <cwctype>
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 
@@ -189,10 +190,15 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 				input[0] = '\0';
 			}
 
+			auto check_invalid_char = [](wchar_t c) {return !std::iswprint(c); };
 			std::wstring inputStr(input);
 			boost::trim(inputStr);
 			if (inputStr.find(L";") != std::wstring::npos) {
 				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
+				return (INT_PTR)FALSE;
+			}
+			else if (std::find_if(inputStr.begin(), inputStr.end(), check_invalid_char) != inputStr.end()) {
+				MessageBox(hDlg, L"Invalid character detected.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 			else if (inputStr.length() <= 0) {
