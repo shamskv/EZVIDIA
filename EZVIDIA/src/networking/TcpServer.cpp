@@ -2,6 +2,10 @@
 #include "../utils/StringUtils.hpp"
 #include <boost/algorithm/string.hpp>
 
+namespace {
+	int recvUntilDelimiterOrTimeout(SOCKET, char*, int, int, char);
+}
+
 void TcpServer::serverThread() {
 	int ret;
 	SOCKET clientSocket;
@@ -11,12 +15,12 @@ void TcpServer::serverThread() {
 		memset(buf, '\0', DEFAULT_BUFLEN);
 		memset(reply_buf, '\0', DEFAULT_BUFLEN);
 
-		ret = recv(clientSocket, buf, DEFAULT_BUFLEN, 0);
+		ret = recvUntilDelimiterOrTimeout(clientSocket, buf, DEFAULT_BUFLEN, 0, '\n');
 		if (ret > 0) {
 			if (strncmp(buf, "LIST", 4) == 0) {
 				std::string tmp = "";
 				for (auto& confName : this->config_.getAllConfigurationNames()) {
-					tmp += tmp.empty() ? "" : ";;";
+					tmp += tmp.empty() ? "" : ";";
 					tmp += StringUtils::wideStringToString(confName);
 				}
 				if (tmp.length() < DEFAULT_BUFLEN) {
@@ -77,4 +81,50 @@ TcpServer::~TcpServer() {
 
 bool TcpServer::up() {
 	return this->state_ == ServerState::UP && this->socket_.ready() && this->thread_.joinable();
+}
+
+namespace {
+	int recvUntilDelimiterOrTimeout(SOCKET socket, char* buffer, int bufferSize, int flags, char delimiter) {
+		int byteCount = 0, readCount = 0;
+		do {
+			WSAPOLLFD pollfd = {};
+			pollfd.fd = socket;
+			pollfd.events = POLLIN;
+
+			wchar_t text_buffer[500] = { 0 };
+			swprintf(text_buffer, _countof(text_buffer), L"Entering Poll with %d byteCount and %d readCount.\n", byteCount, readCount);
+			OutputDebugString(text_buffer);
+			int ret = WSAPoll(&pollfd, 1, 10000);
+			if (ret < 0) {
+				OutputDebugString(L"WSAPoll returned less than zero\n");
+				return -1;
+			}
+			else if (ret == 0) {
+				OutputDebugString(L"WSAPoll returned zero\n");
+				return -2;
+			}
+			else {
+				OutputDebugString(L"WSAPoll returned greater than zero\n");
+				int n = recv(socket, buffer + byteCount, bufferSize - byteCount, flags);
+				if (n > 0) {
+					for (int i = byteCount; i < byteCount + n && i < bufferSize; i++) {
+						if (buffer[i] == delimiter) {
+							OutputDebugString(L"Found delimiter\n");
+							return i;
+						}
+					}
+					OutputDebugString(L"Successful read but no delimiter\n");
+					byteCount += n;
+					readCount++;
+				}
+				else {
+					OutputDebugString(L"recv returned zero or less\n");
+					return n;
+				}
+			}
+		} while (byteCount < bufferSize && readCount < 10);
+
+		OutputDebugString(L"Successfull read but no delimiter\n");
+		return -3;
+	}
 }

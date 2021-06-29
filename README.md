@@ -1,5 +1,6 @@
 ### Roadmap
-- add versioning to settings file
+- ~~add versioning to settings file~~
+- ~~parse TCP as a real stream (introduce a delimiter)~~
 - Logging (header with static stuff, maybe initLogging() needs to be called)
 - Exception handling where necessary (WinMain)
 - MAYBE "parameters" header file with global definitions
@@ -43,6 +44,12 @@ With the tool running, you can use the [Android app](https://github.com/fchamica
 You can find the latest executable in the Releases page of this repository.
 
 If you used the old version, you can reuse the _configs.json_ file by placing it in the same folder as the executable.
+
+### How to build
+Built with MSVC 2019 (C++17)
+- boost (for some string stuff)
+- NVAPI (duh)
+- cpprestsdk (to contact github and check for updates)
 
 ### Why
 My personal motivation behind this project was the hassle of changing from my "desk" setup, which contains 2 23" displays, to my "living room" setup, which only contains my living room TV. When doing this through NVIDIA's Control Panel, I would have to go through the following steps:
