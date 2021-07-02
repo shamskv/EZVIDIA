@@ -5,6 +5,7 @@
 
 class LogFilePolicy {
 private:
+	LogFilePolicy();
 	static std::mutex fileLock;
 	static std::ofstream outputFileStream;
 public:

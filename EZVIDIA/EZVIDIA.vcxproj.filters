@@ -51,7 +51,7 @@
     <ClCompile Include="src\utils\UpdaterUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\logging\Log.cpp">
+    <ClCompile Include="src\logging\BaseLog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\logging\LogFilePolicy.cpp">
@@ -129,7 +129,7 @@
     <ClInclude Include="resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\logging\Log.hpp">
+    <ClInclude Include="src\logging\BaseLog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\logging\LogFilePolicy.hpp">

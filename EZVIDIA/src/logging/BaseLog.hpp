@@ -8,21 +8,24 @@ enum class LogLevel {
 };
 
 template <typename OutputPolicy>
-class Log {
+class BaseLog {
 public:
-	Log();
-	~Log();
+	BaseLog();
+	~BaseLog();
 	std::ostringstream& err();
 	std::ostringstream& warn();
 	std::ostringstream& info();
 	std::ostringstream& debug();
+	std::ostringstream& getLogger(LogLevel);
 private:
-	Log(const Log&) = delete;
-	Log& operator=(const Log&) = delete;
-	std::ostringstream& level(LogLevel = LogLevel::DEBUG);
+	BaseLog(const BaseLog&) = delete;
+	BaseLog& operator=(const BaseLog&) = delete;
 public:
 	static LogLevel globalLevel;
 private:
 	LogLevel messageLevel;
 	std::ostringstream msgStream;
 };
+
+#define Log BaseLog<LogFilePolicy> // define the policy we will use
+#define LOG(level) if(LogLevel::level > Log::globalLevel) ; else Log().getLogger(LogLevel::level) 

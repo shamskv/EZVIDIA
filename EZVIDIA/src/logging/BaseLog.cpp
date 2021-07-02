@@ -1,4 +1,4 @@
-#include "Log.hpp"
+#include "BaseLog.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -36,47 +36,48 @@ namespace {
 }
 
 template <typename OutputPolicy>
-LogLevel Log<OutputPolicy>::globalLevel = LogLevel::INFO;
+LogLevel BaseLog<OutputPolicy>::globalLevel = LogLevel::INFO;
 
 template <typename OutputPolicy>
-Log<OutputPolicy>::Log() = default;
+BaseLog<OutputPolicy>::BaseLog() = default;
 
 template <typename OutputPolicy>
-Log<OutputPolicy>::~Log() {
-	if (this->messageLevel <= Log<OutputPolicy>::globalLevel) {
-		this->msgStream << std::endl;
-		OutputPolicy::write(this->msgStream.str());
-	}
+BaseLog<OutputPolicy>::~BaseLog() {
+	//if (this->messageLevel <= BaseLog<OutputPolicy>::globalLevel) {
+	this->msgStream << std::endl;
+	OutputPolicy::write(this->msgStream.str());
+	//}
 }
 
 template<typename OutputPolicy>
-std::ostringstream& Log<OutputPolicy>::err() {
-	return this->level(LogLevel::ERR);
+std::ostringstream& BaseLog<OutputPolicy>::err() {
+	return this->getLogger(LogLevel::ERR);
 }
 
 template<typename OutputPolicy>
-std::ostringstream& Log<OutputPolicy>::warn() {
-	return this->level(LogLevel::WARNING);
+std::ostringstream& BaseLog<OutputPolicy>::warn() {
+	return this->getLogger(LogLevel::WARNING);
 }
 
 template<typename OutputPolicy>
-std::ostringstream& Log<OutputPolicy>::info() {
-	return this->level(LogLevel::INFO);
+std::ostringstream& BaseLog<OutputPolicy>::info() {
+	return this->getLogger(LogLevel::INFO);
 }
 
 template<typename OutputPolicy>
-std::ostringstream& Log<OutputPolicy>::debug() {
-	return this->level(LogLevel::DEBUG);
+std::ostringstream& BaseLog<OutputPolicy>::debug() {
+	return this->getLogger(LogLevel::DEBUG);
 }
 
 template<typename OutputPolicy>
-std::ostringstream& Log<OutputPolicy>::level(LogLevel lvl) {
+std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
 	this->messageLevel = lvl;
-	this->msgStream << "[" << logLevelToString(lvl) << "] ";
-	this->msgStream << "[" << getCurrentTimeStamp() << "] ";
-	this->msgStream << "[ TID " << GetCurrentThreadId() << "] ";
+	this->msgStream << "[" << logLevelToString(lvl) << "]";
+	this->msgStream << "[" << getCurrentTimeStamp() << "]";
+	this->msgStream << "[TID " << GetCurrentThreadId() << "]";
 
+	this->msgStream << " ";
 	return this->msgStream;
 }
 
-template class Log<LogFilePolicy>;
+template class BaseLog<LogFilePolicy>;
