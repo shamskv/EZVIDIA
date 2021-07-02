@@ -1,6 +1,7 @@
 #include "TcpServer.hpp"
 #include "../utils/StringUtils.hpp"
 #include <boost/algorithm/string.hpp>
+#include "../logging/BaseLog.hpp"
 
 namespace {
 	int recvUntilDelimiterOrTimeout(SOCKET, char*, int, int, char);
@@ -12,21 +13,26 @@ void TcpServer::serverThread() {
 	char buf[DEFAULT_BUFLEN], reply_buf[DEFAULT_BUFLEN];
 
 	while ((clientSocket = this->socket_.waitForClient()) != INVALID_SOCKET) {
+		LOG(INFO) << "New TCP connection";
 		memset(buf, '\0', DEFAULT_BUFLEN);
 		memset(reply_buf, '\0', DEFAULT_BUFLEN);
 
 		ret = recvUntilDelimiterOrTimeout(clientSocket, buf, DEFAULT_BUFLEN, 0, '\n');
 		if (ret > 0) {
+			LOG(INFO) << "Message received: " << std::string(buf);
 			if (strncmp(buf, "LIST", 4) == 0) {
+				LOG(DEBUG) << "TCP message interpreted as a LIST request";
 				std::string tmp = "";
 				for (auto& confName : this->config_.getAllConfigurationNames()) {
 					tmp += tmp.empty() ? "" : ";";
 					tmp += StringUtils::wideStringToString(confName);
 				}
 				if (tmp.length() < DEFAULT_BUFLEN) {
+					LOG(DEBUG) << "LIST response size is valid";
 					strcpy_s(reply_buf, tmp.c_str());
 				}
 				else {
+					LOG(DEBUG) << "LIST response size is exceeds buffer";
 					strcpy_s(reply_buf, "RESPONSE BUFFER SIZE EXCEEDED");
 				}
 			}
@@ -91,40 +97,48 @@ namespace {
 			pollfd.fd = socket;
 			pollfd.events = POLLIN;
 
-			wchar_t text_buffer[500] = { 0 };
-			swprintf(text_buffer, _countof(text_buffer), L"Entering Poll with %d byteCount and %d readCount.\n", byteCount, readCount);
-			OutputDebugString(text_buffer);
+			//wchar_t text_buffer[500] = { 0 };
+			//swprintf(text_buffer, _countof(text_buffer), L"Entering Poll with %d byteCount and %d readCount.\n", byteCount, readCount);
+			//OutputDebugString(text_buffer);
+			LOG(DEBUG) << "Entering Poll with " << byteCount << " and " << readCount << " readCount";
 			int ret = WSAPoll(&pollfd, 1, 10000);
 			if (ret < 0) {
-				OutputDebugString(L"WSAPoll returned less than zero\n");
+				/*OutputDebugString(L"WSAPoll returned less than zero\n");*/
+				LOG(DEBUG) << "WSAPoll returned less than zero";
 				return -1;
 			}
 			else if (ret == 0) {
-				OutputDebugString(L"WSAPoll returned zero\n");
+				//OutputDebugString(L"WSAPoll returned zero\n");
+				LOG(DEBUG) << "WSAPoll returned zero";
 				return -2;
 			}
 			else {
-				OutputDebugString(L"WSAPoll returned greater than zero\n");
+				//OutputDebugString(L"WSAPoll returned greater than zero\n");
+				LOG(DEBUG) << "WSAPoll returned greater than zero";
 				int n = recv(socket, buffer + byteCount, bufferSize - byteCount, flags);
 				if (n > 0) {
 					for (int i = byteCount; i < byteCount + n && i < bufferSize; i++) {
 						if (buffer[i] == delimiter) {
-							OutputDebugString(L"Found delimiter\n");
+							/*OutputDebugString(L"Found delimiter\n");*/
+							LOG(DEBUG) << "Found delimiter at position " << i;
+							buffer[i] = '\0';
 							return i;
 						}
 					}
-					OutputDebugString(L"Successful read but no delimiter\n");
+					//OutputDebugString(L"Successful read but no delimiter\n");
+					LOG(DEBUG) << "Successful read but no delimiter";
 					byteCount += n;
 					readCount++;
 				}
 				else {
-					OutputDebugString(L"recv returned zero or less\n");
+					//OutputDebugString(L"recv returned zero or less\n");
+					LOG(DEBUG) << "recv returned zero or less";
 					return n;
 				}
 			}
 		} while (byteCount < bufferSize && readCount < 10);
 
-		OutputDebugString(L"Successfull read but no delimiter\n");
+		LOG(DEBUG) << "Exceeded number of recvs from TCP connection. readCount " << readCount << " byteCount " << byteCount;
 		return -3;
 	}
 }
