@@ -3,22 +3,23 @@
 #include <windows.h>
 
 namespace {
+	// All with the same number of chars so the log is nice on the eyes :)
 	std::string logLevelToString(LogLevel lvl) {
 		switch (lvl) {
 		case LogLevel::ERR:
-			return "ERROR";
+			return "  ERROR";
 			break;
 		case LogLevel::WARNING:
 			return "WARNING";
 			break;
 		case LogLevel::INFO:
-			return "INFO";
+			return "    INFO";
 			break;
 		case LogLevel::DEBUG:
-			return "DEBUG";
+			return "   DEBUG";
 			break;
 		default:
-			return "???";
+			return "????????";
 			break;
 		}
 	}
@@ -28,7 +29,7 @@ namespace {
 		GetSystemTime(&systime);
 
 		char buf[200];
-		sprintf_s(buf, "%u-%u-%u %u:%u:%u.%u", systime.wYear, systime.wMonth, systime.wDay,
+		sprintf_s(buf, "%04u-%02u-%02u %02u:%02u:%02u:%03u", systime.wYear, systime.wMonth, systime.wDay,
 			systime.wHour, systime.wMinute, systime.wSecond, systime.wMilliseconds);
 
 		return std::string(buf);
