@@ -1,7 +1,7 @@
 #include "TcpServer.hpp"
 #include "../utils/StringUtils.hpp"
 #include <boost/algorithm/string.hpp>
-#include "../logging/BaseLog.hpp"
+#include "../logging/Logger.hpp"
 
 namespace {
 	int recvUntilDelimiterOrTimeout(SOCKET, char*, int, int, char);

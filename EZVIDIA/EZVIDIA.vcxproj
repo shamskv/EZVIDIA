@@ -166,6 +166,7 @@
     <ClInclude Include="src\configurations\Settings.hpp" />
     <ClInclude Include="src\configurations\JsonSettings.hpp" />
     <ClInclude Include="src\logging\LogFilePolicy.hpp" />
+    <ClInclude Include="src\logging\Logger.hpp" />
     <ClInclude Include="src\networking\TcpServer.hpp" />
     <ClInclude Include="src\networking\TcpSocket.hpp" />
     <ClInclude Include="src\logging\BaseLog.hpp" />

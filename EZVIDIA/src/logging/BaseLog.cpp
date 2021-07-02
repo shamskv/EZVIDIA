@@ -1,4 +1,6 @@
 #include "BaseLog.hpp"
+// Include all the policies available, this is necessary to compile the template specializations at the end of the file
+#include"LogFilePolicy.hpp"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
