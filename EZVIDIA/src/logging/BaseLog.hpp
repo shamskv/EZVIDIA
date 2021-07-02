@@ -2,7 +2,7 @@
 #include<sstream>
 
 enum class LogLevel {
-	ERR, WARNING, INFO, DEBUG
+	ERR, WARN, INFO, DEBUG
 };
 
 template <typename OutputPolicy>

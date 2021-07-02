@@ -9,19 +9,19 @@ namespace {
 	std::string logLevelToString(LogLevel lvl) {
 		switch (lvl) {
 		case LogLevel::ERR:
-			return "  ERROR";
+			return "ERROR";
 			break;
-		case LogLevel::WARNING:
-			return "WARNING";
+		case LogLevel::WARN:
+			return " WARN";
 			break;
 		case LogLevel::INFO:
-			return "    INFO";
+			return " INFO";
 			break;
 		case LogLevel::DEBUG:
-			return "   DEBUG";
+			return "DEBUG";
 			break;
 		default:
-			return "????????";
+			return "?????";
 			break;
 		}
 	}
