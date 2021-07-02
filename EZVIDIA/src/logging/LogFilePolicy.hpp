@@ -3,6 +3,8 @@
 #include<mutex>
 #include<string>
 
+#define LOG_FILENAME "ezvidia.log"
+
 class LogFilePolicy {
 private:
 	LogFilePolicy();
@@ -10,5 +12,5 @@ private:
 	static std::ofstream outputFileStream;
 public:
 	static void write(std::string);
-	static void init(std::string);
+	static void init();
 };

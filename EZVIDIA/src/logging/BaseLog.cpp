@@ -53,26 +53,6 @@ BaseLog<OutputPolicy>::~BaseLog() {
 }
 
 template<typename OutputPolicy>
-std::ostringstream& BaseLog<OutputPolicy>::err() {
-	return this->getLogger(LogLevel::ERR);
-}
-
-template<typename OutputPolicy>
-std::ostringstream& BaseLog<OutputPolicy>::warn() {
-	return this->getLogger(LogLevel::WARNING);
-}
-
-template<typename OutputPolicy>
-std::ostringstream& BaseLog<OutputPolicy>::info() {
-	return this->getLogger(LogLevel::INFO);
-}
-
-template<typename OutputPolicy>
-std::ostringstream& BaseLog<OutputPolicy>::debug() {
-	return this->getLogger(LogLevel::DEBUG);
-}
-
-template<typename OutputPolicy>
 std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
 	this->messageLevel = lvl;
 	this->msgStream << "[" << logLevelToString(lvl) << "]";
@@ -81,6 +61,12 @@ std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
 
 	this->msgStream << " ";
 	return this->msgStream;
+}
+
+template<typename OutputPolicy>
+void BaseLog<OutputPolicy>::init(LogLevel lvl) {
+	BaseLog<OutputPolicy>::globalLevel = lvl;
+	OutputPolicy::init();
 }
 
 template class BaseLog<LogFilePolicy>;

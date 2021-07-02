@@ -12,6 +12,6 @@ void LogFilePolicy::write(std::string msg) {
 	}
 }
 
-void LogFilePolicy::init(std::string fileName) {
-	LogFilePolicy::outputFileStream.open(fileName, std::ofstream::app);
+void LogFilePolicy::init() {
+	LogFilePolicy::outputFileStream.open(LOG_FILENAME, std::ofstream::app);
 }

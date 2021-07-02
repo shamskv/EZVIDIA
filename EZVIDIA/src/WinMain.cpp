@@ -33,8 +33,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	// Logging settings
-	LogFilePolicy::init("ezvidia.log");
-	Log::globalLevel = LogLevel::DEBUG;
+	Logger::init(LogLevel::DEBUG);
 
 	std::unique_ptr<Settings> config = std::make_unique<JsonSettings>("ezconfig.json");
 	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());

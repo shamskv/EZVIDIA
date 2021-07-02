@@ -10,11 +10,8 @@ class BaseLog {
 public:
 	BaseLog();
 	~BaseLog();
-	std::ostringstream& err();
-	std::ostringstream& warn();
-	std::ostringstream& info();
-	std::ostringstream& debug();
 	std::ostringstream& getLogger(LogLevel);
+	static void init(LogLevel);
 private:
 	BaseLog(const BaseLog&) = delete;
 	BaseLog& operator=(const BaseLog&) = delete;
