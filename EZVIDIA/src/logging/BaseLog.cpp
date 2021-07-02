@@ -39,22 +39,20 @@ namespace {
 }
 
 template <typename OutputPolicy>
-LogLevel BaseLog<OutputPolicy>::globalLevel = LogLevel::INFO;
+LogLevel BaseLog<OutputPolicy>::loggingLevel = LogLevel::INFO;
 
 template <typename OutputPolicy>
 BaseLog<OutputPolicy>::BaseLog() = default;
 
 template <typename OutputPolicy>
 BaseLog<OutputPolicy>::~BaseLog() {
-	//if (this->messageLevel <= BaseLog<OutputPolicy>::globalLevel) {
 	this->msgStream << std::endl;
 	OutputPolicy::write(this->msgStream.str());
-	//}
 }
 
 template<typename OutputPolicy>
 std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
-	this->messageLevel = lvl;
+	this->msgLevel = lvl;
 	this->msgStream << "[" << logLevelToString(lvl) << "]";
 	this->msgStream << "[" << getCurrentTimeStamp() << "]";
 	this->msgStream << "[TID " << GetCurrentThreadId() << "]";
@@ -65,7 +63,7 @@ std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
 
 template<typename OutputPolicy>
 void BaseLog<OutputPolicy>::init(LogLevel lvl) {
-	BaseLog<OutputPolicy>::globalLevel = lvl;
+	BaseLog<OutputPolicy>::loggingLevel = lvl;
 	OutputPolicy::init();
 }
 

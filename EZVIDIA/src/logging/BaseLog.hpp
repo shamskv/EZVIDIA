@@ -16,8 +16,8 @@ private:
 	BaseLog(const BaseLog&) = delete;
 	BaseLog& operator=(const BaseLog&) = delete;
 public:
-	static LogLevel globalLevel;
+	static LogLevel loggingLevel;
 private:
-	LogLevel messageLevel;
+	LogLevel msgLevel;
 	std::ostringstream msgStream;
 };
