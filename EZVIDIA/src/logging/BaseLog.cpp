@@ -1,8 +1,10 @@
 #include "BaseLog.hpp"
 // Include all the policies available, this is necessary to compile the template specializations at the end of the file
 #include"LogFilePolicy.hpp"
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include "../utils/StringUtils.hpp"
 
 namespace {
 	// All with the same number of chars so the log is nice on the eyes :)
@@ -26,15 +28,12 @@ namespace {
 		}
 	}
 
-	std::string getCurrentTimeStamp() {
+	void getCurrentTimeStamp(char* buffer, size_t size) {
 		SYSTEMTIME systime;
 		GetSystemTime(&systime);
 
-		char buf[200];
-		sprintf_s(buf, "%04u-%02u-%02u %02u:%02u:%02u:%03u", systime.wYear, systime.wMonth, systime.wDay,
+		sprintf_s(buffer, size, "%04u-%02u-%02u %02u:%02u:%02u:%03u", systime.wYear, systime.wMonth, systime.wDay,
 			systime.wHour, systime.wMinute, systime.wSecond, systime.wMilliseconds);
-
-		return std::string(buf);
 	}
 }
 
@@ -51,10 +50,12 @@ BaseLog<OutputPolicy>::~BaseLog() {
 }
 
 template<typename OutputPolicy>
-std::ostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
+std::wostringstream& BaseLog<OutputPolicy>::getLogger(LogLevel lvl) {
 	this->msgLevel = lvl;
-	this->msgStream << "[" << logLevelToString(lvl) << "]";
-	this->msgStream << "[" << getCurrentTimeStamp() << "]";
+	this->msgStream << "[" << logLevelToString(lvl).c_str() << "]";
+	char buf[200] = { 0 };
+	getCurrentTimeStamp(buf, 200);
+	this->msgStream << "[" << buf << "]";
 	this->msgStream << "[TID " << GetCurrentThreadId() << "]";
 
 	this->msgStream << " ";

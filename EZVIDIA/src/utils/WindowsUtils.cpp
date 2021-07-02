@@ -4,17 +4,21 @@
 #include <windows.h>
 #include <fstream>
 #include "StringUtils.hpp"
+#include "../logging/Logger.hpp"
 
 #define PATH_BUFFER_SIZE 300
 
 int WindowsUtils::generateBatFiles(const std::vector<std::wstring>& configs) {
+	LOG(INFO) << "Generating .bat files";
 	WCHAR path[PATH_BUFFER_SIZE];
 	GetModuleFileName(NULL, path, PATH_BUFFER_SIZE);
 
 	std::ofstream fileout;
 	for (auto& name : configs) {
-		fileout.open(L"EZVIDIA " + name + L".bat");
+		std::wstring targetFile(L"EZVIDIA " + name + L".bat");
+		fileout.open(targetFile);
 		if (!fileout) {
+			LOG(ERR) << "Failed to open file " << targetFile << " while generating .bat files";
 			fileout.close();
 			return -1;
 		}

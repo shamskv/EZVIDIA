@@ -11,6 +11,7 @@ void TcpServer::serverThread() {
 	int ret;
 	SOCKET clientSocket;
 	char buf[DEFAULT_BUFLEN], reply_buf[DEFAULT_BUFLEN];
+	LOG(DEBUG) << "TCP Server thread started";
 
 	while ((clientSocket = this->socket_.waitForClient()) != INVALID_SOCKET) {
 		LOG(INFO) << "New TCP connection";
@@ -19,7 +20,7 @@ void TcpServer::serverThread() {
 
 		ret = recvUntilDelimiterOrTimeout(clientSocket, buf, DEFAULT_BUFLEN, 0, '\n');
 		if (ret > 0) {
-			LOG(INFO) << "Message received: " << std::string(buf);
+			LOG(INFO) << "TCP message received: " << std::string(buf).c_str();
 			if (strncmp(buf, "LIST", 4) == 0) {
 				LOG(DEBUG) << "TCP message interpreted as a LIST request";
 				std::string tmp = "";
@@ -39,13 +40,16 @@ void TcpServer::serverThread() {
 
 			//No reply if trying to apply
 			else if (strncmp(buf, "APPLY ", 6) == 0) {
+				LOG(DEBUG) << "TCP message interpreted as a APPLY request";
 				strcpy_s(reply_buf, "NOK");
 				if (strlen(buf) > 6) {
 					std::string targetConf(buf + 6);
 					boost::trim(targetConf);
 					std::wstring targetConfW = StringUtils::stringToWideString(targetConf);
+					LOG(DEBUG) << "APPLY request target conf name parsed as " << targetConfW;
 					auto optionalConf = this->config_.getConfiguration(targetConfW);
 					if (optionalConf.has_value()) {
+						LOG(DEBUG) << "Target conf name was succesfully found ";
 						if (this->driver_.applyConfig(optionalConf.value())) {
 							strcpy_s(reply_buf, "OK");
 						}
@@ -53,23 +57,31 @@ void TcpServer::serverThread() {
 				}
 			}
 			else {
+				LOG(ERR) << "TCP message unrecognized";
 				strcpy_s(reply_buf, "INVALID");
 			}
 
 			//REPLY
+			LOG(DEBUG) << "Replying to TCP client with message: " << std::string(reply_buf).c_str();
 			if (send(clientSocket, reply_buf, static_cast<int>(strlen(reply_buf)), 0) == SOCKET_ERROR) {
-				// TODO log the error
+				LOG(ERR) << "Error replying to TCP client. Code: " << WSAGetLastError();
 			}
+		}
+		else {
+			LOG(ERR) << "Unable to receive TCP message. Custom recv returned: " << ret;
 		}
 
 		// Connection-less
 		closesocket(clientSocket);
 	}
+	LOG(DEBUG) << "TCP Server thread finished";
 }
 
 TcpServer::TcpServer(Settings& config, DisplayDriver& driver) :
 	config_(config), driver_(driver), socket_(TCP_PORT) {
+	LOG(INFO) << "Starting TCP server...";
 	if (!socket_.ready()) {
+		LOG(DEBUG) << "TCP Server failed to start (socket not ready)";
 		this->state_ = ServerState::DOWN;
 		return;
 	}
@@ -79,10 +91,12 @@ TcpServer::TcpServer(Settings& config, DisplayDriver& driver) :
 }
 
 TcpServer::~TcpServer() {
+	LOG(DEBUG) << "Shutting down TCP server...";
 	this->socket_.close();
 	if (thread_.joinable()) {
 		thread_.join(); // pls don't be stuck somehow, maybe implement timeout?
 	}
+	LOG(INFO) << "TCP Server shut down";
 }
 
 bool TcpServer::up() {
@@ -97,43 +111,37 @@ namespace {
 			pollfd.fd = socket;
 			pollfd.events = POLLIN;
 
-			//wchar_t text_buffer[500] = { 0 };
-			//swprintf(text_buffer, _countof(text_buffer), L"Entering Poll with %d byteCount and %d readCount.\n", byteCount, readCount);
-			//OutputDebugString(text_buffer);
 			LOG(DEBUG) << "Entering Poll with " << byteCount << " and " << readCount << " readCount";
 			int ret = WSAPoll(&pollfd, 1, 10000);
 			if (ret < 0) {
-				/*OutputDebugString(L"WSAPoll returned less than zero\n");*/
-				LOG(DEBUG) << "WSAPoll returned less than zero";
+				LOG(DEBUG) << "WSAPoll returned less than zero. Code: " << WSAGetLastError();
 				return -1;
 			}
 			else if (ret == 0) {
-				//OutputDebugString(L"WSAPoll returned zero\n");
 				LOG(DEBUG) << "WSAPoll returned zero";
 				return -2;
 			}
 			else {
-				//OutputDebugString(L"WSAPoll returned greater than zero\n");
 				LOG(DEBUG) << "WSAPoll returned greater than zero";
 				int n = recv(socket, buffer + byteCount, bufferSize - byteCount, flags);
 				if (n > 0) {
 					for (int i = byteCount; i < byteCount + n && i < bufferSize; i++) {
 						if (buffer[i] == delimiter) {
-							/*OutputDebugString(L"Found delimiter\n");*/
 							LOG(DEBUG) << "Found delimiter at position " << i;
 							buffer[i] = '\0';
 							return i;
 						}
 					}
-					//OutputDebugString(L"Successful read but no delimiter\n");
-					LOG(DEBUG) << "Successful read but no delimiter";
+					LOG(DEBUG) << "Successful recv but no delimiter";
 					byteCount += n;
 					readCount++;
 				}
-				else {
-					//OutputDebugString(L"recv returned zero or less\n");
-					LOG(DEBUG) << "recv returned zero or less";
+				else if (n == 0) {
+					LOG(DEBUG) << "recv returned zero";
 					return n;
+				}
+				else {
+					LOG(DEBUG) << "recv returned less than zero. Code: " << WSAGetLastError();
 				}
 			}
 		} while (byteCount < bufferSize && readCount < 10);

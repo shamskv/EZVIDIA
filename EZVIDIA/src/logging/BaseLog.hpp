@@ -10,7 +10,7 @@ class BaseLog {
 public:
 	BaseLog();
 	~BaseLog();
-	std::ostringstream& getLogger(LogLevel);
+	std::wostringstream& getLogger(LogLevel);
 	static void init(LogLevel);
 private:
 	BaseLog(const BaseLog&) = delete;
@@ -19,5 +19,5 @@ public:
 	static LogLevel loggingLevel;
 private:
 	LogLevel msgLevel;
-	std::ostringstream msgStream;
+	std::wostringstream msgStream;
 };

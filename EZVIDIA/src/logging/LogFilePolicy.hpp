@@ -9,8 +9,8 @@ class LogFilePolicy {
 private:
 	LogFilePolicy();
 	static std::mutex fileLock;
-	static std::ofstream outputFileStream;
+	static std::wofstream outputFileStream;
 public:
-	static void write(std::string);
+	static void write(std::wstring);
 	static void init();
 };

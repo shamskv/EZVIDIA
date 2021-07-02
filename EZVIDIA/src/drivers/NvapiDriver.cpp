@@ -1,33 +1,42 @@
 #include "NvapiDriver.hpp"
 #include "DriverException.hpp"
 #include "NvapiPathInfoWrapper.hpp"
+#include "../logging/Logger.hpp"
 #include <nvapi.h>
 #include <unordered_map>
 
 #pragma warning (disable:26812)
 NvapiDriver::NvapiDriver() {
+	LOG(DEBUG) << "Initializing NVIDIA Driver";
 	NvAPI_Status ret = NvAPI_Initialize();
 	if (ret != NVAPI_OK) {
+		LOG(DEBUG) << "NvAPI_Initialize failed";
 		this->state = FAIL;
 	}
 	else {
+		LOG(DEBUG) << "NvAPI_Initialize successful";
 		this->state = OK;
 	}
 }
 
 GlobalConfiguration NvapiDriver::_getConfig() {
+	LOG(DEBUG) << "NvAPI getting current configuration";
 	NvapiPathInfoWrapper pInfoWrapper;
 
 	do {
+		LOG(DEBUG) << "NvAPI_DISP_GetDisplayConfig loop iteration";
 		NvAPI_Status ret = NvAPI_DISP_GetDisplayConfig(&pInfoWrapper.nDisplays, pInfoWrapper.pInfo);
 		if (ret != NVAPI_OK) {
+			LOG(ERR) << "Problem calling NvAPI_DISP_GetDisplayConfig. Code: " << ret;
 			throw DriverException(L"Error calling NvAPI_DISP_GetDisplayConfig (code " + std::to_wstring(ret) + L")");
 		}
 	} while (pInfoWrapper.allocate());
 
 	GlobalConfiguration gConf;
 	uint32_t cloneGroup = 0;
+	LOG(DEBUG) << "NvAPI_DISP_GetDisplayConfig result contains nDisplays == " << pInfoWrapper.nDisplays;
 	for (uint32_t i = 0; i < pInfoWrapper.nDisplays; i++) {
+		LOG(DEBUG) << "NvAPI_DISP_GetDisplayConfig Display " << i << " contains " << pInfoWrapper.pInfo[i].targetInfoCount << " targetInfoCounts";
 		for (uint32_t j = 0; j < pInfoWrapper.pInfo[i].targetInfoCount; j++) {
 			DisplayConfiguration dConf;
 			dConf.width = pInfoWrapper.pInfo[i].sourceModeInfo->resolution.width;
@@ -47,7 +56,6 @@ GlobalConfiguration NvapiDriver::_getConfig() {
 			if (pInfoWrapper.pInfo[i].sourceModeInfo->bGDIPrimary == 1) {
 				gConf.primaryGroup = cloneGroup;
 			}
-
 			gConf.displays.push_back(dConf);
 		}
 		cloneGroup++;
@@ -57,6 +65,7 @@ GlobalConfiguration NvapiDriver::_getConfig() {
 }
 
 bool NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
+	LOG(DEBUG) << "NvAPI applying configuration ";
 	NvapiPathInfoWrapper pInfoWrapper;
 
 	// assign a pInfo index for each clone group

@@ -1,5 +1,6 @@
 #include "TcpSocket.hpp"
 #include<Ws2tcpip.h>
+#include"../logging/Logger.hpp"
 
 TcpSocket::TcpSocket(uint16_t port) : port(port) {
 	WSADATA wsaData;
@@ -8,12 +9,14 @@ TcpSocket::TcpSocket(uint16_t port) : port(port) {
 
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
+		LOG(ERR) << "WSAStartup failed. Code: " << WSAGetLastError();
 		this->state = SocketState::FAIL;
 		return;
 	}
 
 	listenSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (listenSocket == INVALID_SOCKET) {
+		LOG(ERR) << "socket() failed. Code: " << WSAGetLastError();
 		this->state = SocketState::FAIL;
 		return;
 	}
@@ -24,22 +27,25 @@ TcpSocket::TcpSocket(uint16_t port) : port(port) {
 
 	iResult = bind(listenSocket, reinterpret_cast<sockaddr*>(&socketAddr), sizeof(socketAddr));
 	if (iResult == SOCKET_ERROR) {
+		LOG(ERR) << "bind() failed. Code: " << WSAGetLastError();
 		this->state = SocketState::FAIL;
-		int error = WSAGetLastError();
 		return;
 	}
 
 	iResult = listen(listenSocket, SOMAXCONN);
 	if (iResult == SOCKET_ERROR) {
+		LOG(ERR) << "listen() failed. Code: " << WSAGetLastError();
 		this->state = SocketState::FAIL;
 		return;
 	}
 
+	LOG(DEBUG) << "TcpSocket constructed succesfully";
 	this->state = SocketState::OPEN;
 }
 
 TcpSocket::~TcpSocket() {
 	if (listenSocket != INVALID_SOCKET) {
+		LOG(DEBUG) << "Closing TCPsocket (destructor)";
 		closesocket(listenSocket);
 	}
 	WSACleanup();
@@ -58,6 +64,7 @@ SOCKET TcpSocket::waitForClient() {
 
 void TcpSocket::close() {
 	if (listenSocket != INVALID_SOCKET) {
+		LOG(DEBUG) << "Closing TCPsocket (explicit)";
 		closesocket(listenSocket);
 		this->state = SocketState::CLOSED;
 		listenSocket = INVALID_SOCKET;
