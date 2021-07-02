@@ -10,7 +10,7 @@ NvapiDriver::NvapiDriver() {
 	LOG(DEBUG) << "Initializing NVIDIA Driver";
 	NvAPI_Status ret = NvAPI_Initialize();
 	if (ret != NVAPI_OK) {
-		LOG(DEBUG) << "NvAPI_Initialize failed";
+		LOG(DEBUG) << "NvAPI_Initialize failed. Code: " << ret;
 		this->state = FAIL;
 	}
 	else {
@@ -113,6 +113,7 @@ bool NvapiDriver::_applyConfig(const GlobalConfiguration& conf) {
 	NvAPI_Status ret = NvAPI_DISP_SetDisplayConfig(pInfoWrapper.nDisplays, pInfoWrapper.pInfo, NV_DISPLAYCONFIG_SAVE_TO_PERSISTENCE);
 	if (ret != NVAPI_OK) {
 		/*throw DriverException(L"Error calling NvAPI_DISP_SetDisplayConfig (code " + std::to_wstring(ret) + L")");*/
+		LOG(ERR) << "Error on NvAPI_DISP_SetDisplayConfig. Code: " << ret;
 		return false;
 	}
 	return true;

@@ -4,7 +4,6 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include "../utils/StringUtils.hpp"
 
 namespace {
 	// All with the same number of chars so the log is nice on the eyes :)
