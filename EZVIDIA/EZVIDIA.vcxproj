@@ -141,8 +141,10 @@
     <ClCompile Include="src\configurations\JsonSettings.cpp" />
     <ClCompile Include="src\drivers\NvapiDriver.cpp" />
     <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp" />
+    <ClCompile Include="src\logging\LogFilePolicy.cpp" />
     <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
+    <ClCompile Include="src\logging\Log.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
     <ClCompile Include="src\utils\UpdaterUtils.cpp" />
@@ -163,8 +165,10 @@
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\Settings.hpp" />
     <ClInclude Include="src\configurations\JsonSettings.hpp" />
+    <ClInclude Include="src\logging\LogFilePolicy.hpp" />
     <ClInclude Include="src\networking\TcpServer.hpp" />
     <ClInclude Include="src\networking\TcpSocket.hpp" />
+    <ClInclude Include="src\logging\Log.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />
     <ClInclude Include="src\configurations\GlobalConfiguration.hpp" />
