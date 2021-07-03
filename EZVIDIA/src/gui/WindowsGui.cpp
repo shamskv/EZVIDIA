@@ -12,7 +12,7 @@
 #include <string>
 #include <boost/algorithm/string.hpp>
 #include "../utils/WindowsUtils.hpp"
-#include "../utils/UpdaterUtils.hpp"
+#include "../updater/Updater.hpp"
 #include "../logging/Logger.hpp"
 #include <cwctype>
 
@@ -159,7 +159,12 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			thisPtr->tcpServer.reset();
 			break;
 		case IDM_UPDATE:
-			MessageBox(NULL, UpdaterUtils::getLatestVersionNumber().c_str(), L"Version", MB_OK | MB_APPLMODAL);
+			MessageBox(hWnd, Updater::getLatestVersionNumber().c_str(), L"Version", MB_OK | MB_APPLMODAL);
+			break;
+		case IDM_ABOUT:
+			thisPtr->actionLock = true;
+			DialogBoxParam(thisPtr->hInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, AboutProc, (LPARAM)thisPtr);
+			thisPtr->actionLock = false;
 			break;
 		case IDM_EXIT:
 			LOG(DEBUG) << "EXIT signal received by main window";
@@ -257,6 +262,30 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 	return (INT_PTR)FALSE;
 }
 
+LRESULT WindowsGui::AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
+	WindowsGui* thisPtr = reinterpret_cast<WindowsGui*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
+	switch (message) {
+	case WM_INITDIALOG:
+		LOG(DEBUG) << "Initializing About dialog";
+		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
+		SetDlgItemText(hDlg, IDC_ABOUT, L"yadadadadaa");
+		return (INT_PTR)FALSE;
+
+	case WM_COMMAND:
+		if (LOWORD(wParam) == IDOK) {
+			EndDialog(hDlg, LOWORD(wParam));
+			return (INT_PTR)TRUE;
+		}
+		if (LOWORD(wParam) == IDM_ABOUT_URL) {
+			ShellExecute(hDlg, L"open",
+				L"https://github.com/shamskv/ezvidia",
+				NULL, NULL, SW_SHOWNORMAL);
+		}
+		break;
+	}
+	return (INT_PTR)FALSE;
+}
+
 BOOL WindowsGui::AddNotificationIcon(HWND hwnd, HINSTANCE hInst) {
 	NOTIFYICONDATA nid = { sizeof(nid) };
 	nid.hWnd = hwnd;
@@ -316,6 +345,7 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 		AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON, L"Network control (TCP)");
 	}
 	AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
+	AppendMenu(hOptionsMenu, MF_STRING, IDM_ABOUT, L"About");
 
 	AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu, L"Options");
 	AppendMenu(hSubMenu, MF_SEPARATOR, 0, L"");

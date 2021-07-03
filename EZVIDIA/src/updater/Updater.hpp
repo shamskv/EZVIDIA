@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-class UpdaterUtils {
+class Updater {
 public:
 	static std::wstring getLatestVersionNumber();
 };

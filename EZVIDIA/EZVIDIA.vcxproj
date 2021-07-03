@@ -147,7 +147,7 @@
     <ClCompile Include="src\logging\BaseLog.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
-    <ClCompile Include="src\utils\UpdaterUtils.cpp" />
+    <ClCompile Include="src\updater\Updater.cpp" />
     <ClCompile Include="src\utils\WindowsUtils.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
   </ItemGroup>
@@ -165,6 +165,7 @@
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\Settings.hpp" />
     <ClInclude Include="src\configurations\JsonSettings.hpp" />
+    <ClInclude Include="src\ezvidia_globals.hpp" />
     <ClInclude Include="src\logging\LogFilePolicy.hpp" />
     <ClInclude Include="src\logging\Logger.hpp" />
     <ClInclude Include="src\networking\TcpServer.hpp" />
@@ -179,7 +180,7 @@
     <ClInclude Include="src\drivers\DisplayDriver.hpp" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\gui\WindowsGui.hpp" />
-    <ClInclude Include="src\utils\UpdaterUtils.hpp" />
+    <ClInclude Include="src\updater\Updater.hpp" />
     <ClInclude Include="src\utils\WindowsUtils.hpp" />
   </ItemGroup>
   <ItemGroup>

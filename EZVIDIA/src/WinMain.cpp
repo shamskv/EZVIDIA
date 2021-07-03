@@ -17,7 +17,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow) {
 	// Logging settings
-	Logger::init(LogLevel::INFO);
+	Logger::init(LogLevel::DEBUG);
 	LOG(INFO) << "Application starting...";
 	int argc;
 	WCHAR** argv = CommandLineToArgvW(lpCmdLine, &argc);

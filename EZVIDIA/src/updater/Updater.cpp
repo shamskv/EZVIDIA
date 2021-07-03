@@ -1,4 +1,4 @@
-#include "UpdaterUtils.hpp"
+#include "Updater.hpp"
 #include "cpprest/http_client.h"
 #include <cpprest/filestream.h>
 
@@ -11,7 +11,7 @@ using namespace web::http;                  // Common HTTP functionality
 using namespace web::http::client;          // HTTP client features
 using namespace concurrency::streams;       // Asynchronous streams
 
-std::wstring UpdaterUtils::getLatestVersionNumber() {
+std::wstring Updater::getLatestVersionNumber() {
 	std::wstring owner(L"shamskv"), repo(L"EZVIDIA");
 
 	// Build request URI and start the request.

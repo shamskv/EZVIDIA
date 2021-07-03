@@ -48,7 +48,7 @@
     <ClCompile Include="src\networking\TcpServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\utils\UpdaterUtils.cpp">
+    <ClCompile Include="src\updater\Updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\logging\BaseLog.cpp">
@@ -123,7 +123,7 @@
     <ClInclude Include="src\networking\TcpServer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\utils\UpdaterUtils.hpp">
+    <ClInclude Include="src\updater\Updater.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="resources\resource.h">
@@ -136,6 +136,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\logging\Logger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ezvidia_globals.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -26,6 +26,7 @@ private:
 	ATOM MyRegisterClass(HINSTANCE, WCHAR*);
 	static LRESULT CALLBACK MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK NewConfProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	static LRESULT CALLBACK AboutProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static BOOL AddNotificationIcon(HWND hwnd, HINSTANCE hInst);
 	static void ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr);
 
