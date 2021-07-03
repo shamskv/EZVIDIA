@@ -1,7 +1,7 @@
 ### Roadmap
 - ~~add versioning to settings file~~
 - ~~parse TCP as a real stream (introduce a delimiter)~~
-- Logging (header with static stuff, maybe initLogging() needs to be called)
+- ~~Logging (header with static stuff, maybe initLogging() needs to be called)~~
 - Exception handling where necessary (WinMain)
 - MAYBE "parameters" header file with global definitions
   - version number
@@ -27,7 +27,7 @@ EZVIDIA is a tool for **Windows** and **NVIDIA** GPUs that allows a user to save
 - Selecting the desired configuration from a popup menu:
 
 	![Right-clicking the notification icon shows this menu](./menu.png)
-- Sending a UDP message following a specific syntax. Works even if the computer is locked. This is implemented in an Android app (developed by [fchamicapereira](https://github.com/fchamicapereira)) available at [this repository](https://github.com/fchamicapereira/EZVIDIA_android_app). Here is a preview:
+- Sending a TCP message following a specific syntax. Works even if the computer is locked. This is implemented in an Android app (developed by [fchamicapereira](https://github.com/fchamicapereira)) available at [this repository](https://github.com/fchamicapereira/EZVIDIA_android_app). Here is a preview:
 
 	<img src="./android.jpg" width="270">
 

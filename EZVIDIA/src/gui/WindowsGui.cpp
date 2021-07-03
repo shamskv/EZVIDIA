@@ -13,6 +13,7 @@
 #include <boost/algorithm/string.hpp>
 #include "../utils/WindowsUtils.hpp"
 #include "../utils/UpdaterUtils.hpp"
+#include "../logging/Logger.hpp"
 #include <cwctype>
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
@@ -49,6 +50,7 @@ WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& settings, DisplayDriver& d
 
 	// We try to turn on networking if the settings say so
 	if (settings.networkTcpActive()) {
+		LOG(DEBUG) << "GUI is activating TCP server because of settings";
 		tcpServer = std::make_unique<TcpServer>(settings, driver);
 	}
 }
@@ -57,11 +59,12 @@ WindowsGui::~WindowsGui() = default;
 
 int WindowsGui::msgLoop(void) {
 	MSG msg;
-	// Main message loop:
+	LOG(DEBUG) << "Entering GUI message loop";
 	while (GetMessage(&msg, nullptr, 0, 0)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	LOG(DEBUG) << "Leaving GUI message loop";
 	return (int)msg.wParam;
 }
 
@@ -71,6 +74,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 	switch (message) {
 	case WM_CREATE:
 	{
+		LOG(DEBUG) << "Main window received CREATE signal";
 		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 		thisPtr = static_cast<WindowsGui*>(pCreate->lpCreateParams);
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)thisPtr);
@@ -89,9 +93,13 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		break;
 		case WM_CONTEXTMENU:
 		{
+			LOG(DEBUG) << "Main window received CONTEXTMENU (right-click) signal";
 			POINT const pt = { LOWORD(wParam), HIWORD(wParam) };
 			if (!thisPtr->actionLock) {
 				ShowContextMenu(hWnd, pt, thisPtr);
+			}
+			else {
+				LOG(DEBUG) << "CONTEXTMENU signal ignored (actionLock)";
 			}
 		}
 		break;
@@ -104,7 +112,9 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		//Applying configs
 		if (wmId >= IDM_CONFIGNUM && wmId < IDM_CONFIGNUM + thisPtr->settings.getConfigNum()) {
 			int confNum = wmId - IDM_CONFIGNUM;
+			LOG(DEBUG) << "Main window received APPLYCONFIG signal with num " << confNum;
 			auto confToApply = thisPtr->settings.getConfiguration(confNum).value(); // TODO add some error checking here just in case
+			LOG(INFO) << "Applying configuration " << confToApply.name;
 			thisPtr->driver.applyConfig(confToApply);
 			break;
 		}
@@ -116,6 +126,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			msg += thisPtr->settings.getConfiguration(confNum).value().name + L"?";
 			thisPtr->actionLock = true;
 			if (MessageBox(hWnd, msg.c_str(), L"Delete Configuration", MB_YESNO) == IDYES) {
+				LOG(INFO) << "Deleting configuration " << thisPtr->settings.getConfiguration(confNum).value().name;
 				thisPtr->settings.deleteConfiguration(confNum);
 			}
 			thisPtr->actionLock = false;
@@ -139,6 +150,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			thisPtr->settings.setNetworkTcp(true);
 			thisPtr->tcpServer = std::make_unique<TcpServer>(thisPtr->settings, thisPtr->driver);
 			if (!thisPtr->tcpServer.get()->up()) {
+				LOG(ERR) << "Error starting TCP server from GUI, resetting object";
 				thisPtr->tcpServer.reset();
 			}
 			break;
@@ -150,6 +162,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			MessageBox(NULL, UpdaterUtils::getLatestVersionNumber().c_str(), L"Version", MB_OK | MB_APPLMODAL);
 			break;
 		case IDM_EXIT:
+			LOG(DEBUG) << "EXIT signal received by main window";
 			DestroyWindow(hWnd);
 			break;
 		default:
@@ -178,6 +191,7 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 	WindowsGui* thisPtr = reinterpret_cast<WindowsGui*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
 	switch (message) {
 	case WM_INITDIALOG:
+		LOG(DEBUG) << "Initializing New conf dialog";
 		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
 		SetWindowText(hDlg, L"Insert the configuration name:");
 		SetFocus(GetDlgItem(hDlg, IDC_EDIT1));
@@ -194,32 +208,39 @@ LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM l
 			std::wstring inputStr(input);
 			boost::trim(inputStr);
 			if (inputStr.find(L";") != std::wstring::npos) {
+				LOG(ERR) << "New configuration name rejected (contains ;)";
 				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 			else if (std::find_if(inputStr.begin(), inputStr.end(), check_invalid_char) != inputStr.end()) {
+				LOG(ERR) << "New configuration name rejected (misc invalid character)";
 				MessageBox(hDlg, L"Invalid character detected.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 			else if (inputStr.length() <= 0) {
+				LOG(ERR) << "New configuration name rejected (empty)";
 				MessageBox(hDlg, L"Type something.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 			else if (inputStr.length() > 50) {
+				LOG(ERR) << "New configuration name rejected (more than 50 chars)";
 				MessageBox(hDlg, L"No more than 50 characters.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 			else if (thisPtr->settings.isConfigurationPresent(inputStr)) {
+				LOG(ERR) << "New configuration name rejected (already exists)";
 				MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}
 
 			auto optionalConf = thisPtr->driver.getConfig();
 			if (optionalConf.has_value()) {
+				LOG(INFO) << "Saving new configuration with name " << inputStr;
 				optionalConf.value().name = inputStr;
 				thisPtr->settings.addConfiguration(optionalConf.value());
 			}
 			else {
+				LOG(ERR) << "Error saving new configuration (driver couldn't obtain config)";
 				MessageBox(hDlg, L"Error saving configuration.", NULL, MB_OK | MB_ICONERROR);
 				return (INT_PTR)FALSE;
 			}

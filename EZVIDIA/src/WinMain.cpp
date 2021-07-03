@@ -16,6 +16,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
 	_In_ LPWSTR    lpCmdLine,
 	_In_ int       nCmdShow) {
+	// Logging settings
+	Logger::init(LogLevel::INFO);
+	LOG(INFO) << "Application starting...";
 	int argc;
 	WCHAR** argv = CommandLineToArgvW(lpCmdLine, &argc);
 
@@ -31,9 +34,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			return -1;
 		}
 	}
-
-	// Logging settings
-	Logger::init(LogLevel::DEBUG);
 
 	std::unique_ptr<Settings> config = std::make_unique<JsonSettings>("ezconfig.json");
 	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());
@@ -52,5 +52,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	WindowsGui gui(hInstance, *config, *driver);
 
-	return gui.msgLoop();
+	int ret = gui.msgLoop();
+
+	LOG(INFO) << "Application exiting...";
+	return ret;
 }
