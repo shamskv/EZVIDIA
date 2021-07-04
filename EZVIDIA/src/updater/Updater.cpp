@@ -11,6 +11,22 @@ using namespace web::http;                  // Common HTTP functionality
 using namespace web::http::client;          // HTTP client features
 using namespace concurrency::streams;       // Asynchronous streams
 
+bool Updater::isUpdate(std::string current, std::string candidate) {
+	int currMajor, currMinor, currPatch;
+	int candMajor, candMinor, candPatch;
+
+	if (sscanf_s(current.c_str(), "v%u.%u.%u", &currMajor, &currMinor, &currPatch) != 3) {
+		return false;
+	}
+	if (sscanf_s(candidate.c_str(), "v%u.%u.%u", &candMajor, &candMinor, &candPatch) != 3) {
+		return false;
+	}
+
+	// TODO
+
+	return false;
+}
+
 std::wstring Updater::getLatestVersionNumber() {
 	std::wstring owner(L"shamskv"), repo(L"EZVIDIA");
 
@@ -41,4 +57,8 @@ std::wstring Updater::getLatestVersionNumber() {
 	}
 
 	return std::wstring();
+}
+
+std::optional<std::string> Updater::checkUpdateAvailable() {
+	return std::optional<std::string>();
 }

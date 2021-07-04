@@ -3,12 +3,7 @@
 - ~~parse TCP as a real stream (introduce a delimiter)~~
 - ~~Logging (header with static stuff, maybe initLogging() needs to be called)~~
 - Exception handling where necessary (WinMain)
-- MAYBE "parameters" header file with global definitions
-  - version number
-  - settings file name
-  - tcp port
-  - more?
-- Add "About" dialog
+- ~~Add "About" dialog~~
 - Update app
   - check if remote tag > this version
   - ask user if wants to update
