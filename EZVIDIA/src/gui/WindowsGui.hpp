@@ -9,6 +9,7 @@
 class DisplayDriver;
 class Settings;
 class TcpServer;
+class SaveConfDialog;
 
 class WindowsGui {
 private:
@@ -34,4 +35,5 @@ public:
 	WindowsGui(HINSTANCE, Settings&, DisplayDriver&);
 	~WindowsGui();
 	int msgLoop(void);
+	friend class SaveConfDialog;
 };

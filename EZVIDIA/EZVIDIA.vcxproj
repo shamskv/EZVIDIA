@@ -141,6 +141,8 @@
     <ClCompile Include="src\configurations\JsonSettings.cpp" />
     <ClCompile Include="src\drivers\NvapiDriver.cpp" />
     <ClCompile Include="src\drivers\NvapiPathInfoWrapper.cpp" />
+    <ClCompile Include="src\gui\AboutDialog.cpp" />
+    <ClCompile Include="src\gui\SaveConfDialog.cpp" />
     <ClCompile Include="src\logging\LogFilePolicy.cpp" />
     <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
@@ -165,7 +167,9 @@
     <ClInclude Include="src\configurations\ConfException.hpp" />
     <ClInclude Include="src\configurations\Settings.hpp" />
     <ClInclude Include="src\configurations\JsonSettings.hpp" />
-    <ClInclude Include="src\ezvidia_globals.hpp" />
+    <ClInclude Include="src\globals.hpp" />
+    <ClInclude Include="src\gui\AboutDialog.hpp" />
+    <ClInclude Include="src\gui\SaveConfDialog.hpp" />
     <ClInclude Include="src\logging\LogFilePolicy.hpp" />
     <ClInclude Include="src\logging\Logger.hpp" />
     <ClInclude Include="src\networking\TcpServer.hpp" />

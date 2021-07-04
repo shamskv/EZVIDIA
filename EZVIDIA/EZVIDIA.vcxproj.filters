@@ -57,6 +57,12 @@
     <ClCompile Include="src\logging\LogFilePolicy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\gui\AboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gui\SaveConfDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\logo.ico">
@@ -138,7 +144,13 @@
     <ClInclude Include="src\logging\Logger.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ezvidia_globals.hpp">
+    <ClInclude Include="src\globals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\AboutDialog.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gui\SaveConfDialog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,16 +5,17 @@
 #include "../networking/TcpServer.hpp"
 //Windows stuff
 #include "../../resources/resource.h"
+//Dialogs/windows
+#include "AboutDialog.hpp"
+#include "SaveConfDialog.hpp"
 //Dependencies
 #include <shellapi.h>
 #include <CommCtrl.h>
 #include <vector>
 #include <string>
-#include <boost/algorithm/string.hpp>
 #include "../utils/WindowsUtils.hpp"
 #include "../updater/Updater.hpp"
 #include "../logging/Logger.hpp"
-#include <cwctype>
 
 #define WMAPP_NOTIFYCALLBACK WM_APP+1
 
@@ -136,7 +137,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		switch (wmId) {
 		case IDM_SAVECONF:
 			thisPtr->actionLock = true;
-			DialogBoxParam(thisPtr->hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, NewConfProc, (LPARAM)thisPtr);
+			SaveConfDialog::show(thisPtr->hInstance, hWnd, (LPARAM)thisPtr);
 			thisPtr->actionLock = false;
 			break;
 		case IDM_GENERATEBAT:
@@ -163,7 +164,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			break;
 		case IDM_ABOUT:
 			thisPtr->actionLock = true;
-			DialogBoxParam(thisPtr->hInstance, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, AboutProc, (LPARAM)thisPtr);
+			AboutDialog::show(thisPtr->hInstance, hWnd, (LPARAM)thisPtr);
 			thisPtr->actionLock = false;
 			break;
 		case IDM_EXIT:
@@ -190,100 +191,6 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
-}
-
-LRESULT WindowsGui::NewConfProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-	WindowsGui* thisPtr = reinterpret_cast<WindowsGui*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
-	switch (message) {
-	case WM_INITDIALOG:
-		LOG(DEBUG) << "Initializing New conf dialog";
-		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
-		SetWindowText(hDlg, L"Insert the configuration name:");
-		SetFocus(GetDlgItem(hDlg, IDC_EDIT1));
-		return (INT_PTR)FALSE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK) {
-			TCHAR input[100];
-			if (!GetDlgItemText(hDlg, IDC_EDIT1, input, MAX_LOADSTRING)) {
-				input[0] = '\0';
-			}
-
-			auto check_invalid_char = [](wchar_t c) {return !std::iswprint(c); };
-			std::wstring inputStr(input);
-			boost::trim(inputStr);
-			if (inputStr.find(L";") != std::wstring::npos) {
-				LOG(ERR) << "New configuration name rejected (contains ;)";
-				MessageBox(hDlg, L"The character \';\' is not allowed.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-			else if (std::find_if(inputStr.begin(), inputStr.end(), check_invalid_char) != inputStr.end()) {
-				LOG(ERR) << "New configuration name rejected (misc invalid character)";
-				MessageBox(hDlg, L"Invalid character detected.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-			else if (inputStr.length() <= 0) {
-				LOG(ERR) << "New configuration name rejected (empty)";
-				MessageBox(hDlg, L"Type something.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-			else if (inputStr.length() > 50) {
-				LOG(ERR) << "New configuration name rejected (more than 50 chars)";
-				MessageBox(hDlg, L"No more than 50 characters.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-			else if (thisPtr->settings.isConfigurationPresent(inputStr)) {
-				LOG(ERR) << "New configuration name rejected (already exists)";
-				MessageBox(hDlg, L"Chosen name already exists.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-
-			auto optionalConf = thisPtr->driver.getConfig();
-			if (optionalConf.has_value()) {
-				LOG(INFO) << "Saving new configuration with name " << inputStr;
-				optionalConf.value().name = inputStr;
-				thisPtr->settings.addConfiguration(optionalConf.value());
-			}
-			else {
-				LOG(ERR) << "Error saving new configuration (driver couldn't obtain config)";
-				MessageBox(hDlg, L"Error saving configuration.", NULL, MB_OK | MB_ICONERROR);
-				return (INT_PTR)FALSE;
-			}
-
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		else if (LOWORD(wParam) == IDCANCEL) {
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
-}
-
-LRESULT WindowsGui::AboutProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam) {
-	WindowsGui* thisPtr = reinterpret_cast<WindowsGui*>(GetWindowLongPtr(hDlg, GWLP_USERDATA));
-	switch (message) {
-	case WM_INITDIALOG:
-		LOG(DEBUG) << "Initializing About dialog";
-		SetWindowLongPtr(hDlg, GWLP_USERDATA, lParam);
-		SetDlgItemText(hDlg, IDC_ABOUT, L"yadadadadaa");
-		return (INT_PTR)FALSE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK) {
-			EndDialog(hDlg, LOWORD(wParam));
-			return (INT_PTR)TRUE;
-		}
-		if (LOWORD(wParam) == IDM_ABOUT_URL) {
-			ShellExecute(hDlg, L"open",
-				L"https://github.com/shamskv/ezvidia",
-				NULL, NULL, SW_SHOWNORMAL);
-		}
-		break;
-	}
-	return (INT_PTR)FALSE;
 }
 
 BOOL WindowsGui::AddNotificationIcon(HWND hwnd, HINSTANCE hInst) {
