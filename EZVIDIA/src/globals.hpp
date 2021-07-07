@@ -1,3 +1,3 @@
 #pragma once
 
-#define EZVIDIA_VERSION "v0.3.0"
+#define EZVIDIA_VERSION L"v0.3.0"

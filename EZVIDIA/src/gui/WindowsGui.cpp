@@ -160,8 +160,12 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			thisPtr->tcpServer.reset();
 			break;
 		case IDM_UPDATE:
-			MessageBox(hWnd, Updater::getLatestVersionNumber().c_str(), L"Version", MB_OK | MB_APPLMODAL);
+		{
+			auto result = Updater::checkUpdateAvailable();
+			if (result) MessageBox(hWnd, (*result).c_str(), L"Checking for update", MB_OK | MB_APPLMODAL);
+			else MessageBox(hWnd, L"No update available", L"Checking for update", MB_OK | MB_APPLMODAL);
 			break;
+		}
 		case IDM_ABOUT:
 			thisPtr->actionLock = true;
 			AboutDialog::show(thisPtr->hInstance, hWnd, (LPARAM)thisPtr);
