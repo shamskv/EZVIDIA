@@ -162,7 +162,7 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 		case IDM_UPDATE:
 		{
 			auto result = Updater::checkUpdateAvailable();
-			if (result) MessageBox(hWnd, (*result).c_str(), L"Checking for update", MB_OK | MB_APPLMODAL);
+			if (result) MessageBox(hWnd, result->tag.c_str(), L"Checking for update", MB_OK | MB_APPLMODAL);
 			else MessageBox(hWnd, L"No update available", L"Checking for update", MB_OK | MB_APPLMODAL);
 			break;
 		}

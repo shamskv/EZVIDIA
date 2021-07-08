@@ -26,7 +26,7 @@ namespace {
 		std::wistringstream versionStream(versionString);
 
 		if (versionStream.get() != 'v') {
-			return std::optional<version_array_t>();
+			return std::nullopt;
 		}
 
 		version_array_t arr{ 0 };
@@ -34,14 +34,14 @@ namespace {
 			versionStream >> arr[i];
 
 			if (versionStream.fail()) {
-				if (i == 0) return std::optional<version_array_t>(); // If we couldnt even read a number it's a fail
+				if (i == 0) return std::nullopt; // If we couldnt even read a number it's a fail
 				else break;
 			}
 
 			if (versionStream.get() != '.') break;
 		}
 
-		return std::make_optional(std::move(arr));
+		return arr;
 	}
 
 	int compareVersions(version_array_t v1, version_array_t v2) {
@@ -57,7 +57,7 @@ namespace {
 	}
 }
 
-std::wstring Updater::getLatestVersionNumber() {
+std::optional<VersionInfo> Updater::getLatestVersionNumber() {
 	const std::wstring owner(L"shamskv"), repo(L"EZVIDIA");
 
 	// Build request URI and start the request.
@@ -70,38 +70,53 @@ std::wstring Updater::getLatestVersionNumber() {
 	http_response response = client.request(request).get();
 
 	if (response.status_code() == status_codes::OK) {
-		auto responseBody = response.extract_json().get();
-
-		for (auto& value : responseBody[U("assets")].as_array()) {
-			http_client dlClient(value[U("browser_download_url")].as_string());
-			auto dlBody = dlClient.request(methods::GET).get().body();
-
-			auto outStream = fstream::open_ostream(U("dl_ezvidia.exe")).get();
-
-			dlBody.read_to_end(outStream.streambuf()).get();
-			outStream.close();
+		try {
+			auto responseBody = response.extract_json().get();
+			VersionInfo info;
+			info.tag = responseBody.at(U("tag_name")).as_string();
+			info.notes = responseBody.at(U("body")).as_string();
+			return info;
+		}
+		catch (std::exception& e) {
+			LOG(ERR) << "Problem extracting tag + notes from latest release";
 		}
 
-		return responseBody.at(U("tag_name")).as_string();
+		//for (auto& value : responseBody[U("assets")].as_array()) {
+		//	http_client dlClient(value[U("browser_download_url")].as_string());
+		//	auto dlBody = dlClient.request(methods::GET).get().body();
+
+		//	auto outStream = fstream::open_ostream(U("dl_ezvidia.exe")).get();
+
+		//	dlBody.read_to_end(outStream.streambuf()).get();
+		//	outStream.close();
+		//}
+	}
+	else {
+		LOG(ERR) << "Received status code different than 200 when getting latest release: " << response.status_code();
 	}
 
-	return std::wstring();
+	return std::nullopt;
 }
 
-std::optional<std::wstring> Updater::checkUpdateAvailable() {
+std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 	std::wstring localVersionStr = EZVIDIA_VERSION;
-	std::wstring remoteVersionStr = getLatestVersionNumber();
+
+	auto remoteVersionInfo = getLatestVersionNumber();
+	if (!remoteVersionInfo) return std::nullopt;
 
 	auto localVersion = extractVersion(localVersionStr);
-	if (!localVersion) return std::optional<std::wstring>();
+	if (!localVersion) return std::nullopt;
 
-	auto remoteVersion = extractVersion(remoteVersionStr);
-	if (!remoteVersion) return std::optional<std::wstring>();
+	auto remoteVersion = extractVersion(remoteVersionInfo->tag);
+	if (!remoteVersion) return std::nullopt;
 
 	if (compareVersions(*remoteVersion, *localVersion) >= 1) {
-		LOG(DEBUG) << "New version found";
-		return std::make_optional(std::move(remoteVersionStr));
+		LOG(DEBUG) << "Comparison between remote and local version returned >=1";
+		return remoteVersionInfo;
+	}
+	else {
+		LOG(DEBUG) << "Comparison between remote and local version returned <1";
 	}
 
-	return std::optional<std::wstring>();
+	return std::nullopt;
 }
