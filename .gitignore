@@ -12,7 +12,7 @@
 /x64
 /EZVIDIA/EZVIDIA.vcxproj.user
 /EZVIDIA/ezconfig.json
-/EZVIDIA/ezvidia.aps
+*.aps
 *.bat
 /EZVIDIA/ezconfig_backup.json
 *.exe
