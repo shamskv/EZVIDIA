@@ -55,17 +55,24 @@ namespace {
 		}
 		return 0;
 	}
+
+	bool findAsset(json::value& v) {
+		try {
+			return v[U("name")].as_string() == U("EZVIDIA.exe");
+		}
+		catch (std::exception& e) {
+			return false;
+		}
+	}
 }
 
-std::optional<VersionInfo> Updater::getLatestVersionNumber() {
-	const std::wstring owner(L"shamskv"), repo(L"EZVIDIA");
-
+std::optional<VersionInfo> Updater::getLatestVersion() {
 	// Build request URI and start the request.
 	http_client client(U("http://api.github.com/"));
 
 	http_request request(methods::GET);
 	request.headers().add(header_names::accept, U("application/vnd.github.v3+json"));
-	request.set_request_uri(U("/repos/") + owner + U("/") + repo + U("/releases/latest"));
+	request.set_request_uri(U("/repos/") + Updater::owner + U("/") + Updater::repo + U("/releases/latest"));
 
 	http_response response = client.request(request).get();
 
@@ -73,8 +80,9 @@ std::optional<VersionInfo> Updater::getLatestVersionNumber() {
 		try {
 			auto responseBody = response.extract_json().get();
 			VersionInfo info;
-			info.tag = responseBody.at(U("tag_name")).as_string();
-			info.notes = responseBody.at(U("body")).as_string();
+			info.tag = responseBody[U("tag_name")].as_string();
+			info.notes = responseBody[U("body")].as_string();
+			info.assetsUrl = responseBody[U("assets_url")].as_string();
 			return info;
 		}
 		catch (std::exception& e) {
@@ -101,7 +109,7 @@ std::optional<VersionInfo> Updater::getLatestVersionNumber() {
 std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 	std::wstring localVersionStr = EZVIDIA_VERSION;
 
-	auto remoteVersionInfo = getLatestVersionNumber();
+	auto remoteVersionInfo = getLatestVersion();
 	if (!remoteVersionInfo) return std::nullopt;
 
 	auto localVersion = extractVersion(localVersionStr);
@@ -119,4 +127,53 @@ std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 	}
 
 	return std::nullopt;
+}
+
+bool Updater::downloadAndInstall(const VersionInfo& version) {
+	// Build request URI and start the request.
+	http_client client(version.assetsUrl);
+
+	http_request request(methods::GET);
+	request.headers().add(header_names::accept, U("application/vnd.github.v3+json"));
+
+	http_response response = client.request(request).get();
+
+	if (response.status_code() != status_codes::OK) {
+		LOG(ERR) << "Received status code different than 200 when getting latest release assets: " << response.status_code();
+		return false;
+	}
+
+	//Get download url
+	std::wstring executableUrl{};
+	try {
+		auto assetArray = response.extract_json().get().as_array();
+		auto targetAsset = std::find_if(assetArray.begin(), assetArray.end(), findAsset);
+		if (targetAsset == assetArray.end()) {
+			LOG(ERR) << "Couldn't find executable asset in asset list";
+			return false;
+		}
+		executableUrl = (*targetAsset)[U("browser_download_url")].as_string();
+	}
+	catch (std::exception& e) {
+		LOG(ERR) << "Problem extracting executable download url from assets list";
+		return false;
+	}
+	//Download new exe
+	try {
+		http_client dlClient(executableUrl);
+		http_response dlResponse = dlClient.request(methods::GET).get();
+		if (response.status_code() != status_codes::OK) {
+			LOG(ERR) << "Problem downloading executable url (request NOK)";
+			return false;
+		}
+		auto outStream = fstream::open_ostream(U("EZVIDIA.exe.new")).get();
+		dlResponse.body().read_to_end(outStream.streambuf()).get();
+		outStream.close();
+	}
+	catch (std::exception& e) {
+		LOG(ERR) << "Problem downloading executable url";
+		return false;
+	}
+
+	return false;
 }
