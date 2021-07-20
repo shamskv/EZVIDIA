@@ -4,6 +4,7 @@
 - ~~Logging (header with static stuff, maybe initLogging() needs to be called)~~
 - Exception handling where necessary (WinMain)
 - ~~Add "About" dialog~~
+- GUI adjustments (separators, etc)
 - Update app
   - check if remote tag > this version
   - ask user if wants to update
