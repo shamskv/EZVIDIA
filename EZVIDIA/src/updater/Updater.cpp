@@ -110,18 +110,18 @@ namespace {
 		}
 	}
 
-	template<http::method& M, class T>
-	std::optional<T> makeRequest(const std::wstring& url, const std::wstring& contentType) {
+	template<class T>
+	std::optional<T> makeRequest(const http::method& method, const std::wstring& url, const std::wstring& contentType) {
 		LOG(DEBUG) << "Making request to " << url << " with method " << M.c_str();
 		http_client client(url);
-		http_request request(M);
+		http_request request(method);
 		if (!contentType.empty()) {
 			request.headers().add(header_names::accept, contentType);
 		}
 		http_response response = client.request(request).get();
 
 		if (response.status_code() != status_codes::OK) {
-			LOG(ERR) << "Received status code different than 200 (actual: " << response.status_code() << ") when fetching URL " << url << " with method " << M.c_str();
+			LOG(ERR) << "Received status code different than 200 (actual: " << response.status_code() << ") when fetching URL " << url << " with method " << method.c_str();
 			return std::nullopt;
 		}
 
@@ -148,8 +148,7 @@ namespace {
 			return std::nullopt;
 		}
 
-		method requestMethod = methods::GET;
-		return makeRequest<requestMethod, T>(downloadUrl, contentType);
+		return makeRequest<T>(methods::GET, downloadUrl, contentType);
 	}
 }
 
@@ -159,41 +158,22 @@ std::optional<VersionInfo> Updater::getLatestVersion() {
 	std::wstring versionContentType(L"application/vnd.github.v3+json");
 	method versionMethod = methods::GET;
 
-	auto versionJsonOpt = makeRequest<methods::GET, json::value>(versionUrl, versionContentType);
-	//http_client client(U("http://api.github.com/"));
+	auto optionalVersionJson = makeRequest<json::value>(methods::GET, versionUrl, versionContentType);
+	if (!optionalVersionJson) {
+		return std::nullopt;
+	}
 
-	//http_request request(methods::GET);
-	//request.headers().add(header_names::accept, U("application/vnd.github.v3+json"));
-	//request.set_request_uri(U("/repos/") + Updater::owner + U("/") + Updater::repo + U("/releases/latest"));
-
-	//http_response response = client.request(request).get();
-
-	//if (response.status_code() == status_codes::OK) {
-	//	try {
-	//		auto responseBody = response.extract_json().get();
-	//		VersionInfo info;
-	//		info.tag = responseBody[U("tag_name")].as_string();
-	//		info.notes = responseBody[U("body")].as_string();
-	//		info.assetsUrl = responseBody[U("assets_url")].as_string();
-	//		return info;
-	//	}
-	//	catch (std::exception& e) {
-	//		LOG(ERR) << "Problem extracting tag + notes from latest release. exception " << e.what();
-	//	}
-
-	//	//for (auto& value : responseBody[U("assets")].as_array()) {
-	//	//	http_client dlClient(value[U("browser_download_url")].as_string());
-	//	//	auto dlBody = dlClient.request(methods::GET).get().body();
-
-	//	//	auto outStream = fstream::open_ostream(U("dl_ezvidia.exe")).get();
-
-	//	//	dlBody.read_to_end(outStream.streambuf()).get();
-	//	//	outStream.close();
-	//	//}
-	//}
-	//else {
-	//	LOG(ERR) << "Received status code different than 200 when getting latest release: " << response.status_code();
-	//}
+	try {
+		VersionInfo info;
+		json::value& versionJson = optionalVersionJson.value();
+		info.tag = versionJson[U("tag_name")].as_string();
+		info.notes = versionJson[U("body")].as_string();
+		info.assetsUrl = versionJson[U("assets_url")].as_string();
+		return info;
+	}
+	catch (std::exception& e) {
+		LOG(ERR) << "Problem extracting tag + notes from latest release. exception msg: " << e.what();
+	}
 
 	return std::nullopt;
 }
@@ -223,84 +203,25 @@ std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 
 // For this to work, the latest release needs a manifest.json
 bool Updater::downloadAndInstall(const VersionInfo& version) {
-	// Build request URI and start the request.
-	http_client client(version.assetsUrl);
+	// Build request URI and start the request
+	std::wstring assetArrayContentType(L"application/vnd.github.v3+json");
+	auto optionalAssetArray = makeRequest<json::array>(methods::GET, version.assetsUrl, assetArrayContentType);
 
-	http_request request(methods::GET);
-	request.headers().add(header_names::accept, U("application/vnd.github.v3+json"));
+	if (!optionalAssetArray) {
+		return false;
+	}
+	json::array& assetArray = optionalAssetArray.value();
 
-	http_response response = client.request(request).get();
+	auto optionalManifest = downloadAsset<json::array>(assetArray, L"manifest.json");
 
-	if (response.status_code() != status_codes::OK) {
-		LOG(ERR) << "Received status code different than 200 when getting latest release assets: " << response.status_code();
+	if (!optionalManifest) {
 		return false;
 	}
 
-	auto assetArray = response.extract_json().get().as_array();
-	auto manifestAsset = std::find_if(assetArray.begin(), assetArray.end(), findAsset(L"manifest.json"));
-
-	if (manifestAsset == assetArray.end()) {
-		LOG(ERR) << "Couldn't find manifest asset in asset list";
-		return false;
+	for (auto& item : optionalManifest.value()) {
+		std::wstring assetName = item["name"].as_string();
+		std::wstring assetHash = item["hash"].as_string();
 	}
-
-	////Get download urls
-	//std::wstring executableUrl{};
-	//std::wstring checksumUrl{};
-	//try {
-	//	//Executable
-	//	static const wchar_t executableName[] = L"EZVIDIA.exe";
-	//	auto executableAsset = std::find_if(assetArray.begin(), assetArray.end(), findAsset<executableName>);
-	//	if (executableAsset == assetArray.end()) {
-	//		LOG(ERR) << "Couldn't find executable asset in asset list";
-	//		return false;
-	//	}
-	//	executableUrl = (*executableAsset)[U("browser_download_url")].as_string();
-	//	//Checksum
-	//	static const wchar_t checksumName[] = L"checksum.txt";
-	//	auto checksumAsset = std::find_if(assetArray.begin(), assetArray.end(), findAsset<checksumName>);
-	//	if (checksumAsset == assetArray.end()) {
-	//		LOG(ERR) << "Couldn't find checksum asset in asset list";
-	//		return false;
-	//	}
-	//	checksumUrl = (*checksumAsset)[U("browser_download_url")].as_string();
-	//}
-	//catch (std::exception& e) {
-	//	LOG(ERR) << "Problem extracting download urls from assets list. exception " << e.what();
-	//	return false;
-	//}
-	////Download checksum
-	//std::vector<unsigned char> checksum;
-	//try {
-	//	http_client dlClient(checksumUrl);
-	//	http_response dlResponse = dlClient.request(methods::GET).get();
-	//	if (response.status_code() != status_codes::OK) {
-	//		LOG(ERR) << "Problem downloading checksum (request NOK)";
-	//		return false;
-	//	}
-	//	checksum = dlResponse.extract_vector().get();
-	//}
-	//catch (std::exception& e) {
-	//	LOG(ERR) << "Problem downloading checksum. exception " << e.what();
-	//	return false;
-	//}
-	////Download executable
-	//try {
-	//	http_client dlClient(executableUrl);
-	//	http_response dlResponse = dlClient.request(methods::GET).get();
-	//	if (response.status_code() != status_codes::OK) {
-	//		LOG(ERR) << "Problem downloading executable url (request NOK)";
-	//		return false;
-	//	}
-	//	auto outStream = fstream::open_ostream(U("EZVIDIA.exe.new")).get();
-	//	dlResponse.body().read_to_end(outStream.streambuf()).get();
-	//	outStream.close();
-	//}
-
-	//catch (std::exception& e) {
-	//	LOG(ERR) << "Problem downloading executable url. exception " << e.what();
-	//	return false;
-	//}
 
 	return false;
 }
