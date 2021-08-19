@@ -2,6 +2,7 @@
 //Internal dependencies
 #include "../logging/Logger.hpp"
 #include "../globals.hpp"
+#include "../utils/StringUtils.hpp"
 //Rest SDK
 #include "cpprest/http_client.h"
 #include <cpprest/filestream.h>
@@ -12,6 +13,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include<Windows.h>
 #include<debugapi.h>
+//Hash
+#include<picosha2.h>
 
 using namespace web;                        // Common features like URIs.
 using namespace web::http;                  // Common HTTP functionality
@@ -57,9 +60,9 @@ namespace {
 	}
 
 	auto findAsset(const std::wstring& name) {
-		return [&](json::value& v) {
+		return [&](const json::value& v) {
 			try {
-				return v[U("name")].as_string() == name;
+				return v.at(U("name")).as_string() == name;
 			}
 			catch (std::exception& e) {
 				LOG(ERR) << "findAsset failed with exception " << e.what();
@@ -112,7 +115,7 @@ namespace {
 
 	template<class T>
 	std::optional<T> makeRequest(const http::method& method, const std::wstring& url, const std::wstring& contentType) {
-		LOG(DEBUG) << "Making request to " << url << " with method " << M.c_str();
+		LOG(DEBUG) << "Making request to " << url << " with method " << method.c_str();
 		http_client client(url);
 		http_request request(method);
 		if (!contentType.empty()) {
@@ -140,8 +143,8 @@ namespace {
 		std::wstring downloadUrl{};
 		std::wstring contentType{};
 		try {
-			downloadUrl = assetIt->get(L"browser_download_url").as_string();
-			contentType = assetIt->get(L"content_type").as_string();
+			downloadUrl = assetIt->at(L"browser_download_url").as_string();
+			contentType = assetIt->at(L"content_type").as_string();
 		}
 		catch (std::exception& e) {
 			LOG(ERR) << "Problem getting download url/content type for " << assetName << " with exception: " << e.what();
@@ -203,11 +206,11 @@ std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 
 // For this to work, the latest release needs a manifest.json
 bool Updater::downloadAndInstall(const VersionInfo& version) {
-	// Build request URI and start the request
 	std::wstring assetArrayContentType(L"application/vnd.github.v3+json");
 	auto optionalAssetArray = makeRequest<json::array>(methods::GET, version.assetsUrl, assetArrayContentType);
 
 	if (!optionalAssetArray) {
+		LOG(ERR) << "Problem downloading asset array with url " << version.assetsUrl;
 		return false;
 	}
 	json::array& assetArray = optionalAssetArray.value();
@@ -215,13 +218,38 @@ bool Updater::downloadAndInstall(const VersionInfo& version) {
 	auto optionalManifest = downloadAsset<json::array>(assetArray, L"manifest.json");
 
 	if (!optionalManifest) {
+		LOG(ERR) << "Couldn't find manifest.json in asset array";
 		return false;
 	}
 
 	for (auto& item : optionalManifest.value()) {
-		std::wstring assetName = item["name"].as_string();
-		std::wstring assetHash = item["hash"].as_string();
+		std::wstring assetName = item.at(L"name").as_string();
+		std::wstring assetHashExpected = item.at(L"hash").as_string();
+
+		auto optionalAsset = downloadAsset<std::vector<unsigned char>>(assetArray, assetName);
+		if (!optionalAsset) {
+			LOG(ERR) << "Problem downloading asset " << assetName;
+			return false;
+		}
+		auto& assetBytes = optionalAsset.value();
+		std::wstring assetHashActual = StringUtils::stringToWideString(picosha2::hash256_hex_string(assetBytes));
+		if (assetHashActual.compare(assetHashExpected) != 0) {
+			LOG(ERR) << "Hash mismatch for file \"" << assetName << "\" actual hash: " << assetHashActual << " expected hash: " << assetHashExpected;
+			return false;
+		}
+
+		std::ofstream assetOutputFile(assetName, std::ios::out | std::ios::binary);
+		if (assetOutputFile) {
+			assetOutputFile.write(reinterpret_cast<char*>(assetBytes.data()), assetBytes.size());
+			if (!assetOutputFile) {
+				LOG(ERR) << "Unknown error writing to " << assetName;
+			}
+		}
+		else {
+			LOG(ERR) << "Couldn't open file for writing (asset " << assetName << ")";
+			return false;
+		}
 	}
 
-	return false;
+	return true;
 }
