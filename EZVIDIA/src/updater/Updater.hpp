@@ -6,7 +6,7 @@ class VersionInfo {
 public:
 	std::wstring tag;
 	std::wstring notes;
-	std::wstring assetsUrl;
+	std::string assetsUrl;
 };
 
 class Updater {
