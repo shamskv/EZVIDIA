@@ -6,23 +6,14 @@
 #include "HttpClient.hpp"
 //json
 #include <json.hpp>
-////Rest SDK
-//#include <cpprest/http_client.h>
-//#include <cpprest/filestream.h>
 //STD lib stuff
 #include<optional>
 #include<array>
 //Windows stuff
 #define WIN32_LEAN_AND_MEAN
 #include<Windows.h>
-#include<debugapi.h>
-//Hash
-#include<picosha2.h>
-
-//using namespace web;                        // Common features like URIs.
-//using namespace web::http;                  // Common HTTP functionality
-//using namespace web::http::client;          // HTTP client features
-//using namespace concurrency::streams;       // Asynchronous streams
+// Zip stuff
+#include<Zippy.hpp>
 
 typedef std::array<int, 5> version_array_t;
 
@@ -176,6 +167,12 @@ bool Updater::downloadAndInstall(const VersionInfo& version) {
 			return false;
 		}
 	}
+	zipOutputFile.close();
+
+	Zippy::ZipArchive arch;
+	arch.Open("ezvidia.zip");
+	LOG(DEBUG) << "Number of entries in archive: " << arch.GetNumEntries();
+	auto filesToUpdate = arch.GetEntryNames();
 
 	return true;
 }
