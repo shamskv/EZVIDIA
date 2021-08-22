@@ -1,16 +1,10 @@
-### Roadmap
-- ~~add versioning to settings file~~
-- ~~parse TCP as a real stream (introduce a delimiter)~~
-- ~~Logging (header with static stuff, maybe initLogging() needs to be called)~~
+### Roadmap (priority order)
+- Update app (zip)
+- Audio switching (using AudioDeviceCmdlets)
+- Move to CMAKE
+- Change TCP server to boost::asio (still not sure about this)
 - Exception handling where necessary (WinMain)
-- ~~Add "About" dialog~~
 - GUI adjustments (separators, etc)
-- Update app
-  - check if remote tag > this version
-  - ask user if wants to update
-  - download new version as ezvidia.exe.new
-  - rename current version to ezvidia.exe.old OR rename to ezvidia_\<version\>.exe and move to a _backup_ folder, do the same thing with the settings file.
-  - rename the new version to ezvidia.exe
 - ...
 - ...
 - ...

@@ -77,6 +77,12 @@
     <IncludePath>C:\Users\Shams\source\repos\libs\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\Shams\source\repos\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <VcpkgUseStatic>false</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -97,10 +103,11 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <DisableSpecificWarnings>
       </DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>nvapi64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nvapi64.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,12 +134,13 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>nvapi64.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>nvapi64.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -147,6 +155,7 @@
     <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
     <ClCompile Include="src\logging\BaseLog.cpp" />
+    <ClCompile Include="src\updater\HttpClient.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
     <ClCompile Include="src\updater\Updater.cpp" />
@@ -175,6 +184,7 @@
     <ClInclude Include="src\networking\TcpServer.hpp" />
     <ClInclude Include="src\networking\TcpSocket.hpp" />
     <ClInclude Include="src\logging\BaseLog.hpp" />
+    <ClInclude Include="src\updater\HttpClient.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />
     <ClInclude Include="src\configurations\GlobalConfiguration.hpp" />
@@ -189,20 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\boost.1.76.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.76.0.0\build\boost.targets')" />
-    <Import Project="..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets" Condition="Exists('..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" />
-    <Import Project="..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets" Condition="Exists('..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\boost.1.76.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.76.0.0\build\boost.targets'))" />
-    <Error Condition="!Exists('..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_date_time-vc142.1.76.0.0\build\boost_date_time-vc142.targets'))" />
-    <Error Condition="!Exists('..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_regex-vc142.1.76.0.0\build\boost_regex-vc142.targets'))" />
-  </Target>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

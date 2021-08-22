@@ -63,6 +63,9 @@
     <ClCompile Include="src\gui\SaveConfDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\updater\HttpClient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\logo.ico">
@@ -153,9 +156,11 @@
     <ClInclude Include="src\gui\SaveConfDialog.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\updater\HttpClient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
-    <None Include="packages.config" />
   </ItemGroup>
 </Project>

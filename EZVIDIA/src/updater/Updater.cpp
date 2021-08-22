@@ -3,9 +3,12 @@
 #include "../logging/Logger.hpp"
 #include "../globals.hpp"
 #include "../utils/StringUtils.hpp"
-//Rest SDK
-#include "cpprest/http_client.h"
-#include <cpprest/filestream.h>
+#include "HttpClient.hpp"
+//json
+#include <json.hpp>
+////Rest SDK
+//#include <cpprest/http_client.h>
+//#include <cpprest/filestream.h>
 //STD lib stuff
 #include<optional>
 #include<array>
@@ -16,10 +19,10 @@
 //Hash
 #include<picosha2.h>
 
-using namespace web;                        // Common features like URIs.
-using namespace web::http;                  // Common HTTP functionality
-using namespace web::http::client;          // HTTP client features
-using namespace concurrency::streams;       // Asynchronous streams
+//using namespace web;                        // Common features like URIs.
+//using namespace web::http;                  // Common HTTP functionality
+//using namespace web::http::client;          // HTTP client features
+//using namespace concurrency::streams;       // Asynchronous streams
 
 typedef std::array<int, 5> version_array_t;
 
@@ -59,119 +62,119 @@ namespace {
 		return 0;
 	}
 
-	auto findAsset(const std::wstring& name) {
-		return [&](const json::value& v) {
-			try {
-				return v.at(U("name")).as_string() == name;
-			}
-			catch (std::exception& e) {
-				LOG(ERR) << "findAsset failed with exception " << e.what();
-				return false;
-			}
-		};
-	}
+	//auto findAsset(const std::wstring& name) {
+	//	return [&](const json::value& v) {
+	//		try {
+	//			return v.at(U("name")).as_string() == name;
+	//		}
+	//		catch (std::exception& e) {
+	//			LOG(ERR) << "findAsset failed with exception " << e.what();
+	//			return false;
+	//		}
+	//	};
+	//}
 
-	template<class T>
-	std::optional <T> convertResponse(http_response&);
+	//template<class T>
+	//std::optional <T> convertResponse(http_response&);
 
-	template<class T>
-	std::optional <T> convertResponse(http_response& resp) = delete;
+	//template<class T>
+	//std::optional <T> convertResponse(http_response& resp) = delete;
 
-	template<>
-	std::optional<json::value> convertResponse<json::value>(http_response& resp) {
-		LOG(DEBUG) << "Extracting as json object";
-		try {
-			return resp.extract_json().get();
-		}
-		catch (std::exception& e) {
-			LOG(ERR) << "Problem extracting json object from response body" << e.what();
-			return std::nullopt;
-		}
-	}
+	//template<>
+	//std::optional<json::value> convertResponse<json::value>(http_response& resp) {
+	//	LOG(DEBUG) << "Extracting as json object";
+	//	try {
+	//		return resp.extract_json().get();
+	//	}
+	//	catch (std::exception& e) {
+	//		LOG(ERR) << "Problem extracting json object from response body" << e.what();
+	//		return std::nullopt;
+	//	}
+	//}
 
-	template<>
-	std::optional<json::array> convertResponse<json::array>(http_response& resp) {
-		LOG(DEBUG) << "Extracting as json array";
-		try {
-			return resp.extract_json().get().as_array();
-		}
-		catch (std::exception& e) {
-			LOG(ERR) << "Problem extracting json array from response body: " << e.what();
-			return std::nullopt;
-		}
-	}
+	//template<>
+	//std::optional<json::array> convertResponse<json::array>(http_response& resp) {
+	//	LOG(DEBUG) << "Extracting as json array";
+	//	try {
+	//		return resp.extract_json().get().as_array();
+	//	}
+	//	catch (std::exception& e) {
+	//		LOG(ERR) << "Problem extracting json array from response body: " << e.what();
+	//		return std::nullopt;
+	//	}
+	//}
 
-	template<>
-	std::optional<std::vector<unsigned char>> convertResponse<std::vector<unsigned char>>(http_response& resp) {
-		LOG(DEBUG) << "Extracting as byte vector";
-		try {
-			return resp.extract_vector().get();
-		}
-		catch (std::exception& e) {
-			LOG(ERR) << "Problem extracting byte vector from response body" << e.what();
-			return std::nullopt;
-		}
-	}
+	//template<>
+	//std::optional<std::vector<unsigned char>> convertResponse<std::vector<unsigned char>>(http_response& resp) {
+	//	LOG(DEBUG) << "Extracting as byte vector";
+	//	try {
+	//		return resp.extract_vector().get();
+	//	}
+	//	catch (std::exception& e) {
+	//		LOG(ERR) << "Problem extracting byte vector from response body" << e.what();
+	//		return std::nullopt;
+	//	}
+	//}
 
-	template<class T>
-	std::optional<T> makeRequest(const http::method& method, const std::wstring& url, const std::wstring& contentType) {
-		LOG(DEBUG) << "Making request to " << url << " with method " << method.c_str();
-		http_client client(url);
-		http_request request(method);
-		if (!contentType.empty()) {
-			request.headers().add(header_names::accept, contentType);
-		}
-		http_response response = client.request(request).get();
+	//template<class T>
+	//std::optional<T> makeRequest(const http::method& method, const std::wstring& url, const std::wstring& contentType) {
+	//	LOG(DEBUG) << "Making request to " << url << " with method " << method.c_str();
+	//	http_client client(url);
+	//	http_request request(method);
+	//	if (!contentType.empty()) {
+	//		request.headers().add(header_names::accept, contentType);
+	//	}
+	//	http_response response = client.request(request).get();
 
-		if (response.status_code() != status_codes::OK) {
-			LOG(ERR) << "Received status code different than 200 (actual: " << response.status_code() << ") when fetching URL " << url << " with method " << method.c_str();
-			return std::nullopt;
-		}
+	//	if (response.status_code() != status_codes::OK) {
+	//		LOG(ERR) << "Received status code different than 200 (actual: " << response.status_code() << ") when fetching URL " << url << " with method " << method.c_str();
+	//		return std::nullopt;
+	//	}
 
-		return convertResponse<T>(response);
-	}
+	//	return convertResponse<T>(response);
+	//}
 
-	template<class T>
-	std::optional<T> downloadAsset(const json::array& assetArray, const std::wstring assetName) {
-		auto assetIt = std::find_if(assetArray.begin(), assetArray.end(), findAsset(L"manifest.json"));
+	//template<class T>
+	//std::optional<T> downloadAsset(const json::array& assetArray, const std::wstring assetName) {
+	//	auto assetIt = std::find_if(assetArray.begin(), assetArray.end(), findAsset(L"manifest.json"));
 
-		if (assetIt == assetArray.end()) {
-			LOG(ERR) << "Couldn't find " << assetName.c_str() << " in asset list";
-			return std::nullopt;
-		}
+	//	if (assetIt == assetArray.end()) {
+	//		LOG(ERR) << "Couldn't find " << assetName.c_str() << " in asset list";
+	//		return std::nullopt;
+	//	}
 
-		std::wstring downloadUrl{};
-		std::wstring contentType{};
-		try {
-			downloadUrl = assetIt->at(L"browser_download_url").as_string();
-			contentType = assetIt->at(L"content_type").as_string();
-		}
-		catch (std::exception& e) {
-			LOG(ERR) << "Problem getting download url/content type for " << assetName << " with exception: " << e.what();
-			return std::nullopt;
-		}
+	//	std::wstring downloadUrl{};
+	//	std::wstring contentType{};
+	//	try {
+	//		downloadUrl = assetIt->at(L"browser_download_url").as_string();
+	//		contentType = assetIt->at(L"content_type").as_string();
+	//	}
+	//	catch (std::exception& e) {
+	//		LOG(ERR) << "Problem getting download url/content type for " << assetName << " with exception: " << e.what();
+	//		return std::nullopt;
+	//	}
 
-		return makeRequest<T>(methods::GET, downloadUrl, contentType);
-	}
+	//	return makeRequest<T>(methods::GET, downloadUrl, contentType);
+	//}
 }
 
 std::optional<VersionInfo> Updater::getLatestVersion() {
 	// Build request URI and start the request.
-	std::wstring versionUrl(L"http://api.github.com/repos/" + Updater::owner + L"/" + Updater::repo + L"/releases/latest");
-	std::wstring versionContentType(L"application/vnd.github.v3+json");
-	method versionMethod = methods::GET;
+	std::string versionHost("api.github.com");
+	std::string versionUrl("/repos/" + Updater::owner + "/" + Updater::repo + "/releases/latest");
+	std::string versionContentType("application/vnd.github.v3+json");
 
-	auto optionalVersionJson = makeRequest<json::value>(methods::GET, versionUrl, versionContentType);
+	auto optionalVersionJson = HttpClient::makeGetRequest<nlohmann::json>(versionHost, versionUrl, versionContentType);
 	if (!optionalVersionJson) {
 		return std::nullopt;
 	}
 
 	try {
 		VersionInfo info;
-		json::value& versionJson = optionalVersionJson.value();
-		info.tag = versionJson[U("tag_name")].as_string();
-		info.notes = versionJson[U("body")].as_string();
-		info.assetsUrl = versionJson[U("assets_url")].as_string();
+		nlohmann::json& versionJson = optionalVersionJson.value();
+		info.tag = StringUtils::stringToWideString(versionJson["tag_name"].get<std::string>());
+		info.notes = StringUtils::stringToWideString(versionJson["body"].get<std::string>());
+		info.assetsUrl = StringUtils::stringToWideString(versionJson["assets_url"].get<std::string>());
 		return info;
 	}
 	catch (std::exception& e) {
@@ -206,50 +209,50 @@ std::optional<VersionInfo> Updater::checkUpdateAvailable() {
 
 // For this to work, the latest release needs a manifest.json
 bool Updater::downloadAndInstall(const VersionInfo& version) {
-	std::wstring assetArrayContentType(L"application/vnd.github.v3+json");
-	auto optionalAssetArray = makeRequest<json::array>(methods::GET, version.assetsUrl, assetArrayContentType);
+	//std::wstring assetArrayContentType(L"application/vnd.github.v3+json");
+	//auto optionalAssetArray = makeRequest<json::array>(methods::GET, version.assetsUrl, assetArrayContentType);
 
-	if (!optionalAssetArray) {
-		LOG(ERR) << "Problem downloading asset array with url " << version.assetsUrl;
-		return false;
-	}
-	json::array& assetArray = optionalAssetArray.value();
+	//if (!optionalAssetArray) {
+	//	LOG(ERR) << "Problem downloading asset array with url " << version.assetsUrl;
+	//	return false;
+	//}
+	//json::array& assetArray = optionalAssetArray.value();
 
-	auto optionalManifest = downloadAsset<json::array>(assetArray, L"manifest.json");
+	//auto optionalManifest = downloadAsset<json::array>(assetArray, L"manifest.json");
 
-	if (!optionalManifest) {
-		LOG(ERR) << "Couldn't find manifest.json in asset array";
-		return false;
-	}
+	//if (!optionalManifest) {
+	//	LOG(ERR) << "Couldn't find manifest.json in asset array";
+	//	return false;
+	//}
 
-	for (auto& item : optionalManifest.value()) {
-		std::wstring assetName = item.at(L"name").as_string();
-		std::wstring assetHashExpected = item.at(L"hash").as_string();
+	//for (auto& item : optionalManifest.value()) {
+	//	std::wstring assetName = item.at(L"name").as_string();
+	//	std::wstring assetHashExpected = item.at(L"hash").as_string();
 
-		auto optionalAsset = downloadAsset<std::vector<unsigned char>>(assetArray, assetName);
-		if (!optionalAsset) {
-			LOG(ERR) << "Problem downloading asset " << assetName;
-			return false;
-		}
-		auto& assetBytes = optionalAsset.value();
-		std::wstring assetHashActual = StringUtils::stringToWideString(picosha2::hash256_hex_string(assetBytes));
-		if (assetHashActual.compare(assetHashExpected) != 0) {
-			LOG(ERR) << "Hash mismatch for file \"" << assetName << "\" actual hash: " << assetHashActual << " expected hash: " << assetHashExpected;
-			return false;
-		}
+	//	auto optionalAsset = downloadAsset<std::vector<unsigned char>>(assetArray, assetName);
+	//	if (!optionalAsset) {
+	//		LOG(ERR) << "Problem downloading asset " << assetName;
+	//		return false;
+	//	}
+	//	auto& assetBytes = optionalAsset.value();
+	//	std::wstring assetHashActual = StringUtils::stringToWideString(picosha2::hash256_hex_string(assetBytes));
+	//	if (assetHashActual.compare(assetHashExpected) != 0) {
+	//		LOG(ERR) << "Hash mismatch for file \"" << assetName << "\" actual hash: " << assetHashActual << " expected hash: " << assetHashExpected;
+	//		return false;
+	//	}
 
-		std::ofstream assetOutputFile(assetName, std::ios::out | std::ios::binary);
-		if (assetOutputFile) {
-			assetOutputFile.write(reinterpret_cast<char*>(assetBytes.data()), assetBytes.size());
-			if (!assetOutputFile) {
-				LOG(ERR) << "Unknown error writing to " << assetName;
-			}
-		}
-		else {
-			LOG(ERR) << "Couldn't open file for writing (asset " << assetName << ")";
-			return false;
-		}
-	}
+	//	std::ofstream assetOutputFile(assetName, std::ios::out | std::ios::binary);
+	//	if (assetOutputFile) {
+	//		assetOutputFile.write(reinterpret_cast<char*>(assetBytes.data()), assetBytes.size());
+	//		if (!assetOutputFile) {
+	//			LOG(ERR) << "Unknown error writing to " << assetName;
+	//		}
+	//	}
+	//	else {
+	//		LOG(ERR) << "Couldn't open file for writing (asset " << assetName << ")";
+	//		return false;
+	//	}
+	//}
 
 	return true;
 }

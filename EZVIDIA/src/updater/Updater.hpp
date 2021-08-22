@@ -11,8 +11,8 @@ public:
 
 class Updater {
 private:
-	inline static const std::wstring repo = std::wstring(L"EZVIDIA");
-	inline static const std::wstring owner = std::wstring(L"shamskv");
+	inline static const std::string repo = std::string("EZVIDIA");
+	inline static const std::string owner = std::string("shamskv");
 private:
 	static std::optional<VersionInfo> getLatestVersion();
 public:
