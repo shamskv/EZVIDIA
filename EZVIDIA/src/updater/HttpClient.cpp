@@ -10,6 +10,8 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ssl/error.hpp>
 #include <boost/asio/ssl/stream.hpp>
+// string trim
+#include <boost/algorithm/string.hpp>
 // windows access to certificates
 #include <wincrypt.h>
 // json lib
@@ -76,9 +78,24 @@ namespace {
 }
 
 template<class T>
-std::optional<T> HttpClient::makeGetRequest(const std::string& host, const std::string& target, const std::string& contentType) {
+std::optional<T> HttpClient::makeGetRequestSslNoRedirect(const std::string& url, const std::string& contentType) {
 	try {
-		LOG(DEBUG) << "Making request to " << host.c_str();
+		LOG(DEBUG) << "Making request to " << url.c_str();
+
+		// Tranform url into protocol/host/target
+		const unsigned int ARRAY_SIZE = 500;
+		char protocol[ARRAY_SIZE] = { 0 }, host[ARRAY_SIZE] = { 0 }, target[ARRAY_SIZE] = { 0 };
+		if (sscanf_s(url.c_str(), "%[^:]://%[^/]/%s", protocol, ARRAY_SIZE, host, ARRAY_SIZE, target + 1, ARRAY_SIZE - 1) != 3) {
+			LOG(ERR) << "Failed to extract protocol host or target from the provide url";
+			return std::nullopt;
+		}
+		target[0] = '/';
+
+		// Only use this function with https, not sure what would happen with other protocols
+		if (strcmp("https", protocol)) {
+			LOG(ERR) << "Protocol is not https";
+			return std::nullopt;
+		}
 
 		// The io_context is required for all I/O
 		net::io_context ioc;
@@ -96,7 +113,7 @@ std::optional<T> HttpClient::makeGetRequest(const std::string& host, const std::
 		beast::ssl_stream<beast::tcp_stream> stream(ioc, ctx);
 
 		// Set SNI Hostname (many hosts need this to handshake successfully)
-		if (!SSL_set_tlsext_host_name(stream.native_handle(), host.c_str())) {
+		if (!SSL_set_tlsext_host_name(stream.native_handle(), host)) {
 			beast::error_code ec{ static_cast<int>(::ERR_get_error()), net::error::get_ssl_category() };
 			throw beast::system_error{ ec };
 		}
@@ -128,23 +145,21 @@ std::optional<T> HttpClient::makeGetRequest(const std::string& host, const std::
 		http::read(stream, buffer, res);
 
 		if (res.result_int() != 200) {
-			LOG(ERR) << "Request with host " << host.c_str() << " and target " << target.c_str() << " failed with code " << res.result_int();
+			LOG(DEBUG) << "Request with host " << host << " and target " << target << " failed with code " << res.result_int();
+			if (res.result_int() / 100 == 3) {
+				std::string redirectUrl = res[http::field::location].data();
+				if (!redirectUrl.empty()) {
+					redirectUrl = redirectUrl.substr(0, redirectUrl.find("\n"));
+					HttpClient::redirectUrl = redirectUrl;
+				}
+			}
 			return std::nullopt;
 		}
 
 		auto& vectorBody = res.body();
 
-		// Gracefully close the socket
-		beast::error_code ec;
-		stream.shutdown(ec);
-
-		// not_connected happens sometimes
-		// so don't bother reporting it.
-		//
-		if (ec && ec != net::error::eof && ec != ssl::error::stream_truncated)
-			throw beast::system_error{ ec };
-
-		// If we get here then the connection is closed gracefully
+		// So many problem closing sockets, just trying not to leak anything, not like webservers care about it.
+		stream.next_layer().close();
 
 		return convertResponse<T>(vectorBody);
 	}
@@ -154,6 +169,18 @@ std::optional<T> HttpClient::makeGetRequest(const std::string& host, const std::
 	}
 }
 
+// This is so scuffed lol
+template<class T>
+std::optional<T> HttpClient::makeGetRequestSsl(const std::string& url, const std::string& contentType) {
+	std::optional<T> ret = HttpClient::makeGetRequestSslNoRedirect<T>(url, contentType);
+	if (!ret && !HttpClient::redirectUrl.empty()) {
+		std::string redirectUrl = HttpClient::redirectUrl;
+		HttpClient::redirectUrl.clear();
+		ret = HttpClient::makeGetRequestSslNoRedirect<T>(redirectUrl, contentType);
+	}
+	return ret;
+}
+
 // Instantiate the two implementations we will need
-template std::optional<std::vector<char>> HttpClient::makeGetRequest<std::vector<char>>(const std::string&, const std::string&, const std::string&);
-template std::optional<json> HttpClient::makeGetRequest<json>(const std::string&, const std::string&, const std::string&);
+template std::optional<std::vector<char>> HttpClient::makeGetRequestSsl<std::vector<char>>(const std::string&, const std::string&);
+template std::optional<json> HttpClient::makeGetRequestSsl<json>(const std::string&, const std::string&);
