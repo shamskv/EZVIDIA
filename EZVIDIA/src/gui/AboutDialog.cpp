@@ -32,11 +32,8 @@ LRESULT AboutDialog::handleCommand(HWND hDlg, WPARAM wParam) {
 
 std::wstring AboutDialog::getAboutText() {
 	std::wstringstream ss;
-	ss << EZVIDIA_VERSION << std::endl << std::endl;
-	ss << "EZVIDIA is an open source program distributed under the GNU General Public License v3.0." << std::endl;
-	ss << "If you have any feedback or problem leave an issue at the GitHub repository." << std::endl << std::endl;
-	ss << "Developed by shamskv.";
-
+	ss << "EZVIDIA " << EZVIDIA_VERSION << std::endl << std::endl;
+	ss << "If you have any feedback or problem leave an issue at the GitHub repository.";
 	return ss.str();
 }
 
