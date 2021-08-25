@@ -11,3 +11,8 @@
 /EZVIDIA/ezvidia.log
 /x64
 /EZVIDIA/EZVIDIA.vcxproj.user
+/EZVIDIA/ezconfig.json
+*.aps
+*.bat
+/EZVIDIA/ezconfig_backup.json
+*.exe
