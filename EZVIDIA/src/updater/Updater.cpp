@@ -12,8 +12,6 @@
 //Windows stuff
 #define WIN32_LEAN_AND_MEAN
 #include<Windows.h>
-// Zip stuff
-#include<Zippy.hpp>
 
 typedef std::array<int, 5> version_array_t;
 
@@ -168,11 +166,6 @@ bool Updater::downloadAndInstall(const VersionInfo& version) {
 		}
 	}
 	zipOutputFile.close();
-
-	Zippy::ZipArchive arch;
-	arch.Open("ezvidia.zip");
-	LOG(DEBUG) << "Number of entries in archive: " << arch.GetNumEntries();
-	auto filesToUpdate = arch.GetEntryNames();
 
 	return true;
 }

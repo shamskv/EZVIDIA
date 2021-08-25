@@ -159,22 +159,22 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPar
 			thisPtr->settings.setNetworkTcp(false);
 			thisPtr->tcpServer.reset();
 			break;
-		case IDM_UPDATE:
-		{
-			auto result = Updater::checkUpdateAvailable();
-			if (result) {
-				if (MessageBox(hWnd, result->tag.c_str(), L"Checking for update", MB_YESNO | MB_APPLMODAL) == IDYES) {
-					if (Updater::downloadAndInstall(result.value())) {
-						MessageBox(hWnd, L"Updated successfully", L"Checking for update", MB_OK | MB_APPLMODAL);
-					}
-					else {
-						MessageBox(hWnd, L"Updated failed", L"Checking for update", MB_OK | MB_ICONERROR | MB_APPLMODAL);
-					}
-				}
-			}
-			else MessageBox(hWnd, L"No update available", L"Checking for update", MB_OK | MB_APPLMODAL);
-			break;
-		}
+			//case IDM_UPDATE:
+			//{
+			//	auto result = Updater::checkUpdateAvailable();
+			//	if (result) {
+			//		if (MessageBox(hWnd, result->tag.c_str(), L"Checking for update", MB_YESNO | MB_APPLMODAL) == IDYES) {
+			//			if (Updater::downloadAndInstall(result.value())) {
+			//				MessageBox(hWnd, L"Updated successfully", L"Checking for update", MB_OK | MB_APPLMODAL);
+			//			}
+			//			else {
+			//				MessageBox(hWnd, L"Updated failed", L"Checking for update", MB_OK | MB_ICONERROR | MB_APPLMODAL);
+			//			}
+			//		}
+			//	}
+			//	else MessageBox(hWnd, L"No update available", L"Checking for update", MB_OK | MB_APPLMODAL);
+			//	break;
+			//}
 		case IDM_ABOUT:
 			thisPtr->actionLock = true;
 			AboutDialog::show(thisPtr->hInstance, hWnd, (LPARAM)thisPtr);
@@ -264,7 +264,7 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui * thisPtr) {
 	else {
 		AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON, L"Network control (TCP)");
 	}
-	AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
+	//AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
 	AppendMenu(hOptionsMenu, MF_STRING, IDM_ABOUT, L"About");
 
 	AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu, L"Options");
