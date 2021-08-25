@@ -28,14 +28,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (argc == 1 && wcslen(lpCmdLine) > 0) {
 			confNameToApply.emplace(argv[0]);
 		}
-		else if (argc > 1) {
+		else if (argc > 1 && wcslen(lpCmdLine) > 0) {
 			MessageBox(NULL, L"Error starting application: invalid arguments\nRun without arguments or "
 				"with 1 argument containing the desired configuration name surrounded by quotation marks.", NULL, MB_OK | MB_ICONERROR | MB_APPLMODAL);
 			return -1;
 		}
 	}
 
-	std::unique_ptr<Settings> config = std::make_unique<JsonSettings>("ezconfig.json");
+	std::unique_ptr<Settings> config = std::make_unique<JsonSettings>("configs.json");
 	std::unique_ptr<DisplayDriver> driver(DisplayDriver::getAvailableDriver());
 
 	if (confNameToApply.has_value()) {
