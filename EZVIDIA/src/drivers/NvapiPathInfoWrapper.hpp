@@ -2,17 +2,17 @@
 #include <nvapi.h>
 
 class NvapiPathInfoWrapper {
-public:
-	NvU32 nDisplays = 0;
-	NV_DISPLAYCONFIG_PATH_INFO* pInfo = nullptr;
+ public:
+  NvU32 nDisplays = 0;
+  NV_DISPLAYCONFIG_PATH_INFO* pInfo = nullptr;
 
-	NvapiPathInfoWrapper();
+  NvapiPathInfoWrapper();
 
-	bool allocate();
-	void destroy();
+  bool allocate();
+  void destroy();
 
-	~NvapiPathInfoWrapper();
+  ~NvapiPathInfoWrapper();
 
-	NvapiPathInfoWrapper(const NvapiPathInfoWrapper& other) = delete;
-	NvapiPathInfoWrapper& operator=(const NvapiPathInfoWrapper& other) = delete;
+  NvapiPathInfoWrapper(const NvapiPathInfoWrapper& other) = delete;
+  NvapiPathInfoWrapper& operator=(const NvapiPathInfoWrapper& other) = delete;
 };

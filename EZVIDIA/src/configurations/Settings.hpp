@@ -1,42 +1,43 @@
 #pragma once
-#include<mutex>
-#include<vector>
-#include<string>
-#include<optional>
-#include"GlobalConfiguration.hpp"
+#include <mutex>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "GlobalConfiguration.hpp"
 
 class Settings {
-protected:
-	std::vector<GlobalConfiguration> configVector;
-	bool networkTcp;
-	std::mutex settingsLock;
+ protected:
+  std::vector<GlobalConfiguration> configVector;
+  bool networkTcp;
+  std::mutex settingsLock;
 
-	virtual bool persist() = 0;
+  virtual bool persist() = 0;
 
-	virtual bool read() = 0;
+  virtual bool read() = 0;
 
-public:
-	bool addConfiguration(const GlobalConfiguration& conf);
+ public:
+  bool addConfiguration(const GlobalConfiguration& conf);
 
-	bool deleteConfiguration(const std::wstring& name);
+  bool deleteConfiguration(const std::wstring& name);
 
-	bool deleteConfiguration(const int& index);
+  bool deleteConfiguration(const int& index);
 
-	bool isConfigurationPresent(const std::wstring& name);
+  bool isConfigurationPresent(const std::wstring& name);
 
-	std::optional<GlobalConfiguration> getConfiguration(const std::wstring& name);
+  std::optional<GlobalConfiguration> getConfiguration(const std::wstring& name);
 
-	std::optional<GlobalConfiguration> getConfiguration(const int& index);
+  std::optional<GlobalConfiguration> getConfiguration(const int& index);
 
-	std::vector<std::wstring> getAllConfigurationNames();
+  std::vector<std::wstring> getAllConfigurationNames();
 
-	bool refreshConfigurations();
+  bool refreshConfigurations();
 
-	void init();
+  void init();
 
-	size_t getConfigNum();
+  size_t getConfigNum();
 
-	bool networkTcpActive();
+  bool networkTcpActive();
 
-	bool setNetworkTcp(bool);
+  bool setNetworkTcp(bool);
 };

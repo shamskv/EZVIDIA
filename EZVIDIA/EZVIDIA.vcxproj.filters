@@ -163,5 +163,6 @@
   <ItemGroup>
     <None Include="..\README.md" />
     <None Include="vcpkg.json" />
+    <None Include=".clang-format" />
   </ItemGroup>
 </Project>

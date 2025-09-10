@@ -1,21 +1,22 @@
 #pragma once
 #include <WinSock2.h>
-#include<stdint.h>
+#include <stdint.h>
 
 class TcpSocket {
-private:
-	SOCKET listenSocket = INVALID_SOCKET;
-	enum class SocketState { OPEN, FAIL, CLOSED };
-	SocketState state = SocketState::FAIL;
-	uint16_t port;
-public:
-	TcpSocket(uint16_t);
-	~TcpSocket();
+ private:
+  SOCKET listenSocket = INVALID_SOCKET;
+  enum class SocketState { OPEN, FAIL, CLOSED };
+  SocketState state = SocketState::FAIL;
+  uint16_t port;
 
-	bool ready();
-	SOCKET waitForClient();
-	void close();
+ public:
+  TcpSocket(uint16_t);
+  ~TcpSocket();
 
-	TcpSocket(const TcpSocket&) = delete;
-	TcpSocket& operator=(const TcpSocket&) = delete;
+  bool ready();
+  SOCKET waitForClient();
+  void close();
+
+  TcpSocket(const TcpSocket&) = delete;
+  TcpSocket& operator=(const TcpSocket&) = delete;
 };

@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace WindowsUtils {
-	int generateBatFiles(const std::vector<std::wstring>&);
+int generateBatFiles(const std::vector<std::wstring>&);
 }
