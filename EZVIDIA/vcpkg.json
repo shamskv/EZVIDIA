@@ -1,0 +1,11 @@
+{
+  "name": "ezvidia",
+  "version-string": "dev",
+  "dependencies": [
+    "nlohmann-json",
+    "boost-asio",
+    "boost-program-options",
+    "boost-beast",
+    "openssl"
+  ]
+}

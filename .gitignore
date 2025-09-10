@@ -16,3 +16,4 @@
 *.bat
 /EZVIDIA/ezconfig_backup.json
 *.exe
+/EZVIDIA/vcpkg_installed/x64-windows

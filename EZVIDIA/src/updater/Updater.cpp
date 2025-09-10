@@ -5,7 +5,7 @@
 #include "../utils/StringUtils.hpp"
 #include "HttpClient.hpp"
 //json
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 //STD lib stuff
 #include<optional>
 #include<array>

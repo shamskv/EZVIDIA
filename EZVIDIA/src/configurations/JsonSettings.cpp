@@ -1,5 +1,5 @@
 #include "JsonSettings.hpp"
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <fstream>
 #include "ConfException.hpp"
 #include "../utils/StringUtils.hpp"
