@@ -173,19 +173,19 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam,
           //	auto result = Updater::checkUpdateAvailable();
           //	if (result) {
           //		if (MessageBox(hWnd, result->tag.c_str(), L"Checking for
-          //update", MB_YESNO | MB_APPLMODAL) == IDYES) { 			if
-          //(Updater::downloadAndInstall(result.value())) { 				MessageBox(hWnd,
-          //L"Updated successfully", L"Checking for update", MB_OK |
-          //MB_APPLMODAL);
+          // update", MB_YESNO | MB_APPLMODAL) == IDYES) { 			if
+          //(Updater::downloadAndInstall(result.value())) { MessageBox(hWnd,
+          // L"Updated successfully", L"Checking for update", MB_OK |
+          // MB_APPLMODAL);
           //			}
           //			else {
           //				MessageBox(hWnd, L"Updated failed", L"Checking for update",
-          //MB_OK | MB_ICONERROR | MB_APPLMODAL);
+          // MB_OK | MB_ICONERROR | MB_APPLMODAL);
           //			}
           //		}
           //	}
           //	else MessageBox(hWnd, L"No update available", L"Checking for
-          //update", MB_OK | MB_APPLMODAL); 	break;
+          // update", MB_OK | MB_APPLMODAL); 	break;
           // }
         case IDM_ABOUT:
           thisPtr->actionLock = true;

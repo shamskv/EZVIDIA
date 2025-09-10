@@ -164,12 +164,11 @@
     <ClCompile Include="src\networking\TcpServer.cpp" />
     <ClCompile Include="src\networking\TcpSocket.cpp" />
     <ClCompile Include="src\logging\BaseLog.cpp" />
-    <ClCompile Include="src\updater\HttpClient.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
-    <ClCompile Include="src\updater\Updater.cpp" />
     <ClCompile Include="src\utils\WindowsUtils.cpp" />
     <ClCompile Include="src\WinMain.cpp" />
+    <ClCompile Include="src\web_ui\WebServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\logo.ico" />
@@ -193,7 +192,6 @@
     <ClInclude Include="src\networking\TcpServer.hpp" />
     <ClInclude Include="src\networking\TcpSocket.hpp" />
     <ClInclude Include="src\logging\BaseLog.hpp" />
-    <ClInclude Include="src\updater\HttpClient.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />
     <ClInclude Include="src\configurations\GlobalConfiguration.hpp" />
@@ -203,8 +201,8 @@
     <ClInclude Include="src\drivers\DisplayDriver.hpp" />
     <ClInclude Include="src\targetver.h" />
     <ClInclude Include="src\gui\WindowsGui.hpp" />
-    <ClInclude Include="src\updater\Updater.hpp" />
     <ClInclude Include="src\utils\WindowsUtils.hpp" />
+    <ClInclude Include="src\web_ui\WebServer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />

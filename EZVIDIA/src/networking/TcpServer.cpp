@@ -1,9 +1,7 @@
 #include "TcpServer.hpp"
-
-#include <boost/algorithm/string.hpp>
-
-#include "../logging/Logger.hpp"
 #include "../utils/StringUtils.hpp"
+#include "../logging/Logger.hpp"
+
 
 namespace {
 int recvUntilDelimiterOrTimeout(SOCKET, char*, int, int, char);
@@ -46,7 +44,7 @@ void TcpServer::serverThread() {
         strcpy_s(reply_buf, "NOK");
         if (strlen(buf) > 6) {
           std::string targetConf(buf + 6);
-          boost::trim(targetConf);
+          StringUtils::trim(targetConf);
           std::wstring targetConfW =
               StringUtils::stringToWideString(targetConf);
           LOG(DEBUG) << "APPLY request target conf name parsed as "

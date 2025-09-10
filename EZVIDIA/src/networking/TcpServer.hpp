@@ -1,10 +1,9 @@
 #pragma once
-#include <atomic>
-#include <thread>
-
+#include "TcpSocket.hpp"
 #include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
-#include "TcpSocket.hpp"
+#include <thread>
+#include <atomic>
 
 #define TCP_PORT 48541
 #define DEFAULT_BUFLEN 1024

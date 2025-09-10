@@ -31,15 +31,8 @@ ReferenceAlignment: Left
 DerivePointerAlignment: false
 
 # --- Includes ---
-IncludeBlocks: Regroup
-SortIncludes: true
-IncludeCategories:
-  - Regex: '^<.*\.h>'
-    Priority: 1
-  - Regex: '^<'
-    Priority: 2
-  - Regex: '.*'
-    Priority: 3
+SortIncludes: false
+
 
 # --- Comments ---
 AlignTrailingComments: true

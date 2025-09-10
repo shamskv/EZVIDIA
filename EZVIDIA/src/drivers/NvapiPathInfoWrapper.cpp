@@ -1,11 +1,10 @@
 #define WIN32_LEAN_AND_MEAN
-#include "NvapiPathInfoWrapper.hpp"
-
 #include <Windows.h>
 
 #include <memory>
 
 #include "DriverException.hpp"
+#include "NvapiPathInfoWrapper.hpp"
 
 NvapiPathInfoWrapper::NvapiPathInfoWrapper() {
 }

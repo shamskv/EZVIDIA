@@ -6,6 +6,8 @@
     "boost-asio",
     "boost-program-options",
     "boost-beast",
-    "openssl"
+    "openssl",
+    "cpp-httplib",
+    "abseil"
   ]
 }

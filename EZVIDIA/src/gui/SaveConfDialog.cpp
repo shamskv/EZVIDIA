@@ -1,12 +1,10 @@
 #include "SaveConfDialog.hpp"
-
-#include <boost/algorithm/string.hpp>
-#include <cwctype>
-
-#include "../../resources/resource.h"
 #include "../logging/Logger.hpp"
+#include "../../resources/resource.h"
+#include <cwctype>
 #include "WindowsGui.hpp"
-// Forward declarations
+#include "../utils/StringUtils.hpp"
+//Forward declarations
 #include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
 #include "../networking/TcpServer.hpp"
@@ -39,7 +37,7 @@ LRESULT SaveConfDialog::handleCommand(HWND hDlg, WPARAM wParam,
 
     auto check_invalid_char = [](wchar_t c) { return !std::iswprint(c); };
     std::wstring inputStr(input);
-    boost::trim(inputStr);
+    StringUtils::trim(inputStr);
     if (inputStr.find(L";") != std::wstring::npos) {
       LOG(ERR) << "New configuration name rejected (contains ;)";
       MessageBox(hDlg, L"The character \';\' is not allowed.", NULL,
