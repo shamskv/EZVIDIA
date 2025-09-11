@@ -3,6 +3,7 @@
 #include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
 #include "../networking/TcpServer.hpp"
+#include "../web_ui/WebServer.h"
 // Windows stuff
 #include "../../resources/resource.h"
 // Dialogs/windows
@@ -57,6 +58,10 @@ WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& settings,
   if (settings.networkTcpActive()) {
     LOG(DEBUG) << "GUI is activating TCP server because of settings";
     tcpServer = std::make_unique<TcpServer>(settings, driver);
+  }
+  if (settings.webServerActive()) {
+    LOG(DEBUG) << "GUI is activating Web server because of settings";
+    webServer = std::make_unique<WebServer>(&settings, &driver);
   }
 }
 
@@ -167,6 +172,19 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam,
         case IDM_NETWORK_OFF:
           thisPtr->settings.setNetworkTcp(false);
           thisPtr->tcpServer.reset();
+          break;
+        case IDM_WEBSERVER_ON:
+          thisPtr->settings.setWebServer(true);
+          thisPtr->webServer =
+              std::make_unique<WebServer>(&thisPtr->settings, &thisPtr->driver);
+          if (thisPtr->webServer->error()) {
+            LOG(ERR) << "Error starting Web server from GUI, resetting object";
+            thisPtr->webServer.reset();
+          }
+          break;
+        case IDM_WEBSERVER_OFF:
+          thisPtr->settings.setWebServer(false);
+          thisPtr->webServer.reset();
           break;
           // case IDM_UPDATE:
           //{
@@ -279,6 +297,15 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr) {
   } else {
     AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON,
                L"Network control (TCP)");
+  }
+  if (thisPtr->settings.webServerActive() && thisPtr->webServer) {
+    AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_WEBSERVER_OFF,
+               L"Web interface");
+  } else if (thisPtr->settings.webServerActive()) {
+    AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_WEBSERVER_OFF,
+               L"Web interface (ERROR)");
+  } else {
+    AppendMenu(hOptionsMenu, MF_STRING, IDM_WEBSERVER_ON, L"Web interface");
   }
   // AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
   AppendMenu(hOptionsMenu, MF_STRING, IDM_ABOUT, L"About");

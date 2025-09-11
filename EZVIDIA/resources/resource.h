@@ -23,6 +23,8 @@
 #define IDM_NETWORK_OFF 2502
 #define IDM_UPDATE 2503
 #define IDM_ABOUT 2504
+#define IDM_WEBSERVER_ON 2505
+#define IDM_WEBSERVER_OFF 2506
 
 // Next default values for new objects
 //

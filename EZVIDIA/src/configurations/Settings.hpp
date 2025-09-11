@@ -10,6 +10,7 @@ class Settings {
  protected:
   std::vector<GlobalConfiguration> configVector;
   bool networkTcp;
+  bool webServer;
   std::mutex settingsLock;
 
   virtual bool persist() = 0;
@@ -40,4 +41,8 @@ class Settings {
   bool networkTcpActive();
 
   bool setNetworkTcp(bool);
+
+  bool webServerActive();
+
+  bool setWebServer(bool);
 };

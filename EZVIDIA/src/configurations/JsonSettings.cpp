@@ -83,6 +83,7 @@ bool JsonSettings::persist() {
   }
   // Save other settings
   root["networkTcp"] = networkTcp;
+  root["webServer"] = webServer;
 
   out << root.dump(3) << std::endl;
 
@@ -131,6 +132,8 @@ bool JsonSettings::read() {
     // Parse other settings
     networkTcp =
         getValueFromJson(fRoot, "networkTcp", std::optional<bool>(false));
+    webServer =
+        getValueFromJson(fRoot, "webServer", std::optional<bool>(false));
   } else {
     throw ConfException(L"Invalid schema");
   }

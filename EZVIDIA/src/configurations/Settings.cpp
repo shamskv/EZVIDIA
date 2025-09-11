@@ -84,3 +84,12 @@ bool Settings::setNetworkTcp(bool value) {
 
   return persist();
 }
+
+bool Settings::webServerActive() {
+  return webServer;
+}
+
+bool Settings::setWebServer(bool value) {
+  webServer = value;
+  return persist();
+}
