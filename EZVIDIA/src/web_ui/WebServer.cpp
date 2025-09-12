@@ -56,7 +56,7 @@ std::string RenderIndex(Settings& settings) {
           "EZVIDIA/resources/logo.ico'>"
        << "<link rel='manifest' href='/manifest.webmanifest'>"
        << "<link rel='apple-touch-icon' "
-          "href='https://<your-user>.github.io/EZVIDIA/assets/"
+          "href='https://shamskv.github.io/EZVIDIA/assets/"
           "apple-touch-icon.png'>"
        << "<meta name='theme-color' content='#0ea5a5'>"
        << "<title>EZVIDIA</title>"
