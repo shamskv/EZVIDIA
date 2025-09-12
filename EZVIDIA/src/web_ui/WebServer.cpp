@@ -54,6 +54,11 @@ std::string RenderIndex(Settings& settings) {
        << "<link rel='icon' "
           "href='https://raw.githubusercontent.com/shamskv/EZVIDIA/master/"
           "EZVIDIA/resources/logo.ico'>"
+       << "<link rel='manifest' href='/manifest.webmanifest'>"
+       << "<link rel='apple-touch-icon' "
+          "href='https://<your-user>.github.io/EZVIDIA/assets/"
+          "apple-touch-icon.png'>"
+       << "<meta name='theme-color' content='#0ea5a5'>"
        << "<title>EZVIDIA</title>"
        << "<style>"
           " :root{--bg:#111418;--card:#1b1f24;--text:#e7e9ec;--muted:#b3b9c5;"
@@ -173,6 +178,30 @@ WebServer::WebServer(Settings* settings, DisplayDriver* driver)
     }
     nlohmann::json out = {{"ok", ok}, {"name", name}};
     res.set_content(out.dump(), "application/json");
+  });
+
+  // manifest for the nice icon when "installing" the web app.
+  server_->Get("/manifest.webmanifest", [](const httplib::Request&,
+                                           httplib::Response& res) {
+    const std::string base = "https://shamskv.github.io/EZVIDIA/assets/";
+
+    nlohmann::json manifest = {
+        {"name", "EZVIDIA"},
+        {"short_name", "EZVIDIA"},
+        {"start_url", "/"},
+        {"display", "standalone"},
+        {"background_color", "#111418"},
+        {"theme_color", "#0ea5a5"},
+        {"icons",
+         nlohmann::json::array(
+             {nlohmann::json{{"src", base + "android-chrome-192x192.png"},
+                             {"sizes", "192x192"},
+                             {"type", "image/png"}},
+              nlohmann::json{{"src", base + "android-chrome-512x512.png"},
+                             {"sizes", "512x512"},
+                             {"type", "image/png"}}})}};
+
+    res.set_content(manifest.dump(), "application/manifest+json");
   });
 
   // Start server thread
