@@ -11,6 +11,7 @@ class Settings {
   std::vector<GlobalConfiguration> configVector;
   bool networkTcp;
   bool webServer;
+  uint16_t webServerPort;
   std::mutex settingsLock;
 
   virtual bool persist() = 0;
@@ -45,4 +46,8 @@ class Settings {
   bool webServerActive();
 
   bool setWebServer(bool);
+
+  bool setWebServerPort(uint16_t port);
+
+  uint16_t getWebServerPort();
 };

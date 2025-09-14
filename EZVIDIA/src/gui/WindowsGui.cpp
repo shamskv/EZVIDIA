@@ -299,16 +299,22 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr) {
                L"Network control (TCP)");
   }
   if (thisPtr->settings.webServerActive() && thisPtr->webServer) {
+    const std::wstring text =
+        L"Web interface (port " +
+        std::to_wstring(thisPtr->settings.getWebServerPort()) + L")";
     AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_WEBSERVER_OFF,
-               L"Web interface");
+               text.c_str());
   } else if (thisPtr->settings.webServerActive()) {
     AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_WEBSERVER_OFF,
                L"Web interface (ERROR)");
   } else {
-    AppendMenu(hOptionsMenu, MF_STRING, IDM_WEBSERVER_ON, L"Web interface");
+    const std::wstring text =
+        L"Web interface (port " +
+        std::to_wstring(thisPtr->settings.getWebServerPort()) + L")";
+    AppendMenu(hOptionsMenu, MF_STRING, IDM_WEBSERVER_ON, text.c_str());
   }
   // AppendMenu(hOptionsMenu, MF_STRING, IDM_UPDATE, L"Check for updates");
-  AppendMenu(hOptionsMenu, MF_STRING, IDM_ABOUT, L"About");
+  AppendMenu(hOptionsMenu, MF_STRING, IDM_ABOUT, L"About/Help");
 
   AppendMenu(hSubMenu, MF_STRING | MF_POPUP, (UINT_PTR)hOptionsMenu,
              L"Options");

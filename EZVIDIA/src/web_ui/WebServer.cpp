@@ -205,7 +205,11 @@ WebServer::WebServer(Settings* settings, DisplayDriver* driver)
   });
 
   // Start server thread
-  th_ = std::thread([this] { server_->listen("0.0.0.0", 3737); });
+  th_ = std::thread([this] {
+    const int port = (int)settings_.getWebServerPort();
+    LOG(DEBUG) << "Starting web server with port " << port;
+    server_->listen("0.0.0.0", port);
+  });
   for (int i = 0; i < 100; i++) {  // ~1s timeout
     if (server_->is_running()) {
       return;

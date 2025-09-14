@@ -5,6 +5,7 @@
 
 #include "../utils/StringUtils.hpp"
 #include "ConfException.hpp"
+#include <random>
 
 namespace {
 // Declare the auxiliary functions used and the template
@@ -22,6 +23,12 @@ inline bool isValueInJson(const nlohmann::json& root,
 
 template <>
 inline bool isValueInJson<uint32_t>(const nlohmann::json& root,
+                                    const std::string& name) {
+  return root.contains(name) && root[name].is_number_unsigned();
+}
+
+template <>
+inline bool isValueInJson<uint16_t>(const nlohmann::json& root,
                                     const std::string& name) {
   return root.contains(name) && root[name].is_number_unsigned();
 }
@@ -84,6 +91,7 @@ bool JsonSettings::persist() {
   // Save other settings
   root["networkTcp"] = networkTcp;
   root["webServer"] = webServer;
+  root["webServerPort"] = webServerPort;
 
   out << root.dump(3) << std::endl;
 
@@ -130,10 +138,14 @@ bool JsonSettings::read() {
       throw ConfException(L"Missing configList array.");
     }
     // Parse other settings
-    networkTcp =
-        getValueFromJson(fRoot, "networkTcp", std::optional<bool>(false));
-    webServer =
-        getValueFromJson(fRoot, "webServer", std::optional<bool>(false));
+    networkTcp = getValueFromJson<bool>(fRoot, "networkTcp", false);
+    webServer = getValueFromJson<bool>(fRoot, "webServer", false);
+    // Assign a random port.
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<uint16_t> dist(20000, 30000);
+    webServerPort =
+        getValueFromJson<uint16_t>(fRoot, "webServerPort", dist(gen));
   } else {
     throw ConfException(L"Invalid schema");
   }

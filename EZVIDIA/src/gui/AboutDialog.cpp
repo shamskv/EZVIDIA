@@ -36,7 +36,10 @@ std::wstring AboutDialog::getAboutText() {
   std::wstringstream ss;
   ss << "EZVIDIA " << EZVIDIA_VERSION << std::endl << std::endl;
   ss << "If you have any feedback or problem leave an issue at the GitHub "
-        "repository.";
+        "repository.\n\nIf you need to change the port of the Web Server "
+        "(e.g. conflict with existing program), just manually change it in "
+        "configs.json. Or just delete the entry and you'll be assigned a new "
+        "port on start.";
   return ss.str();
 }
 

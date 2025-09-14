@@ -93,3 +93,12 @@ bool Settings::setWebServer(bool value) {
   webServer = value;
   return persist();
 }
+
+bool Settings::setWebServerPort(uint16_t port) {
+  webServerPort = port;
+  return persist();
+}
+
+uint16_t Settings::getWebServerPort() {
+  return webServerPort;
+}
