@@ -22,7 +22,7 @@ Look for a green notification icon in your task bar. Right-clicking this icon gi
 ![Right-clicking the notification icon shows this menu](./menu.png)
 
 ### Web interface
-**Make sure you enable this feature using the Desktop interface (`Options->Web Interface`) before trying to use it.** You should see a port number in the interface (default is a random port between `20000` and `30000` which is persisted in the JSON settings file). You can then access the Web interface by going to `http:\\<your IP>:<port>`.
+**Make sure you enable this feature using the Desktop interface (`Options->Web Interface`) before trying to use it.** You should see a port number in the interface (default is a random port between `20000` and `30000` which is persisted in the JSON settings file). You can then access the Web interface by going to `http:\\<your local IP>:<port>`.
 
 <img src="./web.png" width="270">
 
