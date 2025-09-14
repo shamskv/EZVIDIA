@@ -39,16 +39,7 @@
     <ClCompile Include="src\utils\WindowsUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\networking\TcpSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WinMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\networking\TcpServer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\updater\Updater.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\logging\BaseLog.cpp">
@@ -61,9 +52,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\gui\SaveConfDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\updater\HttpClient.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\web_ui\WebServer.cpp">
@@ -129,15 +117,6 @@
     <ClInclude Include="src\utils\WindowsUtils.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\networking\TcpSocket.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\networking\TcpServer.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\updater\Updater.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="resources\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -157,9 +136,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\gui\SaveConfDialog.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\updater\HttpClient.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\web_ui\WebServer.h">

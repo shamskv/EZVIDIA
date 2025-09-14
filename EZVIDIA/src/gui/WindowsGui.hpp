@@ -8,7 +8,6 @@
 // Forward Declarations
 class DisplayDriver;
 class Settings;
-class TcpServer;
 class WebServer;
 class SaveConfDialog;
 
@@ -23,7 +22,6 @@ class WindowsGui {
   DisplayDriver& driver;
   Settings& settings;
 
-  std::unique_ptr<TcpServer> tcpServer;
   std::unique_ptr<WebServer> webServer;
 
   ATOM MyRegisterClass(HINSTANCE, WCHAR*);

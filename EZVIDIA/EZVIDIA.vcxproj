@@ -161,8 +161,6 @@
     <ClCompile Include="src\gui\AboutDialog.cpp" />
     <ClCompile Include="src\gui\SaveConfDialog.cpp" />
     <ClCompile Include="src\logging\LogFilePolicy.cpp" />
-    <ClCompile Include="src\networking\TcpServer.cpp" />
-    <ClCompile Include="src\networking\TcpSocket.cpp" />
     <ClCompile Include="src\logging\BaseLog.cpp" />
     <ClCompile Include="src\utils\StringUtils.cpp" />
     <ClCompile Include="src\gui\WindowsGui.cpp" />
@@ -189,8 +187,6 @@
     <ClInclude Include="src\gui\SaveConfDialog.hpp" />
     <ClInclude Include="src\logging\LogFilePolicy.hpp" />
     <ClInclude Include="src\logging\Logger.hpp" />
-    <ClInclude Include="src\networking\TcpServer.hpp" />
-    <ClInclude Include="src\networking\TcpSocket.hpp" />
     <ClInclude Include="src\logging\BaseLog.hpp" />
     <ClInclude Include="src\utils\StringUtils.hpp" />
     <ClInclude Include="src\configurations\DisplayConfiguration.hpp" />

@@ -2,7 +2,6 @@
 // Forward declarations
 #include "../configurations/Settings.hpp"
 #include "../drivers/DisplayDriver.hpp"
-#include "../networking/TcpServer.hpp"
 #include "../web_ui/WebServer.h"
 // Windows stuff
 #include "../../resources/resource.h"
@@ -54,11 +53,6 @@ WindowsGui::WindowsGui(HINSTANCE hInstance, Settings& settings,
       CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT,
                    0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, this);
 
-  // We try to turn on networking if the settings say so
-  if (settings.networkTcpActive()) {
-    LOG(DEBUG) << "GUI is activating TCP server because of settings";
-    tcpServer = std::make_unique<TcpServer>(settings, driver);
-  }
   if (settings.webServerActive()) {
     LOG(DEBUG) << "GUI is activating Web server because of settings";
     webServer = std::make_unique<WebServer>(&settings, &driver);
@@ -159,19 +153,6 @@ LRESULT WindowsGui::MainProc(HWND hWnd, UINT message, WPARAM wParam,
                 thisPtr->settings.getAllConfigurationNames());
           }
           thisPtr->actionLock = false;
-          break;
-        case IDM_NETWORK_ON:
-          thisPtr->settings.setNetworkTcp(true);
-          thisPtr->tcpServer =
-              std::make_unique<TcpServer>(thisPtr->settings, thisPtr->driver);
-          if (!thisPtr->tcpServer.get()->up()) {
-            LOG(ERR) << "Error starting TCP server from GUI, resetting object";
-            thisPtr->tcpServer.reset();
-          }
-          break;
-        case IDM_NETWORK_OFF:
-          thisPtr->settings.setNetworkTcp(false);
-          thisPtr->tcpServer.reset();
           break;
         case IDM_WEBSERVER_ON:
           thisPtr->settings.setWebServer(true);
@@ -286,17 +267,6 @@ void WindowsGui::ShowContextMenu(HWND hwnd, POINT pt, WindowsGui* thisPtr) {
   } else {
     AppendMenu(hOptionsMenu, MF_STRING | MF_GRAYED, NULL,
                L"Generate batch files");
-  }
-  if (thisPtr->settings.networkTcpActive() && thisPtr->tcpServer &&
-      thisPtr->tcpServer->up()) {
-    AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_NETWORK_OFF,
-               L"Network control (TCP)");
-  } else if (thisPtr->settings.networkTcpActive()) {
-    AppendMenu(hOptionsMenu, MF_STRING | MF_CHECKED, IDM_NETWORK_OFF,
-               L"Network control (TCP) (ERROR)");
-  } else {
-    AppendMenu(hOptionsMenu, MF_STRING, IDM_NETWORK_ON,
-               L"Network control (TCP)");
   }
   if (thisPtr->settings.webServerActive() && thisPtr->webServer) {
     const std::wstring text =
